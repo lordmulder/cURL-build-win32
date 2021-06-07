@@ -59,7 +59,8 @@ tar -xvf ${pkg_brot} --strip-components=1 -C "${BROT_DIR}"
 pushd "${BROT_DIR}"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE}" make lib
 mkdir -p "${DEPS_DIR}/include/brotli"
-cp -vf libbrotli.a "${DEPS_DIR}/lib"
+cp -vf libbrotli.a "${DEPS_DIR}/lib/libbrotlienc.a"
+cp -vf libbrotli.a "${DEPS_DIR}/lib/libbrotlidec.a"
 cp -vf c/include/brotli/*.h "${DEPS_DIR}/include/brotli"
 popd
 
@@ -72,7 +73,7 @@ pkg_ossl="$(find "${DEPS_DIR}" -maxdepth 1 -name 'openssl-*.tar.gz' | sort -rn |
 rm -rf "${OSSL_DIR}" && mkdir "${OSSL_DIR}"
 tar -xvf ${pkg_ossl} --strip-components=1 -C "${OSSL_DIR}"
 pushd "${OSSL_DIR}"
-./Configure no-hw no-asm no-shared zlib -static -march=${MY_MARCH} -mtune=${MY_MTUNE} -I"${DEPS_DIR}/include" -L"${DEPS_DIR}/lib" -latomic mingw
+./Configure no-hw no-shared no-engine no-capieng no-dso 386 zlib -static -march=${MY_MARCH} -mtune=${MY_MTUNE} -I"${DEPS_DIR}/include" -L"${DEPS_DIR}/lib" -latomic mingw
 make build_libs
 mkdir -p "${DEPS_DIR}/include/crypto" "${DEPS_DIR}/include/openssl"
 cp -vf libcrypto.a libssl.a "${DEPS_DIR}/lib"
