@@ -53,7 +53,7 @@ popd
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== Brotli ====================\n\n"
 readonly BROT_DIR="${BASE_DIR}/brotli-src"
-pkg_brot="$(find "${DEPS_DIR}" -maxdepth 1 -name 'zstd-*.tar.gz' | sort -rn | head -n1)"
+pkg_brot="$(find "${DEPS_DIR}" -maxdepth 1 -name 'brotli-*.tar.gz' | sort -rn | head -n1)"
 rm -rf "${BROT_DIR}" && mkdir "${BROT_DIR}"
 tar -xvf ${pkg_brot} --strip-components=1 -C "${BROT_DIR}"
 pushd "${BROT_DIR}"
