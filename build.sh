@@ -1,4 +1,10 @@
 #!/bin/bash
+#                                 _   _ ____  _
+#                             ___| | | |  _ \| |
+#                            / __| | | | |_) | |
+#                           | (__| |_| |  _ <| |___
+#                            \___|\___/|_| \_\_____|
+
 set -e
 
 readonly MY_MARCH=i386
@@ -90,7 +96,8 @@ pkg_curl="$(find "${DEPS_DIR}" -maxdepth 1 -name 'curl-*.tar.gz' | sort -rn | he
 rm -rf "${CURL_DIR}" && mkdir "${CURL_DIR}"
 tar -xvf ${pkg_curl} --strip-components=1 -C "${CURL_DIR}"
 pushd "${CURL_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${DEPS_DIR}/include\"" LDFLAGS="-static -L\"${DEPS_DIR}/lib\"" LIBS="-latomic -lcrypt32" ./configure --disable-shared --enable-static --disable-ldap --with-zlib="${DEPS_DIR}" --with-zstd="${DEPS_DIR}" --with-brotli="${DEPS_DIR}" --with-openssl="${DEPS_DIR}" --with-ca-bundle="cacert.pem"
+patch -p1 -b < "${BASE_DIR}/patch/curl_mutex_init.diff"
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${DEPS_DIR}/include\"" LDFLAGS="-static -no-pthread -L\"${DEPS_DIR}/lib\"" LIBS="-latomic -lcrypt32" ./configure --disable-shared --disable-pthreads --enable-static --disable-ldap --with-zlib="${DEPS_DIR}" --with-zstd="${DEPS_DIR}" --with-brotli="${DEPS_DIR}" --with-openssl="${DEPS_DIR}" --with-ca-bundle="cacert.pem"
 make curl_LDFLAGS=-all-static
 cp -vf "${CURL_DIR}/src/curl.exe" "${BASE_DIR}/curl.exe"
 cp -vf "${DEPS_DIR}/cacert.pem" "${BASE_DIR}/cacert.pem"
