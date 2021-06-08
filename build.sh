@@ -99,9 +99,10 @@ tar -xvf ${pkg_ngh2} --strip-components=1 -C "${NGH2_DIR}"
 pushd "${NGH2_DIR}"
 CFLAGS="-march=i386 -mtune=intel" OPENSSL_CFLAGS="-I\"${DEPS_DIR}/include\"" OPENSSL_LIBS="-L\"${DEPS_DIR}/lib\" -lssl -lcrypto" ZLIB_CFLAGS="-I\"${DEPS_DIR}/include\"" ZLIB_LIBS="-L\"${DEPS_DIR}/lib\" -lz" ./configure --enable-lib-only --disable-threads --disable-shared
 make
-mkdir -p "${DEPS_DIR}/include/nghttp2"
+mkdir -p "${DEPS_DIR}/include/nghttp2" "${DEPS_DIR}/pkgconfig"
 cp -v lib/.libs/libnghttp2.a "${DEPS_DIR}/lib"
 cp -v lib/includes/nghttp2/*.h "${DEPS_DIR}/include/nghttp2"
+cp -v lib/libnghttp2.pc "${DEPS_DIR}/pkgconfig"
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -114,7 +115,7 @@ rm -rf "${CURL_DIR}" && mkdir "${CURL_DIR}"
 tar -xvf ${pkg_curl} --strip-components=1 -C "${CURL_DIR}"
 pushd "${CURL_DIR}"
 patch -p1 -b < "${BASE_DIR}/patch/curl_mutex_init.diff"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${DEPS_DIR}/include\"" LDFLAGS="-static -no-pthread -L\"${DEPS_DIR}/lib\"" LIBS="-latomic -lcrypt32" ./configure --disable-shared --disable-pthreads --enable-static --disable-ldap --with-zlib="${DEPS_DIR}" --with-zstd="${DEPS_DIR}" --with-brotli="${DEPS_DIR}" --with-openssl="${DEPS_DIR}" --with-nghttp2="${DEPS_DIR}" --with-ca-bundle="cacert.pem"
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -DNGHTTP2_STATICLIB -I\"${DEPS_DIR}/include\"" LDFLAGS="-static -no-pthread -L\"${DEPS_DIR}/lib\"" LIBS="-latomic -lcrypt32" PKG_CONFIG_PATH="${DEPS_DIR}/pkgconfig" ./configure --disable-shared --disable-pthreads --enable-static --disable-ldap --with-zlib="${DEPS_DIR}" --with-zstd="${DEPS_DIR}" --with-brotli="${DEPS_DIR}" --with-openssl="${DEPS_DIR}" --with-nghttp2="${DEPS_DIR}" --with-ca-bundle="cacert.pem"
 make curl_LDFLAGS=-all-static
 cp -vf "${CURL_DIR}/src/curl.exe" "${BASE_DIR}/curl.exe"
 cp -vf "${DEPS_DIR}/cacert.pem" "${BASE_DIR}/cacert.pem"
