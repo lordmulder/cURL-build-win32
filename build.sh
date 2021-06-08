@@ -25,6 +25,7 @@ wget -4 -P "${LIBS_DIR}" https://github.com/google/brotli/archive/v1.0.9/brotli-
 wget -4 -P "${LIBS_DIR}" https://www.openssl.org/source/openssl-1.1.1k.tar.gz
 wget -4 -P "${LIBS_DIR}" https://github.com/nghttp2/nghttp2/releases/download/v1.43.0/nghttp2-1.43.0.tar.gz
 wget -4 -P "${LIBS_DIR}" https://ftp.gnu.org/gnu/libidn/libidn2-2.3.1.tar.gz
+wget -4 -p "${LIBS_DIR}" https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.16.tar.gz
 wget -4 -P "${LIBS_DIR}" https://curl.se/download/curl-7.77.0.tar.gz
 wget -4 -P "${LIBS_DIR}" https://curl.se/ca/cacert.pem
 
@@ -104,6 +105,21 @@ mkdir -p "${LIBS_DIR}/include/nghttp2" "${LIBS_DIR}/pkgconfig"
 cp -v lib/.libs/libnghttp2.a "${LIBS_DIR}/lib"
 cp -v lib/includes/nghttp2/*.h "${LIBS_DIR}/include/nghttp2"
 cp -v lib/libnghttp2.pc "${LIBS_DIR}/pkgconfig"
+popd
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# libiconv
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+printf "\n==================== libiconv ====================\n\n"
+readonly ICNV_DIR="${BASE_DIR}/libiconv-src"
+pkg_icnv="$(find "${LIBS_DIR}" -maxdepth 1 -name 'libiconv-*.tar.gz' | sort -rn | head -n1)"
+rm -rf "${ICNV_DIR}" && mkdir "${ICNV_DIR}"
+tar -xvf ${pkg_icnv} --strip-components=1 -C "${ICNV_DIR}"
+pushd "${ICNV_DIR}"
+CCFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${LIBS_DIR}/include\"" LDFLAGS="-L\"${LIBS_DIR}/lib\"" ./configure --disable-rpath --disable-shared
+make
+cp -v lib/.libs/libiconv.a "${LIBS_DIR}/lib"
+cp -v include/iconv.h "${LIBS_DIR}/include"
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
