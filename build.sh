@@ -26,7 +26,7 @@ wget -4 -P "${LIBS_DIR}" https://www.openssl.org/source/openssl-1.1.1k.tar.gz
 wget -4 -P "${LIBS_DIR}" https://www.libssh2.org/download/libssh2-1.9.0.tar.gz
 wget -4 -P "${LIBS_DIR}" https://github.com/nghttp2/nghttp2/releases/download/v1.43.0/nghttp2-1.43.0.tar.gz
 wget -4 -P "${LIBS_DIR}" https://ftp.gnu.org/gnu/libidn/libidn2-2.3.1.tar.gz
-wget -4 -p "${LIBS_DIR}" https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.16.tar.gz
+wget -4 -P "${LIBS_DIR}" https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.16.tar.gz
 wget -4 -P "${LIBS_DIR}" https://curl.se/download/curl-7.77.0.tar.gz
 wget -4 -P "${LIBS_DIR}" https://curl.se/ca/cacert.pem
 
