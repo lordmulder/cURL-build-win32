@@ -2,4 +2,6 @@
 /*.exe
 /*.pem
 /*.txt
+/*.zip
 /.libs
+/.bin
