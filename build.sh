@@ -132,7 +132,7 @@ pkg_icnv="$(find "${LIBS_DIR}" -maxdepth 1 -name 'libiconv-*.tar.gz' | sort -rn 
 rm -rf "${ICNV_DIR}" && mkdir "${ICNV_DIR}"
 tar -xvf ${pkg_icnv} --strip-components=1 -C "${ICNV_DIR}"
 pushd "${ICNV_DIR}"
-CCFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${LIBS_DIR}/include\"" LDFLAGS="-L\"${LIBS_DIR}/lib\"" ./configure --disable-rpath --disable-shared
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${LIBS_DIR}/include\"" LDFLAGS="-L\"${LIBS_DIR}/lib\"" ./configure --disable-rpath --disable-shared
 make
 cp -v lib/.libs/libiconv.a "${LIBS_DIR}/lib"
 cp -v include/iconv.h "${LIBS_DIR}/include"
@@ -147,7 +147,7 @@ pkg_idn2="$(find "${LIBS_DIR}" -maxdepth 1 -name 'libidn2-*.tar.gz' | sort -rn |
 rm -rf "${IDN2_DIR}" && mkdir "${IDN2_DIR}"
 tar -xvf ${pkg_idn2} --strip-components=1 -C "${IDN2_DIR}"
 pushd "${IDN2_DIR}"
-CCFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${LIBS_DIR}/include\"" LDFLAGS="-L\"${LIBS_DIR}/lib\"" ./configure --disable-shared --disable-doc --without-libiconv-prefix --without-libunistring-prefix --disable-valgrind-tests
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${LIBS_DIR}/include\"" LDFLAGS="-L\"${LIBS_DIR}/lib\"" ./configure --disable-shared --disable-doc --without-libiconv-prefix --without-libunistring-prefix --disable-valgrind-tests
 make
 cp -v lib/.libs/libidn2.a "${LIBS_DIR}/lib"
 cp -v lib/idn2.h "${LIBS_DIR}/include"
