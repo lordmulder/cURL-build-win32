@@ -115,7 +115,7 @@ rm -rf "${CURL_DIR}" && mkdir "${CURL_DIR}"
 tar -xvf ${pkg_curl} --strip-components=1 -C "${CURL_DIR}"
 pushd "${CURL_DIR}"
 patch -p1 -b < "${BASE_DIR}/patch/curl_mutex_init.diff"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -DNGHTTP2_STATICLIB -I\"${DEPS_DIR}/include\"" LDFLAGS="-static -no-pthread -L\"${DEPS_DIR}/lib\"" LIBS="-latomic -lcrypt32" PKG_CONFIG_PATH="${DEPS_DIR}/pkgconfig" ./configure --disable-shared --disable-pthreads --enable-static --disable-ldap --with-zlib="${DEPS_DIR}" --with-zstd="${DEPS_DIR}" --with-brotli="${DEPS_DIR}" --with-openssl="${DEPS_DIR}" --with-nghttp2="${DEPS_DIR}" --with-ca-bundle="cacert.pem"
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${DEPS_DIR}/include\"" CPPFLAGS="-DNGHTTP2_STATICLIB" LDFLAGS="-static -no-pthread -L\"${DEPS_DIR}/lib\"" LIBS="-latomic -lcrypt32" PKG_CONFIG_PATH="${DEPS_DIR}/pkgconfig" ./configure --disable-shared --disable-pthreads --enable-static --disable-ldap --with-zlib="${DEPS_DIR}" --with-zstd="${DEPS_DIR}" --with-brotli="${DEPS_DIR}" --with-openssl="${DEPS_DIR}" --with-nghttp2="${DEPS_DIR}" --with-ca-bundle="cacert.pem"
 make curl_LDFLAGS=-all-static
 cp -vf "${CURL_DIR}/src/curl.exe" "${BASE_DIR}/curl.exe"
 cp -vf "${DEPS_DIR}/cacert.pem" "${BASE_DIR}/cacert.pem"
