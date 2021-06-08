@@ -111,9 +111,9 @@ popd
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== libidn2 ====================\n\n"
 readonly IDN2_DIR="${BASE_DIR}/libidn2-src"
-pkg_ngh2="$(find "${IDN2_DIR}" -maxdepth 1 -name 'libidn2-*.tar.gz' | sort -rn | head -n1)"
+pkg_idn2="$(find "${LIBS_DIR}" -maxdepth 1 -name 'libidn2-*.tar.gz' | sort -rn | head -n1)"
 rm -rf "${IDN2_DIR}" && mkdir "${IDN2_DIR}"
-tar -xvf ${pkg_ngh2} --strip-components=1 -C "${IDN2_DIR}"
+tar -xvf ${pkg_idn2} --strip-components=1 -C "${IDN2_DIR}"
 pushd "${IDN2_DIR}"
 CCFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${LIBS_DIR}/include\"" LDFLAGS="-L\"${LIBS_DIR}/lib\"" ./configure --disable-shared --disable-doc --without-libiconv-prefix --without-libunistring-prefix --disable-valgrind-tests
 make
