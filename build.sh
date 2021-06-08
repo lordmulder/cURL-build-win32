@@ -100,7 +100,7 @@ pkg_ssh2="$(find "${LIBS_DIR}" -maxdepth 1 -name 'libssh2-*.tar.gz' | sort -rn |
 rm -rf "${SSH2_DIR}" && mkdir "${SSH2_DIR}"
 tar -xvf ${pkg_ssh2} --strip-components=1 -C "${SSH2_DIR}"
 pushd "${SSH2_DIR}"
-CCFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${LIBS_DIR}/include\"" LDFLAGS="-L\"${LIBS_DIR}/lib\"" LIBS="-latomic" ./configure --disable-examples-build --disable-shared --with-libz
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${LIBS_DIR}/include\"" LDFLAGS="-L\"${LIBS_DIR}/lib\"" LIBS="-latomic" ./configure --disable-examples-build --disable-shared --with-libz
 make
 cp -v lib/.libs/libssh2.a "${LIBS_DIR}/lib"
 cp -v include/libssh2.h include/libssh2_publickey.h include/libssh2_sftp.h "${LIBS_DIR}/include"
