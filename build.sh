@@ -166,6 +166,7 @@ pushd "${CURL_DIR}"
 patch -p1 -b < "${BASE_DIR}/patch/curl_findw32cacert.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_mutex_init.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_parseconfig.diff"
+cp -vf "${LIBS_DIR}/cacert.pem"   ca-bundle.pem
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${LIBS_DIR}/include\"" CPPFLAGS="-DNGHTTP2_STATICLIB" LDFLAGS="-static -no-pthread -L\"${LIBS_DIR}/lib\"" LIBS="-latomic -liconv -lcrypt32" PKG_CONFIG_PATH="${LIBS_DIR}/pkgconfig" ./configure --enable-static --disable-shared --disable-pthreads --disable-libcurl-option --with-zlib="${LIBS_DIR}" --with-zstd="${LIBS_DIR}" --with-brotli="${LIBS_DIR}" --with-openssl="${LIBS_DIR}" --with-libssh2="${LIBS_DIR}" --with-nghttp2="${LIBS_DIR}" --with-libidn2="${LIBS_DIR}" --with-ca-bundle="ca-bundle.pem"
 make curl_LDFLAGS=-all-static
 strip -s src/curl.exe
