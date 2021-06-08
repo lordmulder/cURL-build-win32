@@ -96,7 +96,8 @@ readonly NGH2_DIR="${BASE_DIR}/nghttp2-src"
 pkg_ngh2="$(find "${DEPS_DIR}" -maxdepth 1 -name 'nghttp2-*.tar.gz' | sort -rn | head -n1)"
 rm -rf "${NGH2_DIR}" && mkdir "${NGH2_DIR}"
 tar -xvf ${pkg_ngh2} --strip-components=1 -C "${NGH2_DIR}"
-CFLAGS="-march=i386 -mtune=intel" OPENSSL_CFLAGS="-I${DEPS_DIR}/include" OPENSSL_LIBS="-L${DEPS_DIR}/lib -lssl -lcrypto" ZLIB_CFLAGS="-I${DEPS_DIR}/include" ZLIB_LIBS="-L${DEPS_DIR}/lib -lz" ./configure --enable-lib-only --disable-threads --disable-shared
+pushd "${NGH2_DIR}"
+CFLAGS="-march=i386 -mtune=intel" OPENSSL_CFLAGS="-I\"${DEPS_DIR}/include\"" OPENSSL_LIBS="-L\"${DEPS_DIR}/lib\" -lssl -lcrypto" ZLIB_CFLAGS="-I\"${DEPS_DIR}/include\"" ZLIB_LIBS="-L\"${DEPS_DIR}/lib\" -lz" ./configure --enable-lib-only --disable-threads --disable-shared
 make
 mkdir -p "${DEPS_DIR}/include/nghttp2"
 cp -v lib/.libs/libnghttp2.a "${DEPS_DIR}/lib"
