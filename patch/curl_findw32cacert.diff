@@ -1,0 +1,17 @@
+diff --git "a/D:\\_Sandbox\\curl\\curl-src\\src\\tool_operate.c.ori" "b/D:\\_Sandbox\\curl\\curl-src\\src\\tool_operate.c"
+index cd61316..1431913 100644
+--- "a/src/tool_operate.c"
++++ "b/src/tool_operate.c"
+@@ -2514,12 +2514,6 @@ static CURLcode transfer_per_config(struct GlobalConfig *global,
+ 
+       if(env)
+         curl_free(env);
+-#ifdef WIN32
+-      else {
+-        result = FindWin32CACert(config, tls_backend_info->backend,
+-                                 TEXT("curl-ca-bundle.crt"));
+-      }
+-#endif
+     }
+     curl_easy_cleanup(curltls);
+   }
