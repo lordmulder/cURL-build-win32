@@ -23,6 +23,7 @@ wget -4 -P "${LIBS_DIR}" https://zlib.net/zlib-1.2.11.tar.gz
 wget -4 -P "${LIBS_DIR}" https://github.com/facebook/zstd/releases/download/v1.5.0/zstd-1.5.0.tar.gz
 wget -4 -P "${LIBS_DIR}" https://github.com/google/brotli/archive/v1.0.9/brotli-1.0.9.tar.gz
 wget -4 -P "${LIBS_DIR}" https://www.openssl.org/source/openssl-1.1.1k.tar.gz
+wget -4 -P "${LIBS_DIR}" https://www.libssh2.org/download/libssh2-1.9.0.tar.gz
 wget -4 -P "${LIBS_DIR}" https://github.com/nghttp2/nghttp2/releases/download/v1.43.0/nghttp2-1.43.0.tar.gz
 wget -4 -P "${LIBS_DIR}" https://ftp.gnu.org/gnu/libidn/libidn2-2.3.1.tar.gz
 wget -4 -p "${LIBS_DIR}" https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.16.tar.gz
@@ -91,6 +92,21 @@ cp -vf include/openssl/*.h "${LIBS_DIR}/include/openssl"
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# libssh2
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+printf "\n==================== libssh2 ====================\n\n"
+readonly SSH2_DIR="${BASE_DIR}/libssh2-src"
+pkg_ssh2="$(find "${LIBS_DIR}" -maxdepth 1 -name 'libssh2-*.tar.gz' | sort -rn | head -n1)"
+rm -rf "${SSH2_DIR}" && mkdir "${SSH2_DIR}"
+tar -xvf ${pkg_ssh2} --strip-components=1 -C "${SSH2_DIR}"
+pushd "${SSH2_DIR}"
+CCFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${LIBS_DIR}/include\"" LDFLAGS="-L\"${LIBS_DIR}/lib\"" LIBS="-latomic" ./configure --disable-examples-build --disable-shared --with-libz
+make
+cp -v lib/.libs/libssh2.a "${LIBS_DIR}/lib"
+cp -v include/libssh2.h include/libssh2_publickey.h include/libssh2_sftp.h "${LIBS_DIR}/include"
+popd
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # nghttp2
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== nghttp2 ====================\n\n"
@@ -147,11 +163,14 @@ rm -rf "${CURL_DIR}" && mkdir "${CURL_DIR}"
 tar -xvf ${pkg_curl} --strip-components=1 -C "${CURL_DIR}"
 pushd "${CURL_DIR}"
 patch -p1 -b < "${BASE_DIR}/patch/curl_mutex_init.diff"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${LIBS_DIR}/include\"" CPPFLAGS="-DNGHTTP2_STATICLIB" LDFLAGS="-static -no-pthread -L\"${LIBS_DIR}/lib\"" LIBS="-latomic -liconv -lcrypt32" PKG_CONFIG_PATH="${LIBS_DIR}/pkgconfig" ./configure --disable-shared --disable-pthreads --enable-static --disable-ldap --with-zlib="${LIBS_DIR}" --with-zstd="${LIBS_DIR}" --with-brotli="${LIBS_DIR}" --with-openssl="${LIBS_DIR}" --with-nghttp2="${LIBS_DIR}" --with-libidn2="${LIBS_DIR}" --with-ca-bundle="cacert.pem"
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${LIBS_DIR}/include\"" CPPFLAGS="-DNGHTTP2_STATICLIB" LDFLAGS="-static -no-pthread -L\"${LIBS_DIR}/lib\"" LIBS="-latomic -liconv -lcrypt32" PKG_CONFIG_PATH="${LIBS_DIR}/pkgconfig" ./configure --disable-shared --disable-pthreads --enable-static --disable-ldap --with-zlib="${LIBS_DIR}" --with-zstd="${LIBS_DIR}" --with-brotli="${LIBS_DIR}" --with-openssl="${LIBS_DIR}" --with-libssh2="${LIBS_DIR}" --with-nghttp2="${LIBS_DIR}" --with-libidn2="${LIBS_DIR}" --with-ca-bundle="cacert.pem"
 make curl_LDFLAGS=-all-static
 cp -vf "${CURL_DIR}/src/curl.exe" "${BASE_DIR}/curl.exe"
 cp -vf "${LIBS_DIR}/cacert.pem" "${BASE_DIR}/cacert.pem"
 strip -s "${BASE_DIR}/curl.exe"
+unix2dos -n COPYING "${BASE_DIR}/COPYING.txt"
+unix2dos -n README "${BASE_DIR}/README.txt"
+unix2dos -n CHANGES "${BASE_DIR}/CHANGES.txt"
 popd
 
 printf "\nCompleted.\n\n"
