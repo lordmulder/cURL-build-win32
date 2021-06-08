@@ -29,6 +29,7 @@ wget -4 -P "${LIBS_DIR}" https://ftp.gnu.org/gnu/libidn/libidn2-2.3.1.tar.gz
 wget -4 -P "${LIBS_DIR}" https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.16.tar.gz
 wget -4 -P "${LIBS_DIR}" https://curl.se/download/curl-7.77.0.tar.gz
 wget -4 -P "${LIBS_DIR}" https://curl.se/ca/cacert.pem
+wget -4 -P "${LIBS_DIR}" https://curl.se/docs/manpage.html
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # zlib
@@ -163,14 +164,43 @@ rm -rf "${CURL_DIR}" && mkdir "${CURL_DIR}"
 tar -xvf ${pkg_curl} --strip-components=1 -C "${CURL_DIR}"
 pushd "${CURL_DIR}"
 patch -p1 -b < "${BASE_DIR}/patch/curl_mutex_init.diff"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${LIBS_DIR}/include\"" CPPFLAGS="-DNGHTTP2_STATICLIB" LDFLAGS="-static -no-pthread -L\"${LIBS_DIR}/lib\"" LIBS="-latomic -liconv -lcrypt32" PKG_CONFIG_PATH="${LIBS_DIR}/pkgconfig" ./configure --disable-shared --disable-pthreads --enable-static --disable-ldap --with-zlib="${LIBS_DIR}" --with-zstd="${LIBS_DIR}" --with-brotli="${LIBS_DIR}" --with-openssl="${LIBS_DIR}" --with-libssh2="${LIBS_DIR}" --with-nghttp2="${LIBS_DIR}" --with-libidn2="${LIBS_DIR}" --with-ca-bundle="cacert.pem"
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${LIBS_DIR}/include\"" CPPFLAGS="-DNGHTTP2_STATICLIB" LDFLAGS="-static -no-pthread -L\"${LIBS_DIR}/lib\"" LIBS="-latomic -liconv -lcrypt32" PKG_CONFIG_PATH="${LIBS_DIR}/pkgconfig" ./configure --enable-static --disable-shared --disable-pthreads --disable-libcurl-option --with-zlib="${LIBS_DIR}" --with-zstd="${LIBS_DIR}" --with-brotli="${LIBS_DIR}" --with-openssl="${LIBS_DIR}" --with-libssh2="${LIBS_DIR}" --with-nghttp2="${LIBS_DIR}" --with-libidn2="${LIBS_DIR}" --with-ca-bundle="cacert.pem"
 make curl_LDFLAGS=-all-static
-cp -vf "${CURL_DIR}/src/curl.exe" "${BASE_DIR}/curl.exe"
-cp -vf "${LIBS_DIR}/cacert.pem" "${BASE_DIR}/cacert.pem"
-strip -s "${BASE_DIR}/curl.exe"
-unix2dos -n COPYING "${BASE_DIR}/COPYING.txt"
-unix2dos -n README "${BASE_DIR}/README.txt"
-unix2dos -n CHANGES "${BASE_DIR}/CHANGES.txt"
+strip -s src/curl.exe
 popd
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Output
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+printf "\n==================== Output ====================\n\n"
+readonly OUT_DIR="${BASE_DIR}/.bin"
+rm -rf "${OUT_DIR}" && mkdir "${OUT_DIR}"
+cp -vf "${CURL_DIR}/src/curl.exe" "${OUT_DIR}/curl.exe"
+cp -vf "${LIBS_DIR}/cacert.pem"   "${OUT_DIR}/cacert.pem"
+cp -vf "${LIBS_DIR}/manpage.html" "${OUT_DIR}/manpage.html"
+unix2dos -n "${CURL_DIR}/COPYING" "${OUT_DIR}/COPYING.txt"
+unix2dos -n "${CURL_DIR}/README"  "${OUT_DIR}/README.txt"
+unix2dos -n "${CURL_DIR}/CHANGES" "${OUT_DIR}/CHANGES.txt"
+mkdir -p "${OUT_DIR}/legal"
+unix2dos -n "${BROT_DIR}/LICENSE"    "${OUT_DIR}/legal/brotli.LICENSE.txt"
+unix2dos -n "${BROT_DIR}/README.md"  "${OUT_DIR}/legal/brotli.README.md"
+unix2dos -n "${ICNV_DIR}/AUTHORS"    "${OUT_DIR}/legal/libiconv.AUTHORS.txt"
+unix2dos -n "${ICNV_DIR}/COPYING"    "${OUT_DIR}/legal/libiconv.COPYING.txt"
+unix2dos -n "${ICNV_DIR}/README"     "${OUT_DIR}/legal/libiconv.README"
+unix2dos -n "${IDN2_DIR}/AUTHORS"    "${OUT_DIR}/legal/libidn2.AUTHORS.txt"
+unix2dos -n "${IDN2_DIR}/COPYING"    "${OUT_DIR}/legal/libidn2.COPYING.txt"
+unix2dos -n "${IDN2_DIR}/README.md"  "${OUT_DIR}/legal/libidn2.README.md"
+unix2dos -n "${NGH2_DIR}/AUTHORS"    "${OUT_DIR}/legal/nghttp2.AUTHORS.txt"
+unix2dos -n "${NGH2_DIR}/LICENSE"    "${OUT_DIR}/legal/nghttp2.LICENSE.txt"
+unix2dos -n "${NGH2_DIR}/README.rst" "${OUT_DIR}/legal/nghttp2.README.rst"
+unix2dos -n "${OSSL_DIR}/AUTHORS"    "${OUT_DIR}/legal/openssl.AUTHORS.txt"
+unix2dos -n "${OSSL_DIR}/LICENSE"    "${OUT_DIR}/legal/openssl.LICENSE.txt"
+unix2dos -n "${OSSL_DIR}/README"     "${OUT_DIR}/legal/openssl.README.txt"
+unix2dos -n "${SSH2_DIR}/COPYING"    "${OUT_DIR}/legal/libssh2.COPYING.txt"
+unix2dos -n "${SSH2_DIR}/README"     "${OUT_DIR}/legal/libssh2.README.txt"
+unix2dos -n "${ZLIB_DIR}/README"     "${OUT_DIR}/legal/zlib.README.txt"
+unix2dos -n "${ZSTD_DIR}/LICENSE"    "${OUT_DIR}/legal/zstandard.LICENSE.txt"
+unix2dos -n "${ZSTD_DIR}/README.md"  "${OUT_DIR}/legal/zstandard.README.md"
+find "${OUT_DIR}" -type f -exec chmod 444 "{}" \;
 
 printf "\nCompleted.\n\n"
