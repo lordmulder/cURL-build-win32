@@ -21,18 +21,18 @@ index d26774f..ab1d28f 100644
 +  unsigned long len = GetModuleFileName(0, filebuffer, BUFFSIZE);
 +  if(len > 0 && len < BUFFSIZE) {
 +#ifdef UNICODE
-+    char *execpath_utf8 = curlx_convert_wchar_to_UTF8(filebuffer);
-+    if (execpath_utf8) {
-+      char *lastdirchar = strrchr(execpath_utf8, '\\');
++    char *exedir_utf8 = curlx_convert_wchar_to_UTF8(filebuffer);
++    if (exedir_utf8) {
++      char *lastdirchar = strrchr(exedir_utf8, '\\');
 +      if(lastdirchar) {
 +        *lastdirchar = '\0';
 +      }
-+      char *full_path = curl_maprintf("%s%s%s", execpath_utf8, DIR_CHAR, filename);
++      char *full_path = curl_maprintf("%s%s%s", exedir_utf8, DIR_CHAR, filename);
 +      if (full_path) {
 +        file = fopen(full_path, FOPEN_READTEXT);
 +        free(full_path);
 +      }
-+      free(execpath_utf8);
++      free(exedir_utf8);
 +    }
 +#else
      char *lastdirchar = strrchr(filebuffer, '\\');

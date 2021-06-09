@@ -24,32 +24,32 @@ index 98e13bc..2fcd28f 100644
 +static char *execpath(const TCHAR *filename)
 +{
 +  static const size_t BUFFSIZE = 512;
-+  char *cacert = NULL;
++  char *full_path = NULL;
 +  TCHAR filebuffer[BUFFSIZE];
 +
 +  unsigned long len = GetModuleFileName(0, filebuffer, BUFFSIZE);
 +  if(len > 0 && len < BUFFSIZE) {
 +#ifdef UNICODE
 +    char *filename_utf8 = curlx_convert_wchar_to_UTF8(filename);
-+    char *execpath_utf8 = curlx_convert_wchar_to_UTF8(filebuffer);
-+    if (filename_utf8 && execpath_utf8) {
-+      char *lastdirchar = strrchr(execpath_utf8, '\\');
++    char *exedir_utf8 = curlx_convert_wchar_to_UTF8(filebuffer);
++    if (filename_utf8 && exedir_utf8) {
++      char *lastdirchar = strrchr(exedir_utf8, '\\');
 +      if(lastdirchar) {
 +        *lastdirchar = '\0';
 +      }
-+      cacert = curl_maprintf("%s%s%s", execpath_utf8, DIR_CHAR, filename_utf8);
++      full_path = curl_maprintf("%s%s%s", exedir_utf8, DIR_CHAR, filename_utf8);
 +    }
 +    free(filename_utf8);
-+    free(execpath_utf8);
++    free(exedir_utf8);
 +#else
 +    char *lastdirchar = strrchr(filebuffer, '\\');
 +    if(lastdirchar) {
 +      *lastdirchar = '\0';
 +    }
-+    cacert = curl_maprintf("%s%s%s", filebuffer, DIR_CHAR, filename);
++    full_path = curl_maprintf("%s%s%s", filebuffer, DIR_CHAR, filename);
 +#endif
 +  }
-+  return cacert;
++  return full_path;
 +}
 +
  CURLcode FindWin32CACert(struct OperationConfig *config,
@@ -75,7 +75,7 @@ index 98e13bc..2fcd28f 100644
 -#endif
 -      if(!config->cacert)
 -        result = CURLE_OUT_OF_MEMORY;
-+    char *cacert = execpath(bundle_file, &result);
++    char *cacert = execpath(bundle_file);
 +    if (cacert) {
 +      if (file_exists(cacert)) {
 +        Curl_safefree(config->cacert);
