@@ -1,10 +1,13 @@
 diff --git "a/D:\\_Sandbox\\curl\\curl-src\\src\\tool_parsecfg.c.orig" "b/D:\\_Sandbox\\curl\\curl-src\\src\\tool_parsecfg.c"
-index d26774f..1026630 100644
+index d26774f..92c2299 100644
 --- "a/src/tool_parsecfg.c"
 +++ "b/src/tool_parsecfg.c"
-@@ -47,27 +47,26 @@ static bool my_get_line(FILE *fp, struct curlx_dynbuf *, bool *error);
+@@ -45,29 +45,26 @@ static const char *unslashquote(const char *line, char *param);
+ static bool my_get_line(FILE *fp, struct curlx_dynbuf *, bool *error);
+ 
  #ifdef WIN32
- static FILE *execpath(const char *filename)
+-static FILE *execpath(const char *filename)
++static FILE *execpath(const TCHAR *filename)
  {
 -  char filebuffer[512];
 -  /* Get the filename of our executable. GetModuleFileName is already declared
@@ -27,25 +30,25 @@ index d26774f..1026630 100644
 -      remaining = sizeof(filebuffer) - strlen(filebuffer);
 -      if(strlen(filename) < remaining - 1) {
 -        msnprintf(lastdirchar, remaining, "%s%s", DIR_CHAR, filename);
+-        return fopen(filebuffer, FOPEN_READTEXT);
+-      }
 +      *lastdirchar = TEXT('\0');
 +    }
 +    if (_tcslen(filebuffer) + _tcslen(filename) + 2U < BUFFSIZE) {
 +      _tcscat(filebuffer, TEXT("\\"));
 +      _tcscat(filebuffer, filename);
-+      if (exists(filebuffer)) {
 +#ifdef UNICODE
-+        return _wfopen(filebuffer, TEXT(FOPEN_READTEXT));
++      return _wfopen(filebuffer, TEXT(FOPEN_READTEXT));
 +#else
-         return fopen(filebuffer, FOPEN_READTEXT);
++      return fopen(filebuffer, FOPEN_READTEXT);
 +#endif
-       }
      }
    }
 -
    return NULL;
  }
  #endif
-@@ -85,7 +84,7 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
+@@ -85,7 +82,7 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
    if(!filename || !*filename) {
      /* NULL or no file name attempts to load .curlrc from the homedir! */
  
@@ -54,3 +57,15 @@ index d26774f..1026630 100644
  #ifndef WIN32
      if(home) {
        pathalloc = curl_maprintf("%s%s.curlrc", home, DIR_CHAR);
+@@ -120,9 +117,9 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
+     }
+     if(!filename) {
+       /* check for .curlrc then _curlrc in the dir of the executable */
+-      file = execpath(".curlrc");
++      file = execpath(TEXT(".curlrc"));
+       if(!file)
+-        file = execpath("_curlrc");
++        file = execpath(TEXT("_curlrc"));
+     }
+ #endif
+ 
