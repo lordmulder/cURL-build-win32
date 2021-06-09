@@ -1,4 +1,4 @@
-diff --git "a/D:\\_Sandbox\\curl\\curl-src\\src\\tool_parsecfg.c.orig" "b/D:\\_Sandbox\\curl\\curl-src\\src\\tool_parsecfg.c"
+diff --git "a/D:\\_Sandbox\\curl\\curl-src\\src\\tool_parsecfg.c" "b/D:\\_Sandbox\\curl\\curl-src\\src\\tool_parsecfg.c"
 index d26774f..e0b97c1 100644
 --- "a/src/tool_parsecfg.c"
 +++ "b/src/tool_parsecfg.c"

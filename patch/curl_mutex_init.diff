@@ -1,4 +1,4 @@
-diff --git "a/D:\\_Sandbox\\curl\\curl-src\\lib\\curl_threads.h.old" "b/D:\\_Sandbox\\curl\\curl-src\\lib\\curl_threads.h"
+diff --git "a/D:\\_Sandbox\\curl\\curl-src\\lib\\curl_threads.h" "b/D:\\_Sandbox\\curl\\curl-src\\lib\\curl_threads.h"
 index e10b7a1..22fdb49 100644
 --- "a/lib/curl_threads.h"
 +++ "b/lib/curl_threads.h"
