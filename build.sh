@@ -27,6 +27,7 @@ wget -4 -P "${LIBS_DIR}" https://www.libssh2.org/download/libssh2-1.9.0.tar.gz
 wget -4 -P "${LIBS_DIR}" https://github.com/nghttp2/nghttp2/releases/download/v1.43.0/nghttp2-1.43.0.tar.gz
 wget -4 -P "${LIBS_DIR}" https://ftp.gnu.org/gnu/libidn/libidn2-2.3.1.tar.gz
 wget -4 -P "${LIBS_DIR}" https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.16.tar.gz
+wget -4 -P "${LIBS_DIR}" https://ftp.gnu.org/gnu/gsasl/libgsasl-1.10.0.tar.gz
 wget -4 -P "${LIBS_DIR}" https://curl.se/download/curl-7.77.0.tar.gz
 wget -4 -P "${LIBS_DIR}" https://curl.se/ca/cacert.pem
 wget -4 -P "${LIBS_DIR}" https://curl.se/docs/manpage.html
@@ -155,6 +156,21 @@ cp -v lib/idn2.h "${LIBS_DIR}/include"
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# libgsasl
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+printf "\n==================== libgsasl ====================\n\n"
+readonly SASL_DIR="${BASE_DIR}/libgsasl-src"
+pkg_sasl="$(find "${LIBS_DIR}" -maxdepth 1 -name 'libgsasl-*.tar.gz' | sort -rn | head -n1)"
+rm -rf "${SASL_DIR}" && mkdir "${SASL_DIR}"
+tar -xvf ${pkg_sasl} --strip-components=1 -C "${SASL_DIR}"
+pushd "${SASL_DIR}"
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${LIBS_DIR}/include\"" LDFLAGS="-L\"${LIBS_DIR}/lib\"" ./configure --disable-shared --disable-valgrind-tests --disable-obsolete
+make
+cp -v src/.libs/libgsasl.a "${LIBS_DIR}/lib"
+cp -v src/gsasl.h src/gsasl-*.h "${LIBS_DIR}/include"
+popd
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # cURL
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== cURL ====================\n\n"
@@ -167,7 +183,7 @@ patch -p1 -b < "${BASE_DIR}/patch/curl_threads.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_doswin.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_parsecfg.diff"
 sed -i -E 's/\bmain[[:space:]]*\(([^\(\)]*)\)/wmain(\1)/g' configure
-CFLAGS="-municode -mconsole -march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${LIBS_DIR}/include\"" CPPFLAGS="-DNGHTTP2_STATICLIB" LDFLAGS="-static -no-pthread -L\"${LIBS_DIR}/lib\"" LIBS="-latomic -liconv -lcrypt32" PKG_CONFIG_PATH="${LIBS_DIR}/pkgconfig" ./configure --enable-static --disable-shared --disable-pthreads --disable-libcurl-option --disable-openssl-auto-load-config --with-zlib="${LIBS_DIR}" --with-zstd="${LIBS_DIR}" --with-brotli="${LIBS_DIR}" --with-openssl="${LIBS_DIR}" --with-libssh2="${LIBS_DIR}" --with-nghttp2="${LIBS_DIR}" --with-libidn2="${LIBS_DIR}" --without-ca-bundle
+CFLAGS="-municode -mconsole -march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${LIBS_DIR}/include\"" CPPFLAGS="-DNGHTTP2_STATICLIB" LDFLAGS="-static -no-pthread -L\"${LIBS_DIR}/lib\"" LIBS="-latomic -liconv -lcrypt32" PKG_CONFIG_PATH="${LIBS_DIR}/pkgconfig" ./configure --enable-static --disable-shared --disable-pthreads --disable-libcurl-option --disable-openssl-auto-load-config --with-zlib="${LIBS_DIR}" --with-zstd="${LIBS_DIR}" --with-brotli="${LIBS_DIR}" --with-openssl="${LIBS_DIR}" --with-libssh2="${LIBS_DIR}" --with-nghttp2="${LIBS_DIR}" --with-libidn2="${LIBS_DIR}" --with-gsasl="${LIBS_DIR}" --without-ca-bundle
 make curl_LDFLAGS=-all-static
 strip -s src/curl.exe
 popd
