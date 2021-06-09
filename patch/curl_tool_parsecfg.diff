@@ -1,8 +1,8 @@
 diff --git "a/D:\\_Sandbox\\curl\\curl-src\\src\\tool_parsecfg.c.orig" "b/D:\\_Sandbox\\curl\\curl-src\\src\\tool_parsecfg.c"
-index d26774f..92c2299 100644
+index d26774f..6b26101 100644
 --- "a/src/tool_parsecfg.c"
 +++ "b/src/tool_parsecfg.c"
-@@ -45,29 +45,26 @@ static const char *unslashquote(const char *line, char *param);
+@@ -45,29 +45,22 @@ static const char *unslashquote(const char *line, char *param);
  static bool my_get_line(FILE *fp, struct curlx_dynbuf *, bool *error);
  
  #ifdef WIN32
@@ -37,18 +37,14 @@ index d26774f..92c2299 100644
 +    if (_tcslen(filebuffer) + _tcslen(filename) + 2U < BUFFSIZE) {
 +      _tcscat(filebuffer, TEXT("\\"));
 +      _tcscat(filebuffer, filename);
-+#ifdef UNICODE
-+      return _wfopen(filebuffer, TEXT(FOPEN_READTEXT));
-+#else
-+      return fopen(filebuffer, FOPEN_READTEXT);
-+#endif
++      return _tfopen(filebuffer, TEXT(FOPEN_READTEXT));
      }
    }
 -
    return NULL;
  }
  #endif
-@@ -85,7 +82,7 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
+@@ -85,7 +78,7 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
    if(!filename || !*filename) {
      /* NULL or no file name attempts to load .curlrc from the homedir! */
  
@@ -57,7 +53,7 @@ index d26774f..92c2299 100644
  #ifndef WIN32
      if(home) {
        pathalloc = curl_maprintf("%s%s.curlrc", home, DIR_CHAR);
-@@ -120,9 +117,9 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
+@@ -120,9 +113,9 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
      }
      if(!filename) {
        /* check for .curlrc then _curlrc in the dir of the executable */
