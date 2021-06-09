@@ -1,61 +1,46 @@
 diff --git "a/D:\\_Sandbox\\curl\\curl-src\\src\\tool_doswin.c.orig" "b/D:\\_Sandbox\\curl\\curl-src\\src\\tool_doswin.c"
-index 98e13bc..2fcd28f 100644
+index 98e13bc..9f83c16 100644
 --- "a/src/tool_doswin.c"
 +++ "b/src/tool_doswin.c"
-@@ -612,6 +612,52 @@ char **__crt0_glob_function(char *arg)
+@@ -612,6 +612,37 @@ char **__crt0_glob_function(char *arg)
   * HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\SafeProcessSearchMode
   */
  
-+static BOOL file_exists(const char *filename)
++static BOOL check_file_exists(const TCHAR *filename)
 +{
-+  DWORD attribs = INVALID_FILE_ATTRIBUTES;
-+#ifdef UNICODE
-+  wchar_t *filename_w = curlx_convert_UTF8_to_wchar(filename);
-+  if (filename_w) {
-+    attribs = GetFileAttributes(filename_w);
-+    free(filename_w);
-+  }
-+#else
-+  attribs = GetFileAttributes(filename)
-+#endif
-+  return (attribs != INVALID_FILE_ATTRIBUTES) && (!(attribs & FILE_ATTRIBUTE_DIRECTORY));
++  const DWORD attr = GetFileAttributes(filename);
++  return (attr != INVALID_FILE_ATTRIBUTES) && (!(attr & FILE_ATTRIBUTE_DIRECTORY));
 +}
 +
 +static char *execpath(const TCHAR *filename)
 +{
 +  static const size_t BUFFSIZE = 512;
-+  char *full_path = NULL;
 +  TCHAR filebuffer[BUFFSIZE];
-+
 +  unsigned long len = GetModuleFileName(0, filebuffer, BUFFSIZE);
-+  if(len > 0 && len < BUFFSIZE) {
-+#ifdef UNICODE
-+    char *filename_utf8 = curlx_convert_wchar_to_UTF8(filename);
-+    char *exedir_utf8 = curlx_convert_wchar_to_UTF8(filebuffer);
-+    if (filename_utf8 && exedir_utf8) {
-+      char *lastdirchar = strrchr(exedir_utf8, '\\');
-+      if(lastdirchar) {
-+        *lastdirchar = '\0';
-+      }
-+      full_path = curl_maprintf("%s%s%s", exedir_utf8, DIR_CHAR, filename_utf8);
-+    }
-+    free(filename_utf8);
-+    free(exedir_utf8);
-+#else
-+    char *lastdirchar = strrchr(filebuffer, '\\');
++  if((len > 0) && (len < BUFFSIZE)) {
++    TCHAR *lastdirchar = _tcsrchr(filebuffer, TEXT('\\'));
 +    if(lastdirchar) {
-+      *lastdirchar = '\0';
++      *lastdirchar = TEXT('\0');
 +    }
-+    full_path = curl_maprintf("%s%s%s", filebuffer, DIR_CHAR, filename);
++    if (_tcslen(filebuffer) + _tcslen(filename) + 2U < BUFFSIZE) {
++      _tcscat(filebuffer, TEXT("\\"));
++      _tcscat(filebuffer, filename);
++      if (check_file_exists(filebuffer)) {
++#ifdef UNICODE
++        return curlx_convert_wchar_to_UTF8(filebuffer);
++#else
++        return strdup(filebuffer);
 +#endif
++      }
++    }
 +  }
-+  return full_path;
++  return NULL;
 +}
 +
  CURLcode FindWin32CACert(struct OperationConfig *config,
                           curl_sslbackend backend,
                           const TCHAR *bundle_file)
-@@ -627,23 +673,17 @@ CURLcode FindWin32CACert(struct OperationConfig *config,
+@@ -627,22 +658,10 @@ CURLcode FindWin32CACert(struct OperationConfig *config,
    if((curlinfo->features & CURL_VERSION_SSL) &&
       backend != CURLSSLBACKEND_SCHANNEL) {
  
@@ -67,7 +52,9 @@ index 98e13bc..2fcd28f 100644
 -
 -    res_len = SearchPath(NULL, bundle_file, NULL, PATH_MAX, buf, &ptr);
 -    if(res_len > 0) {
--      Curl_safefree(config->cacert);
++    char *cacert = execpath(bundle_file);
++    if (cacert) {
+       Curl_safefree(config->cacert);
 -#ifdef UNICODE
 -      config->cacert = curlx_convert_wchar_to_UTF8(buf);
 -#else
@@ -75,17 +62,7 @@ index 98e13bc..2fcd28f 100644
 -#endif
 -      if(!config->cacert)
 -        result = CURLE_OUT_OF_MEMORY;
-+    char *cacert = execpath(bundle_file);
-+    if (cacert) {
-+      if (file_exists(cacert)) {
-+        Curl_safefree(config->cacert);
-+        config->cacert = cacert;
-+      }
-+      else
-+        free(cacert);
++      config->cacert = cacert;
      }
-+    else
-+      result = CURLE_OUT_OF_MEMORY;
    }
  
-   return result;

@@ -1,8 +1,8 @@
 diff --git "a/D:\\_Sandbox\\curl\\curl-src\\src\\tool_parsecfg.c.orig" "b/D:\\_Sandbox\\curl\\curl-src\\src\\tool_parsecfg.c"
-index d26774f..ab1d28f 100644
+index d26774f..1026630 100644
 --- "a/src/tool_parsecfg.c"
 +++ "b/src/tool_parsecfg.c"
-@@ -47,28 +47,39 @@ static bool my_get_line(FILE *fp, struct curlx_dynbuf *, bool *error);
+@@ -47,27 +47,26 @@ static bool my_get_line(FILE *fp, struct curlx_dynbuf *, bool *error);
  #ifdef WIN32
  static FILE *execpath(const char *filename)
  {
@@ -14,28 +14,12 @@ index d26774f..ab1d28f 100644
 -  unsigned long len = GetModuleFileNameA(0, filebuffer, sizeof(filebuffer));
 -  if(len > 0 && len < sizeof(filebuffer)) {
 -    /* We got a valid filename - get the directory part */
+-    char *lastdirchar = strrchr(filebuffer, '\\');
 +  static const size_t BUFFSIZE = 512;
-+  FILE *file = NULL;
 +  TCHAR filebuffer[BUFFSIZE];
-+
 +  unsigned long len = GetModuleFileName(0, filebuffer, BUFFSIZE);
-+  if(len > 0 && len < BUFFSIZE) {
-+#ifdef UNICODE
-+    char *exedir_utf8 = curlx_convert_wchar_to_UTF8(filebuffer);
-+    if (exedir_utf8) {
-+      char *lastdirchar = strrchr(exedir_utf8, '\\');
-+      if(lastdirchar) {
-+        *lastdirchar = '\0';
-+      }
-+      char *full_path = curl_maprintf("%s%s%s", exedir_utf8, DIR_CHAR, filename);
-+      if (full_path) {
-+        file = fopen(full_path, FOPEN_READTEXT);
-+        free(full_path);
-+      }
-+      free(exedir_utf8);
-+    }
-+#else
-     char *lastdirchar = strrchr(filebuffer, '\\');
++  if((len > 0) && (len < BUFFSIZE)) {
++    TCHAR *lastdirchar = _tcsrchr(filebuffer, TEXT('\\'));
      if(lastdirchar) {
 -      size_t remaining;
 -      *lastdirchar = 0;
@@ -43,24 +27,25 @@ index d26774f..ab1d28f 100644
 -      remaining = sizeof(filebuffer) - strlen(filebuffer);
 -      if(strlen(filename) < remaining - 1) {
 -        msnprintf(lastdirchar, remaining, "%s%s", DIR_CHAR, filename);
--        return fopen(filebuffer, FOPEN_READTEXT);
--      }
-+      *lastdirchar = '\0';
++      *lastdirchar = TEXT('\0');
 +    }
-+    char *full_path = curl_maprintf("%s%s%s", filebuffer, DIR_CHAR, filename);
-+    if (full_path) {
-+      file = fopen(full_path, FOPEN_READTEXT);
-+      free(full_path);
-     }
++    if (_tcslen(filebuffer) + _tcslen(filename) + 2U < BUFFSIZE) {
++      _tcscat(filebuffer, TEXT("\\"));
++      _tcscat(filebuffer, filename);
++      if (exists(filebuffer)) {
++#ifdef UNICODE
++        return _wfopen(filebuffer, TEXT(FOPEN_READTEXT));
++#else
+         return fopen(filebuffer, FOPEN_READTEXT);
 +#endif
+       }
+     }
    }
 -
--  return NULL;
-+  return file;
+   return NULL;
  }
  #endif
- 
-@@ -85,7 +96,7 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
+@@ -85,7 +84,7 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
    if(!filename || !*filename) {
      /* NULL or no file name attempts to load .curlrc from the homedir! */
  
