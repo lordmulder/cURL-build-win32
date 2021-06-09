@@ -1,8 +1,59 @@
-diff --git "a/D:\\_Sandbox\\curl\\curl-src\\src\\tool_parsecfg.c.ori" "b/D:\\_Sandbox\\curl\\curl-src\\src\\tool_parsecfg.c"
-index d26774f..9ef1564 100644
---- "a/src/tool_parsecfg.c"
-+++ "b/src/tool_parsecfg.c"
-@@ -85,7 +85,7 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
+diff --git "a/D:\\_Sandbox\\curl\\curl-src\\src\\tool_parsecfg.c.orig" "b/D:\\_Sandbox\\curl\\curl-src\\src\\tool_parsecfg.c"
+index d26774f..e0b97c1 100644
+--- "a/D:\\_Sandbox\\curl\\curl-src\\src\\tool_parsecfg.c.orig"
++++ "b/D:\\_Sandbox\\curl\\curl-src\\src\\tool_parsecfg.c"
+@@ -47,28 +47,34 @@ static bool my_get_line(FILE *fp, struct curlx_dynbuf *, bool *error);
+ #ifdef WIN32
+ static FILE *execpath(const char *filename)
+ {
+-  char filebuffer[512];
++  static const size_t BUFFSIZE = 512;
++  FILE *file = NULL;
++  TCHAR filebuffer[BUFFSIZE];
+   /* Get the filename of our executable. GetModuleFileName is already declared
+-   * via inclusions done in setup header file.  We assume that we are using
+-   * the ASCII version here.
++   * via inclusions done in setup header file.
+    */
+-  unsigned long len = GetModuleFileNameA(0, filebuffer, sizeof(filebuffer));
+-  if(len > 0 && len < sizeof(filebuffer)) {
+-    /* We got a valid filename - get the directory part */
+-    char *lastdirchar = strrchr(filebuffer, '\\');
+-    if(lastdirchar) {
+-      size_t remaining;
+-      *lastdirchar = 0;
+-      /* If we have enough space, build the RC filename */
+-      remaining = sizeof(filebuffer) - strlen(filebuffer);
+-      if(strlen(filename) < remaining - 1) {
+-        msnprintf(lastdirchar, remaining, "%s%s", DIR_CHAR, filename);
+-        return fopen(filebuffer, FOPEN_READTEXT);
++  unsigned long len = GetModuleFileName(0, filebuffer, BUFFSIZE);
++  if(len > 0 && len < BUFFSIZE) {
++#ifdef UNICODE
++    char *module_path = curlx_convert_wchar_to_UTF8(filebuffer);
++#else
++    char *module_path = strdup(filebuffer);
++#endif
++    if (module_path) {
++      char *lastdirchar = strrchr(module_path, '\\');
++      if(lastdirchar) {
++        *lastdirchar = '\0';
++      }
++      char *file_path = curl_maprintf("%s%s%s", module_path, DIR_CHAR, filename);
++      if (file_path) {
++        file = fopen(file_path, FOPEN_READTEXT);
++        free(file_path);
+       }
++      free(module_path);
+     }
+   }
+ 
+-  return NULL;
++  return file;
+ }
+ #endif
+ 
+@@ -85,7 +91,7 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
    if(!filename || !*filename) {
      /* NULL or no file name attempts to load .curlrc from the homedir! */
  
