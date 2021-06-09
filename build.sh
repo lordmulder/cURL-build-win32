@@ -164,7 +164,8 @@ pkg_sasl="$(find "${LIBS_DIR}" -maxdepth 1 -name 'libgsasl-*.tar.gz' | sort -rn 
 rm -rf "${SASL_DIR}" && mkdir "${SASL_DIR}"
 tar -xvf ${pkg_sasl} --strip-components=1 -C "${SASL_DIR}"
 pushd "${SASL_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${LIBS_DIR}/include\"" LDFLAGS="-L\"${LIBS_DIR}/lib\"" ./configure --disable-shared --disable-valgrind-tests --disable-obsolete
+patch -p1 -b < "${BASE_DIR}/patch/gsasl_error.diff"
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${LIBS_DIR}/include\"" LDFLAGS="-L\"${LIBS_DIR}/lib\"" ./configure --disable-shared --disable-valgrind-tests --disable-obsolete -without-libintl-prefix
 make
 cp -v src/.libs/libgsasl.a "${LIBS_DIR}/lib"
 cp -v src/gsasl.h src/gsasl-*.h "${LIBS_DIR}/include"
@@ -199,11 +200,11 @@ cp -vf "${CURL_DIR}/src/curl.exe" curl.exe
 cp -vf "${LIBS_DIR}/cacert.pem"   curl-ca-bundle.crt
 cp -vf "${LIBS_DIR}/manpage.html" manpage.html
 mkdir -p "${OUT_DIR}/legal"
-unix2dos -n "${CURL_DIR}/COPYING"    legal/curl.COPYING.txt
-unix2dos -n "${CURL_DIR}/README"     legal/curl.README.txt
-unix2dos -n "${CURL_DIR}/CHANGES"    legal/curl.CHANGES.txt
 unix2dos -n "${BROT_DIR}/LICENSE"    legal/brotli.LICENSE.txt
 unix2dos -n "${BROT_DIR}/README.md"  legal/brotli.README.md
+unix2dos -n "${CURL_DIR}/CHANGES"    legal/curl.CHANGES.txt
+unix2dos -n "${CURL_DIR}/COPYING"    legal/curl.COPYING.txt
+unix2dos -n "${CURL_DIR}/README"     legal/curl.README.txt
 unix2dos -n "${ICNV_DIR}/AUTHORS"    legal/libiconv.AUTHORS.txt
 unix2dos -n "${ICNV_DIR}/COPYING"    legal/libiconv.COPYING.txt
 unix2dos -n "${ICNV_DIR}/README"     legal/libiconv.README
@@ -216,11 +217,16 @@ unix2dos -n "${NGH2_DIR}/README.rst" legal/nghttp2.README.rst
 unix2dos -n "${OSSL_DIR}/AUTHORS"    legal/openssl.AUTHORS.txt
 unix2dos -n "${OSSL_DIR}/LICENSE"    legal/openssl.LICENSE.txt
 unix2dos -n "${OSSL_DIR}/README"     legal/openssl.README.txt
+unix2dos -n "${SASL_DIR}/AUTHORS"    legal/libgsasl.AUTHORS.txt
+unix2dos -n "${SASL_DIR}/COPYING"    legal/libgsasl.COPYING.txt
+unix2dos -n "${SASL_DIR}/README"     legal/libgsasl.README.txt
 unix2dos -n "${SSH2_DIR}/COPYING"    legal/libssh2.COPYING.txt
 unix2dos -n "${SSH2_DIR}/README"     legal/libssh2.README.txt
 unix2dos -n "${ZLIB_DIR}/README"     legal/zlib.README.txt
 unix2dos -n "${ZSTD_DIR}/LICENSE"    legal/zstandard.LICENSE.txt
 unix2dos -n "${ZSTD_DIR}/README.md"  legal/zstandard.README.md
+mkdir -p "${OUT_DIR}/patch"
+find "${BASE_DIR}/patch" -type f -name '*.diff' -exec cp -vf "{}" "${OUT_DIR}/patch"
 find "${OUT_DIR}" -type f -exec chmod 444 "{}" \;
 readonly zfile="${BASE_DIR}/curl-win32.$(date +"%Y-%m-%d").zip"
 rm -rf "${zfile}" && zip -v -r -9 "${zfile}" "."
