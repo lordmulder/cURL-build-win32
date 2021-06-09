@@ -199,6 +199,7 @@ pushd "${OUT_DIR}"
 cp -vf "${CURL_DIR}/src/curl.exe" curl.exe
 cp -vf "${LIBS_DIR}/cacert.pem"   curl-ca-bundle.crt
 cp -vf "${LIBS_DIR}/manpage.html" manpage.html
+sed -n "/Configured to build curl\/libcurl:$/,/^[[:space:]]*Features:/p" "${CURL_DIR}/config.log" | sed -r "s/configure:[[:digit:]]+://" | sed "s/^[[:blank:]]*//" | unix2dos > config.log
 mkdir -p "${OUT_DIR}/legal"
 unix2dos -n "${BROT_DIR}/LICENSE"    legal/brotli.LICENSE.txt
 unix2dos -n "${BROT_DIR}/README.md"  legal/brotli.README.md
@@ -226,7 +227,7 @@ unix2dos -n "${ZLIB_DIR}/README"     legal/zlib.README.txt
 unix2dos -n "${ZSTD_DIR}/LICENSE"    legal/zstandard.LICENSE.txt
 unix2dos -n "${ZSTD_DIR}/README.md"  legal/zstandard.README.md
 mkdir -p "${OUT_DIR}/patch"
-find "${BASE_DIR}/patch" -type f -name '*.diff' -exec cp -vf "{}" "${OUT_DIR}/patch"
+find "${BASE_DIR}/patch" -maxdepth 1 -type f -name '*.diff' -exec cp -vf "{}" "${OUT_DIR}/patch" \;
 find "${OUT_DIR}" -type f -exec chmod 444 "{}" \;
 readonly zfile="${BASE_DIR}/curl-win32.$(date +"%Y-%m-%d").zip"
 rm -rf "${zfile}" && zip -v -r -9 "${zfile}" "."
