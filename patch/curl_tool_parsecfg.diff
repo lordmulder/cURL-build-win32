@@ -1,0 +1,71 @@
+diff --git "a/D:\\_Sandbox\\curl\\curl-src\\src\\tool_parsecfg.c.orig" "b/D:\\_Sandbox\\curl\\curl-src\\src\\tool_parsecfg.c"
+index d26774f..ab1d28f 100644
+--- "a/src/tool_parsecfg.c"
++++ "b/src/tool_parsecfg.c"
+@@ -47,28 +47,39 @@ static bool my_get_line(FILE *fp, struct curlx_dynbuf *, bool *error);
+ #ifdef WIN32
+ static FILE *execpath(const char *filename)
+ {
+-  char filebuffer[512];
+-  /* Get the filename of our executable. GetModuleFileName is already declared
+-   * via inclusions done in setup header file.  We assume that we are using
+-   * the ASCII version here.
+-   */
+-  unsigned long len = GetModuleFileNameA(0, filebuffer, sizeof(filebuffer));
+-  if(len > 0 && len < sizeof(filebuffer)) {
+-    /* We got a valid filename - get the directory part */
++  static const size_t BUFFSIZE = 512;
++  FILE *file = NULL;
++  TCHAR filebuffer[BUFFSIZE];
++
++  unsigned long len = GetModuleFileName(0, filebuffer, BUFFSIZE);
++  if(len > 0 && len < BUFFSIZE) {
++#ifdef UNICODE
++    char *execpath_utf8 = curlx_convert_wchar_to_UTF8(filebuffer);
++    if (execpath_utf8) {
++      char *lastdirchar = strrchr(execpath_utf8, '\\');
++      if(lastdirchar) {
++        *lastdirchar = '\0';
++      }
++      char *full_path = curl_maprintf("%s%s%s", execpath_utf8, DIR_CHAR, filename);
++      if (full_path) {
++        file = fopen(full_path, FOPEN_READTEXT);
++        free(full_path);
++      }
++      free(execpath_utf8);
++    }
++#else
+     char *lastdirchar = strrchr(filebuffer, '\\');
+     if(lastdirchar) {
+-      size_t remaining;
+-      *lastdirchar = 0;
+-      /* If we have enough space, build the RC filename */
+-      remaining = sizeof(filebuffer) - strlen(filebuffer);
+-      if(strlen(filename) < remaining - 1) {
+-        msnprintf(lastdirchar, remaining, "%s%s", DIR_CHAR, filename);
+-        return fopen(filebuffer, FOPEN_READTEXT);
+-      }
++      *lastdirchar = '\0';
++    }
++    char *full_path = curl_maprintf("%s%s%s", filebuffer, DIR_CHAR, filename);
++    if (full_path) {
++      file = fopen(full_path, FOPEN_READTEXT);
++      free(full_path);
+     }
++#endif
+   }
+-
+-  return NULL;
++  return file;
+ }
+ #endif
+ 
+@@ -85,7 +96,7 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
+   if(!filename || !*filename) {
+     /* NULL or no file name attempts to load .curlrc from the homedir! */
+ 
+-    char *home = homedir(".curlrc");
++    char *home = NULL; /* homedir(".curlrc"); */
+ #ifndef WIN32
+     if(home) {
+       pathalloc = curl_maprintf("%s%s.curlrc", home, DIR_CHAR);

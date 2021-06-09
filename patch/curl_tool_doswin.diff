@@ -1,0 +1,91 @@
+diff --git "a/D:\\_Sandbox\\curl\\curl-src\\src\\tool_doswin.c.orig" "b/D:\\_Sandbox\\curl\\curl-src\\src\\tool_doswin.c"
+index 98e13bc..2fcd28f 100644
+--- "a/src/tool_doswin.c"
++++ "b/src/tool_doswin.c"
+@@ -612,6 +612,52 @@ char **__crt0_glob_function(char *arg)
+  * HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\SafeProcessSearchMode
+  */
+ 
++static BOOL file_exists(const char *filename)
++{
++  DWORD attribs = INVALID_FILE_ATTRIBUTES;
++#ifdef UNICODE
++  wchar_t *filename_w = curlx_convert_UTF8_to_wchar(filename);
++  if (filename_w) {
++    attribs = GetFileAttributes(filename_w);
++    free(filename_w);
++  }
++#else
++  attribs = GetFileAttributes(filename)
++#endif
++  return (attribs != INVALID_FILE_ATTRIBUTES) && (!(attribs & FILE_ATTRIBUTE_DIRECTORY));
++}
++
++static char *execpath(const TCHAR *filename)
++{
++  static const size_t BUFFSIZE = 512;
++  char *cacert = NULL;
++  TCHAR filebuffer[BUFFSIZE];
++
++  unsigned long len = GetModuleFileName(0, filebuffer, BUFFSIZE);
++  if(len > 0 && len < BUFFSIZE) {
++#ifdef UNICODE
++    char *filename_utf8 = curlx_convert_wchar_to_UTF8(filename);
++    char *execpath_utf8 = curlx_convert_wchar_to_UTF8(filebuffer);
++    if (filename_utf8 && execpath_utf8) {
++      char *lastdirchar = strrchr(execpath_utf8, '\\');
++      if(lastdirchar) {
++        *lastdirchar = '\0';
++      }
++      cacert = curl_maprintf("%s%s%s", execpath_utf8, DIR_CHAR, filename_utf8);
++    }
++    free(filename_utf8);
++    free(execpath_utf8);
++#else
++    char *lastdirchar = strrchr(filebuffer, '\\');
++    if(lastdirchar) {
++      *lastdirchar = '\0';
++    }
++    cacert = curl_maprintf("%s%s%s", filebuffer, DIR_CHAR, filename);
++#endif
++  }
++  return cacert;
++}
++
+ CURLcode FindWin32CACert(struct OperationConfig *config,
+                          curl_sslbackend backend,
+                          const TCHAR *bundle_file)
+@@ -627,23 +673,17 @@ CURLcode FindWin32CACert(struct OperationConfig *config,
+   if((curlinfo->features & CURL_VERSION_SSL) &&
+      backend != CURLSSLBACKEND_SCHANNEL) {
+ 
+-    DWORD res_len;
+-    TCHAR buf[PATH_MAX];
+-    TCHAR *ptr = NULL;
+-
+-    buf[0] = TEXT('\0');
+-
+-    res_len = SearchPath(NULL, bundle_file, NULL, PATH_MAX, buf, &ptr);
+-    if(res_len > 0) {
+-      Curl_safefree(config->cacert);
+-#ifdef UNICODE
+-      config->cacert = curlx_convert_wchar_to_UTF8(buf);
+-#else
+-      config->cacert = strdup(buf);
+-#endif
+-      if(!config->cacert)
+-        result = CURLE_OUT_OF_MEMORY;
++    char *cacert = execpath(bundle_file, &result);
++    if (cacert) {
++      if (file_exists(cacert)) {
++        Curl_safefree(config->cacert);
++        config->cacert = cacert;
++      }
++      else
++        free(cacert);
+     }
++    else
++      result = CURLE_OUT_OF_MEMORY;
+   }
+ 
+   return result;
