@@ -1,7 +1,7 @@
 diff --git "a/D:\\_Sandbox\\curl\\curl-src\\src\\tool_parsecfg.c.orig" "b/D:\\_Sandbox\\curl\\curl-src\\src\\tool_parsecfg.c"
 index d26774f..e0b97c1 100644
---- "a/D:\\_Sandbox\\curl\\curl-src\\src\\tool_parsecfg.c.orig"
-+++ "b/D:\\_Sandbox\\curl\\curl-src\\src\\tool_parsecfg.c"
+--- "a/src/tool_parsecfg.c"
++++ "b/src/tool_parsecfg.c"
 @@ -47,28 +47,34 @@ static bool my_get_line(FILE *fp, struct curlx_dynbuf *, bool *error);
  #ifdef WIN32
  static FILE *execpath(const char *filename)
