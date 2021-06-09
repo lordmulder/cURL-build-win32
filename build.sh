@@ -199,7 +199,7 @@ pushd "${OUT_DIR}"
 cp -vf "${CURL_DIR}/src/curl.exe" curl.exe
 cp -vf "${LIBS_DIR}/cacert.pem"   curl-ca-bundle.crt
 cp -vf "${LIBS_DIR}/manpage.html" manpage.html
-sed -n "/Configured to build curl\/libcurl:$/,/^[[:space:]]*Features:/p" "${CURL_DIR}/config.log" | sed -r "s/configure:[[:digit:]]+://" | sed "s/^[[:blank:]]*//" | unix2dos > config.log
+sed -n "/Configured to build curl\/libcurl:$/,/^[[:space:]]*Features:/p" "${CURL_DIR}/config.log" | sed -r "s/configure:[[:digit:]]+://" | sed -r "s/^[[:blank:]]*//" | unix2dos > config.log
 mkdir -p "${OUT_DIR}/legal"
 unix2dos -n "${BROT_DIR}/LICENSE"    legal/brotli.LICENSE.txt
 unix2dos -n "${BROT_DIR}/README.md"  legal/brotli.README.md
