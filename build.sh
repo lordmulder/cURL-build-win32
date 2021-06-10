@@ -55,7 +55,7 @@ pkg_zstd="$(find "${LIBS_DIR}" -maxdepth 1 -name 'zstd-*.tar.gz' | sort -rn | he
 rm -rf "${ZSTD_DIR}" && mkdir "${ZSTD_DIR}"
 tar -xvf ${pkg_zstd} --strip-components=1 -C "${ZSTD_DIR}"
 pushd "${ZSTD_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${LIBS_DIR}/include\"" LDFLAGS="-L\"${LIBS_DIR}/lib\"" make lib
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" make lib
 cp -vf lib/libzstd.a "${LIBS_DIR}/lib"
 cp -vf lib/zstd.h lib/zstd_errors.h "${LIBS_DIR}/include"
 popd
@@ -69,7 +69,7 @@ pkg_brot="$(find "${LIBS_DIR}" -maxdepth 1 -name 'brotli-*.tar.gz' | sort -rn | 
 rm -rf "${BROT_DIR}" && mkdir "${BROT_DIR}"
 tar -xvf ${pkg_brot} --strip-components=1 -C "${BROT_DIR}"
 pushd "${BROT_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${LIBS_DIR}/include\"" LDFLAGS="-L\"${LIBS_DIR}/lib\"" make lib
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" make lib
 mkdir -p "${LIBS_DIR}/include/brotli"
 cp -vf libbrotli.a "${LIBS_DIR}/lib/libbrotlienc.a"
 cp -vf libbrotli.a "${LIBS_DIR}/lib/libbrotlidec.a"
@@ -102,7 +102,7 @@ pkg_ssh2="$(find "${LIBS_DIR}" -maxdepth 1 -name 'libssh2-*.tar.gz' | sort -rn |
 rm -rf "${SSH2_DIR}" && mkdir "${SSH2_DIR}"
 tar -xvf ${pkg_ssh2} --strip-components=1 -C "${SSH2_DIR}"
 pushd "${SSH2_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${LIBS_DIR}/include\"" LDFLAGS="-L\"${LIBS_DIR}/lib\"" LIBS="-latomic" ./configure --disable-examples-build --disable-shared --with-libz
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" LIBS="-latomic" ./configure --disable-examples-build --disable-shared --with-libz
 make
 cp -v src/.libs/libssh2.a "${LIBS_DIR}/lib"
 cp -v include/libssh2.h include/libssh2_publickey.h include/libssh2_sftp.h "${LIBS_DIR}/include"
@@ -117,7 +117,7 @@ pkg_ngh2="$(find "${LIBS_DIR}" -maxdepth 1 -name 'nghttp2-*.tar.gz' | sort -rn |
 rm -rf "${NGH2_DIR}" && mkdir "${NGH2_DIR}"
 tar -xvf ${pkg_ngh2} --strip-components=1 -C "${NGH2_DIR}"
 pushd "${NGH2_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${LIBS_DIR}/include\"" LDFLAGS="-L\"${LIBS_DIR}/lib\"" OPENSSL_CFLAGS="-I\"${LIBS_DIR}/include\"" OPENSSL_LIBS="-L\"${LIBS_DIR}/lib\" -lssl -lcrypto" ZLIB_CFLAGS="-I\"${LIBS_DIR}/include\"" ZLIB_LIBS="-L\"${LIBS_DIR}/lib\" -lz" ./configure --enable-lib-only --disable-threads --disable-shared
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" OPENSSL_CFLAGS="-I${LIBS_DIR}/include" OPENSSL_LIBS="-L${LIBS_DIR}/lib -lssl -lcrypto" ZLIB_CFLAGS="-I${LIBS_DIR}/include" ZLIB_LIBS="-L${LIBS_DIR}/lib -lz" ./configure --enable-lib-only --disable-threads --disable-shared
 make
 mkdir -p "${LIBS_DIR}/include/nghttp2" "${LIBS_DIR}/pkgconfig"
 cp -v lib/.libs/libnghttp2.a "${LIBS_DIR}/lib"
@@ -134,7 +134,7 @@ pkg_icnv="$(find "${LIBS_DIR}" -maxdepth 1 -name 'libiconv-*.tar.gz' | sort -rn 
 rm -rf "${ICNV_DIR}" && mkdir "${ICNV_DIR}"
 tar -xvf ${pkg_icnv} --strip-components=1 -C "${ICNV_DIR}"
 pushd "${ICNV_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${LIBS_DIR}/include\"" LDFLAGS="-L\"${LIBS_DIR}/lib\"" ./configure --disable-rpath --disable-shared
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" ./configure --disable-rpath --disable-shared
 make
 cp -v lib/.libs/libiconv.a "${LIBS_DIR}/lib"
 cp -v include/iconv.h "${LIBS_DIR}/include"
@@ -149,7 +149,7 @@ pkg_idn2="$(find "${LIBS_DIR}" -maxdepth 1 -name 'libidn2-*.tar.gz' | sort -rn |
 rm -rf "${IDN2_DIR}" && mkdir "${IDN2_DIR}"
 tar -xvf ${pkg_idn2} --strip-components=1 -C "${IDN2_DIR}"
 pushd "${IDN2_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${LIBS_DIR}/include\"" LDFLAGS="-L\"${LIBS_DIR}/lib\"" ./configure --disable-shared --disable-doc --without-libiconv-prefix --without-libunistring-prefix --disable-valgrind-tests
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" ./configure --disable-shared --disable-doc --without-libiconv-prefix --without-libunistring-prefix --disable-valgrind-tests
 make
 cp -v lib/.libs/libidn2.a "${LIBS_DIR}/lib"
 cp -v lib/idn2.h "${LIBS_DIR}/include"
@@ -165,11 +165,23 @@ rm -rf "${SASL_DIR}" && mkdir "${SASL_DIR}"
 tar -xvf ${pkg_sasl} --strip-components=1 -C "${SASL_DIR}"
 pushd "${SASL_DIR}"
 patch -p1 -b < "${BASE_DIR}/patch/gsasl_error.diff"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${LIBS_DIR}/include\"" LDFLAGS="-L\"${LIBS_DIR}/lib\"" ./configure --disable-shared --disable-valgrind-tests --disable-obsolete -without-libintl-prefix
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" ./configure --disable-shared --disable-valgrind-tests --disable-obsolete -without-libintl-prefix
 make
 cp -v src/.libs/libgsasl.a "${LIBS_DIR}/lib"
 cp -v src/gsasl.h src/gsasl-*.h "${LIBS_DIR}/include"
 popd
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# libwmain
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+printf "\n==================== libwmain ====================\n\n"
+readonly LWMN_DIR="${BASE_DIR}/libwmain-src"
+pkg_lwmn="$(find "${BASE_DIR}/patch" -maxdepth 1 -name 'libwmain-*.tar.gz' | sort -rn | head -n1)"
+rm -rf "${LWMN_DIR}" && mkdir "${LWMN_DIR}"
+tar -xvf "${pkg_lwmn}" --strip-components=1 -C "${LWMN_DIR}"
+pushd "${LWMN_DIR}"
+make
+cp -v libwmain.a "${LIBS_DIR}/lib"
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # cURL
@@ -184,8 +196,7 @@ patch -p1 -b < "${BASE_DIR}/patch/curl_threads.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_doswin.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_parsecfg.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_url.diff"
-sed -i -E 's/\bmain[[:space:]]*\(([^\(\)]*)\)/wmain(\1)/g' configure
-CFLAGS="-municode -mconsole -march=${MY_MARCH} -mtune=${MY_MTUNE} -I\"${LIBS_DIR}/include\"" CPPFLAGS="-DNGHTTP2_STATICLIB" LDFLAGS="-static -no-pthread -L\"${LIBS_DIR}/lib\"" LIBS="-latomic -liconv -lcrypt32" PKG_CONFIG_PATH="${LIBS_DIR}/pkgconfig" ./configure --enable-static --disable-shared --disable-pthreads --disable-libcurl-option --disable-openssl-auto-load-config --with-zlib="${LIBS_DIR}" --with-zstd="${LIBS_DIR}" --with-brotli="${LIBS_DIR}" --with-openssl="${LIBS_DIR}" --with-libssh2="${LIBS_DIR}" --with-nghttp2="${LIBS_DIR}" --with-libidn2="${LIBS_DIR}" --with-gsasl="${LIBS_DIR}" --without-ca-bundle
+CFLAGS="-municode -mconsole -march=${MY_MARCH} -mtune=${MY_MTUNE} -I${LIBS_DIR}/include" CPPFLAGS="-DNGHTTP2_STATICLIB" LDFLAGS="-static -no-pthread -L${LIBS_DIR}/lib" LIBS="-latomic -liconv -lcrypt32 -lwmain" PKG_CONFIG_PATH="${LIBS_DIR}/pkgconfig" ./configure --enable-static --disable-shared --disable-pthreads --disable-libcurl-option --disable-openssl-auto-load-config --with-zlib="${LIBS_DIR}" --with-zstd="${LIBS_DIR}" --with-brotli="${LIBS_DIR}" --with-openssl="${LIBS_DIR}" --with-libssh2="${LIBS_DIR}" --with-nghttp2="${LIBS_DIR}" --with-libidn2="${LIBS_DIR}" --with-gsasl="${LIBS_DIR}" --without-ca-bundle
 make curl_LDFLAGS=-all-static
 strip -s src/curl.exe
 popd
@@ -228,7 +239,7 @@ unix2dos -n "${ZLIB_DIR}/README"     legal/zlib.README.txt
 unix2dos -n "${ZSTD_DIR}/LICENSE"    legal/zstandard.LICENSE.txt
 unix2dos -n "${ZSTD_DIR}/README.md"  legal/zstandard.README.md
 mkdir -p "${OUT_DIR}/patch"
-find "${BASE_DIR}/patch" -maxdepth 1 -type f -name '*.diff' -exec cp -vf "{}" "${OUT_DIR}/patch" \;
+cp -vf "${BASE_DIR}/patch/"*.diff "${BASE_DIR}/patch/"*.tar.gz "${OUT_DIR}/patch"
 find "${OUT_DIR}" -type f -exec chmod 444 "{}" \;
 readonly zfile="${BASE_DIR}/curl-win32.$(date +"%Y-%m-%d").zip"
 rm -rf "${zfile}" && zip -v -r -9 "${zfile}" "."
