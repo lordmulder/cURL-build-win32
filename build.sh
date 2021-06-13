@@ -198,6 +198,7 @@ tar -xvf "${pkg_lwmn}" --strip-components=1 -C "${LWMN_DIR}"
 pushd "${LWMN_DIR}"
 make MARCH=${MY_MARCH} MTUNE=${MY_MTUNE}
 cp -v libwmain.a "${LIBS_DIR}/lib"
+popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # cURL
