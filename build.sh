@@ -7,6 +7,9 @@
 
 set -e
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Set up compiler
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 case "$(cc -dumpmachine)" in
   i686-*)
     readonly MY_CPU=x86
@@ -24,9 +27,11 @@ case "$(cc -dumpmachine)" in
     ;;
 esac
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Initialize paths
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 readonly BASE_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 readonly LIBS_DIR="${BASE_DIR}/.libs/${MY_CPU}"
-
 find "${BASE_DIR}" -maxdepth 1 -type d -name "*-${MY_CPU}" -exec rm -rf "{}" \;
 rm -rf "${LIBS_DIR}" && mkdir -p "${LIBS_DIR}/include" "${LIBS_DIR}/lib"
 
@@ -188,19 +193,6 @@ cp -v src/gsasl.h src/gsasl-*.h "${LIBS_DIR}/include"
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# libwmain
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-printf "\n==================== libwmain ====================\n\n"
-readonly LWMN_DIR="${BASE_DIR}/libwmain-${MY_CPU}"
-pkg_lwmn="$(find "${BASE_DIR}/patch" -maxdepth 1 -name 'libwmain-*.tar.gz' | sort -rn | head -n1)"
-rm -rf "${LWMN_DIR}" && mkdir "${LWMN_DIR}"
-tar -xvf "${pkg_lwmn}" --strip-components=1 -C "${LWMN_DIR}"
-pushd "${LWMN_DIR}"
-make MARCH=${MY_MARCH} MTUNE=${MY_MTUNE}
-cp -v libwmain.a "${LIBS_DIR}/lib"
-popd
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # cURL
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== cURL ====================\n\n"
@@ -213,8 +205,8 @@ patch -p1 -b < "${BASE_DIR}/patch/curl_threads.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_doswin.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_parsecfg.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_url.diff"
-CFLAGS="-municode -mconsole -march=${MY_MARCH} -mtune=${MY_MTUNE} -I${LIBS_DIR}/include" CPPFLAGS="-DNGHTTP2_STATICLIB" LDFLAGS="-static -no-pthread -L${LIBS_DIR}/lib" LIBS="-latomic -liconv -lcrypt32 -lwmain" PKG_CONFIG_PATH="${LIBS_DIR}/pkgconfig" ./configure --enable-static --disable-shared --disable-pthreads --disable-libcurl-option --disable-openssl-auto-load-config --with-zlib="${LIBS_DIR}" --with-zstd="${LIBS_DIR}" --with-brotli="${LIBS_DIR}" --with-openssl="${LIBS_DIR}" --with-libssh2="${LIBS_DIR}" --with-nghttp2="${LIBS_DIR}" --with-libidn2="${LIBS_DIR}" --with-gsasl="${LIBS_DIR}" --without-ca-bundle
-make curl_LDFLAGS=-all-static
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${LIBS_DIR}/include" CPPFLAGS="-DNGHTTP2_STATICLIB -DUNICODE -D_UNICODE" LDFLAGS="-static -no-pthread -L${LIBS_DIR}/lib" LIBS="-latomic -liconv -lcrypt32" PKG_CONFIG_PATH="${LIBS_DIR}/pkgconfig" ./configure --enable-static --disable-shared --disable-pthreads --disable-libcurl-option --disable-openssl-auto-load-config --with-zlib="${LIBS_DIR}" --with-zstd="${LIBS_DIR}" --with-brotli="${LIBS_DIR}" --with-openssl="${LIBS_DIR}" --with-libssh2="${LIBS_DIR}" --with-nghttp2="${LIBS_DIR}" --with-libidn2="${LIBS_DIR}" --with-gsasl="${LIBS_DIR}" --without-ca-bundle
+make curl_LDFLAGS="-all-static -municode -mconsole"
 strip -s src/curl.exe
 popd
 
