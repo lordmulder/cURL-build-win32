@@ -9,12 +9,12 @@ set -e
 
 case "$(cc -dumpmachine)" in
   i686-*)
-    readonly MY_ARCH=x86
+    readonly MY_CPU=x86
     readonly MY_MARCH=i386
     readonly MY_MTUNE=intel
     ;;
   x86_64-*)
-    readonly MY_ARCH=x64
+    readonly MY_CPU=x64
     readonly MY_MARCH=x86-64
     readonly MY_MTUNE=corei7
     ;;
@@ -25,9 +25,9 @@ case "$(cc -dumpmachine)" in
 esac
 
 readonly BASE_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
-readonly LIBS_DIR="${BASE_DIR}/.libs/${MY_ARCH}"
+readonly LIBS_DIR="${BASE_DIR}/.libs/${MY_CPU}"
 
-find "${BASE_DIR}" -maxdepth 1 -type d -name "*-${MY_ARCH}" -exec rm -rf "{}" \;
+find "${BASE_DIR}" -maxdepth 1 -type d -name "*-${MY_CPU}" -exec rm -rf "{}" \;
 rm -rf "${LIBS_DIR}" && mkdir -p "${LIBS_DIR}/include" "${LIBS_DIR}/lib"
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -50,7 +50,7 @@ wget -4 -P "${LIBS_DIR}" https://curl.se/docs/manpage.html
 # zlib
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== zlib ====================\n\n"
-readonly ZLIB_DIR="${BASE_DIR}/zlib-${MY_ARCH}"
+readonly ZLIB_DIR="${BASE_DIR}/zlib-${MY_CPU}"
 pkg_zlib="$(find "${LIBS_DIR}" -maxdepth 1 -name 'zlib-*.tar.gz' | sort -rn | head -n1)"
 rm -rf "${ZLIB_DIR}" && mkdir "${ZLIB_DIR}"
 tar -xvf "${pkg_zlib}" --strip-components=1 -C "${ZLIB_DIR}"
@@ -64,7 +64,7 @@ popd
 # Zstandard
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== Zstandard ====================\n\n"
-readonly ZSTD_DIR="${BASE_DIR}/zstd-${MY_ARCH}"
+readonly ZSTD_DIR="${BASE_DIR}/zstd-${MY_CPU}"
 pkg_zstd="$(find "${LIBS_DIR}" -maxdepth 1 -name 'zstd-*.tar.gz' | sort -rn | head -n1)"
 rm -rf "${ZSTD_DIR}" && mkdir "${ZSTD_DIR}"
 tar -xvf "${pkg_zstd}" --strip-components=1 -C "${ZSTD_DIR}"
@@ -78,7 +78,7 @@ popd
 # Brotli
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== Brotli ====================\n\n"
-readonly BROT_DIR="${BASE_DIR}/brotli-${MY_ARCH}"
+readonly BROT_DIR="${BASE_DIR}/brotli-${MY_CPU}"
 pkg_brot="$(find "${LIBS_DIR}" -maxdepth 1 -name 'brotli-*.tar.gz' | sort -rn | head -n1)"
 rm -rf "${BROT_DIR}" && mkdir "${BROT_DIR}"
 tar -xvf "${pkg_brot}" --strip-components=1 -C "${BROT_DIR}"
@@ -94,13 +94,14 @@ popd
 # OpenSSL
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== OpenSSL ====================\n\n"
-readonly OSSL_DIR="${BASE_DIR}/openssl-${MY_ARCH}"
+readonly OSSL_DIR="${BASE_DIR}/openssl-${MY_CPU}"
 pkg_ossl="$(find "${LIBS_DIR}" -maxdepth 1 -name 'openssl-*.tar.gz' | sort -rn | head -n1)"
 rm -rf "${OSSL_DIR}" && mkdir "${OSSL_DIR}"
 tar -xvf "${pkg_ossl}" --strip-components=1 -C "${OSSL_DIR}"
-[[ "${MY_MARCH}" == "x86-64" ]] && readonly ossl_flag="no-sse2" || readonly ossl_flag="386"
+[[ "${MY_CPU}" == "x64" ]] && readonly ossl_flag="no-sse2" || readonly ossl_flag="386"
+[[ "${MY_CPU}" == "x64" ]] && readonly ossl_mngw="mingw64" || readonly ossl_mngw="mingw"
 pushd "${OSSL_DIR}"
-./Configure no-hw no-shared no-engine no-capieng no-dso ${ossl_flag} zlib -static -march=${MY_MARCH} -mtune=${MY_MTUNE} -I"${LIBS_DIR}/include" -L"${LIBS_DIR}/lib" -latomic mingw
+./Configure no-hw no-shared no-engine no-capieng no-dso zlib ${ossl_flag} -static -march=${MY_MARCH} -mtune=${MY_MTUNE} -I"${LIBS_DIR}/include" -L"${LIBS_DIR}/lib" -latomic ${ossl_mngw}
 make build_libs
 mkdir -p "${LIBS_DIR}/include/crypto" "${LIBS_DIR}/include/openssl"
 cp -vf libcrypto.a libssl.a "${LIBS_DIR}/lib"
@@ -112,7 +113,7 @@ popd
 # libssh2
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== libssh2 ====================\n\n"
-readonly SSH2_DIR="${BASE_DIR}/libssh2-${MY_ARCH}"
+readonly SSH2_DIR="${BASE_DIR}/libssh2-${MY_CPU}"
 pkg_ssh2="$(find "${LIBS_DIR}" -maxdepth 1 -name 'libssh2-*.tar.gz' | sort -rn | head -n1)"
 rm -rf "${SSH2_DIR}" && mkdir "${SSH2_DIR}"
 tar -xvf "${pkg_ssh2}" --strip-components=1 -C "${SSH2_DIR}"
@@ -127,7 +128,7 @@ popd
 # nghttp2
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== nghttp2 ====================\n\n"
-readonly NGH2_DIR="${BASE_DIR}/nghttp2-${MY_ARCH}"
+readonly NGH2_DIR="${BASE_DIR}/nghttp2-${MY_CPU}"
 pkg_ngh2="$(find "${LIBS_DIR}" -maxdepth 1 -name 'nghttp2-*.tar.gz' | sort -rn | head -n1)"
 rm -rf "${NGH2_DIR}" && mkdir "${NGH2_DIR}"
 tar -xvf "${pkg_ngh2}" --strip-components=1 -C "${NGH2_DIR}"
@@ -144,7 +145,7 @@ popd
 # libiconv
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== libiconv ====================\n\n"
-readonly ICNV_DIR="${BASE_DIR}/libiconv-${MY_ARCH}"
+readonly ICNV_DIR="${BASE_DIR}/libiconv-${MY_CPU}"
 pkg_icnv="$(find "${LIBS_DIR}" -maxdepth 1 -name 'libiconv-*.tar.gz' | sort -rn | head -n1)"
 rm -rf "${ICNV_DIR}" && mkdir "${ICNV_DIR}"
 tar -xvf "${pkg_icnv}" --strip-components=1 -C "${ICNV_DIR}"
@@ -159,7 +160,7 @@ popd
 # libidn2
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== libidn2 ====================\n\n"
-readonly IDN2_DIR="${BASE_DIR}/libidn2-${MY_ARCH}"
+readonly IDN2_DIR="${BASE_DIR}/libidn2-${MY_CPU}"
 pkg_idn2="$(find "${LIBS_DIR}" -maxdepth 1 -name 'libidn2-*.tar.gz' | sort -rn | head -n1)"
 rm -rf "${IDN2_DIR}" && mkdir "${IDN2_DIR}"
 tar -xvf "${pkg_idn2}" --strip-components=1 -C "${IDN2_DIR}"
@@ -174,7 +175,7 @@ popd
 # libgsasl
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== libgsasl ====================\n\n"
-readonly SASL_DIR="${BASE_DIR}/libgsasl-${MY_ARCH}"
+readonly SASL_DIR="${BASE_DIR}/libgsasl-${MY_CPU}"
 pkg_sasl="$(find "${LIBS_DIR}" -maxdepth 1 -name 'libgsasl-*.tar.gz' | sort -rn | head -n1)"
 rm -rf "${SASL_DIR}" && mkdir "${SASL_DIR}"
 tar -xvf "${pkg_sasl}" --strip-components=1 -C "${SASL_DIR}"
@@ -190,7 +191,7 @@ popd
 # libwmain
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== libwmain ====================\n\n"
-readonly LWMN_DIR="${BASE_DIR}/libwmain-${MY_ARCH}"
+readonly LWMN_DIR="${BASE_DIR}/libwmain-${MY_CPU}"
 pkg_lwmn="$(find "${BASE_DIR}/patch" -maxdepth 1 -name 'libwmain-*.tar.gz' | sort -rn | head -n1)"
 rm -rf "${LWMN_DIR}" && mkdir "${LWMN_DIR}"
 tar -xvf "${pkg_lwmn}" --strip-components=1 -C "${LWMN_DIR}"
@@ -202,7 +203,7 @@ cp -v libwmain.a "${LIBS_DIR}/lib"
 # cURL
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== cURL ====================\n\n"
-readonly CURL_DIR="${BASE_DIR}/curl-${MY_ARCH}"
+readonly CURL_DIR="${BASE_DIR}/curl-${MY_CPU}"
 pkg_curl="$(find "${LIBS_DIR}" -maxdepth 1 -name 'curl-*.tar.gz' | sort -rn | head -n1)"
 rm -rf "${CURL_DIR}" && mkdir "${CURL_DIR}"
 tar -xvf ${pkg_curl} --strip-components=1 -C "${CURL_DIR}"
@@ -220,7 +221,7 @@ popd
 # Output
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== Output ====================\n\n"
-readonly OUT_DIR="${BASE_DIR}/.bin/${MY_ARCH}"
+readonly OUT_DIR="${BASE_DIR}/.bin/${MY_CPU}"
 rm -rf "${OUT_DIR}" && mkdir -p "${OUT_DIR}"
 pushd "${OUT_DIR}"
 cp -vf "${CURL_DIR}/src/curl.exe" curl.exe
@@ -256,7 +257,7 @@ unix2dos -n "${ZSTD_DIR}/README.md"  legal/zstandard.README.md
 mkdir -p "${OUT_DIR}/patch"
 cp -vf "${BASE_DIR}/patch/"*.diff "${BASE_DIR}/patch/"*.tar.gz "${OUT_DIR}/patch"
 find "${OUT_DIR}" -type f -exec chmod 444 "{}" \;
-readonly zfile="${BASE_DIR}/curl-${MY_MARCH}.$(date +"%Y-%m-%d").zip"
+readonly zfile="${BASE_DIR}/curl-${MY_CPU}.$(date +"%Y-%m-%d").zip"
 rm -rf "${zfile}" && zip -v -r -9 "${zfile}" "."
 chmod 444 "${zfile}"
 popd
