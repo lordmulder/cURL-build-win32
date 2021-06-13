@@ -221,7 +221,7 @@ popd
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== Output ====================\n\n"
 readonly OUT_DIR="${BASE_DIR}/.bin/${MY_ARCH}"
-rm -rf "${OUT_DIR}" && mkdir "${OUT_DIR}"
+rm -rf "${OUT_DIR}" && mkdir -p "${OUT_DIR}"
 pushd "${OUT_DIR}"
 cp -vf "${CURL_DIR}/src/curl.exe" curl.exe
 cp -vf "${LIBS_DIR}/cacert.pem"   curl-ca-bundle.crt
