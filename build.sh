@@ -248,7 +248,7 @@ unix2dos -n "${ZLIB_DIR}/README"     legal/zlib.README.txt
 unix2dos -n "${ZSTD_DIR}/LICENSE"    legal/zstandard.LICENSE.txt
 unix2dos -n "${ZSTD_DIR}/README.md"  legal/zstandard.README.md
 mkdir -p "${OUT_DIR}/patch"
-cp -vf "${BASE_DIR}/patch/"*.diff "${BASE_DIR}/patch/"*.tar.gz "${OUT_DIR}/patch"
+cp -vf "${BASE_DIR}/patch/"*.diff "${OUT_DIR}/patch"
 find "${OUT_DIR}" -type f -exec chmod 444 "{}" \;
 readonly zfile="${BASE_DIR}/curl-windows-${MY_CPU}.$(date +"%Y-%m-%d").zip"
 rm -rf "${zfile}" && zip -v -r -9 "${zfile}" "."
