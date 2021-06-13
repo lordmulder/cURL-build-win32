@@ -6,7 +6,7 @@ index e439acd..476a497 100644
  #include "mac.h"
  #include "misc.h"
  
-+#define DIFFTIME(X,Y) ((double)((Y) - (X)))
++#define DIFFTIME(_b,_a) ((double)((_b) - (_a)))
 +
  /* libssh2_default_alloc
   */
