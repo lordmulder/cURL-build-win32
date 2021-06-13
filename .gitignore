@@ -1,7 +1,10 @@
 /*-src
+/*-x64
+/*-x86
 /*.exe
 /*.pem
 /*.txt
 /*.zip
-/.libs
 /.bin
+/.libs
+/.release
