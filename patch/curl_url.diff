@@ -1,18 +1,49 @@
-diff --git "a/D:\\_Sandbox\\curl\\curl-src\\lib\\url.c.orig" "b/D:\\_Sandbox\\curl\\curl-src\\lib\\url.c"
-index 1ee38af..0a6ba91 100644
---- "a/lib/url.c"
-+++ "b/lib/url.c"
-@@ -1577,11 +1577,11 @@ CURLcode Curl_idnconvert_hostname(struct Curl_easy *data,
+From 3592721ce7d81e1a1fbd8cedd5cd80863891daf7 Mon Sep 17 00:00:00 2001
+From: Viktor Szakats <commit@vsz.me>
+Date: Fri, 11 Jun 2021 23:55:40 +0000
+Subject: [PATCH] idn: fix libidn2 with windows unicode builds
+
+Unicode Windows builds use UTF-8 strings internally in libcurl,
+so make sure to call the UTF-8 flavour of the libidn2 API.
+
+Reported-by: dEajL3kA on github
+Fixes #7228
+---
+ lib/url.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/lib/url.c b/lib/url.c
+index edcdf54b1a07..ee1b4c29de51 100644
+--- a/lib/url.c
++++ b/lib/url.c
+@@ -62,6 +62,14 @@
+ #ifdef USE_LIBIDN2
+ #include <idn2.h>
+ 
++#if defined(WIN32) && defined(UNICODE)
++#define IDN2_LOOKUP(name, host, flags) \
++  idn2_lookup_u8((const uint8_t *)name, (uint8_t **)host, flags)
++#else
++#define IDN2_LOOKUP(name, host, flags) \
++  idn2_lookup_ul((const char *)name, (char **)host, flags)
++#endif
++
+ #elif defined(USE_WIN32_IDN)
+ /* prototype for curl_win32_idn_to_ascii() */
+ bool curl_win32_idn_to_ascii(const char *in, char **out);
+@@ -1576,12 +1584,12 @@ CURLcode Curl_idnconvert_hostname(struct Curl_easy *data,
  #else
        int flags = IDN2_NFC_INPUT;
  #endif
 -      int rc = idn2_lookup_ul((const char *)host->name, &ace_hostname, flags);
-+      int rc = idn2_lookup_u8((const uint8_t *)host->name, (uint8_t **)&ace_hostname, flags);
++      int rc = IDN2_LOOKUP(host->name, &ace_hostname, flags);
        if(rc != IDN2_OK)
          /* fallback to TR46 Transitional mode for better IDNA2003
             compatibility */
 -        rc = idn2_lookup_ul((const char *)host->name, &ace_hostname,
-+        rc = idn2_lookup_u8((const uint8_t *)host->name, (uint8_t **)&ace_hostname,
-                             IDN2_TRANSITIONAL);
+-                            IDN2_TRANSITIONAL);
++        rc = IDN2_LOOKUP(host->name, &ace_hostname,
++                         IDN2_TRANSITIONAL);
        if(rc == IDN2_OK) {
          host->encalloc = (char *)ace_hostname;
+         /* change the name pointer to point to the encoded hostname */
