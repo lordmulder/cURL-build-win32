@@ -7,4 +7,5 @@
 /*.zip
 /.bin
 /.libs
+/.local
 /.release

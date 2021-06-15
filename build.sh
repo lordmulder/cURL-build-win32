@@ -31,7 +31,7 @@ esac
 # Initialize paths
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 readonly BASE_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
-readonly LIBS_DIR="${BASE_DIR}/.libs/${MY_CPU}"
+readonly LIBS_DIR="${BASE_DIR}/.local/${MY_CPU}"
 find "${BASE_DIR}" -maxdepth 1 -type d -name "*-${MY_CPU}" -exec rm -rf "{}" \;
 rm -rf "${LIBS_DIR}" && mkdir -p "${LIBS_DIR}/include" "${LIBS_DIR}/lib"
 
@@ -60,9 +60,8 @@ pkg_zlib="$(find "${LIBS_DIR}" -maxdepth 1 -name 'zlib-*.tar.gz' | sort -rn | he
 rm -rf "${ZLIB_DIR}" && mkdir "${ZLIB_DIR}"
 tar -xvf "${pkg_zlib}" --strip-components=1 -C "${ZLIB_DIR}"
 pushd "${ZLIB_DIR}"
-make -f win32/Makefile.gcc libz.a LOC="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501"
-cp -vf libz.a "${LIBS_DIR}/lib"
-cp -vf zlib.h zconf.h "${LIBS_DIR}/include"
+make -f win32/Makefile.gcc LOC="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501"
+make -f win32/Makefile.gcc install BINARY_PATH="${LIBS_DIR}/include" INCLUDE_PATH="${LIBS_DIR}/include" LIBRARY_PATH="${LIBS_DIR}/lib"
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -76,7 +75,7 @@ tar -xvf "${pkg_zstd}" --strip-components=1 -C "${ZSTD_DIR}"
 pushd "${ZSTD_DIR}"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" make lib
 cp -vf lib/libzstd.a "${LIBS_DIR}/lib"
-cp -vf lib/zstd.h lib/zstd_errors.h "${LIBS_DIR}/include"
+cp -vf lib/zstd.h lib/zstd_errors.h lib/zdict.h "${LIBS_DIR}/include"
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -106,12 +105,9 @@ tar -xvf "${pkg_ossl}" --strip-components=1 -C "${OSSL_DIR}"
 [[ "${MY_CPU}" == "x64" ]] && readonly ossl_flag="no-sse2" || readonly ossl_flag="386"
 [[ "${MY_CPU}" == "x64" ]] && readonly ossl_mngw="mingw64" || readonly ossl_mngw="mingw"
 pushd "${OSSL_DIR}"
-./Configure no-hw no-shared no-engine no-capieng no-dso zlib ${ossl_flag} -static -march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I"${LIBS_DIR}/include" -L"${LIBS_DIR}/lib" -latomic ${ossl_mngw}
+./Configure no-hw no-shared no-engine no-capieng no-dso zlib ${ossl_flag} -static -march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I"${LIBS_DIR}/include" -L"${LIBS_DIR}/lib" -latomic --prefix="${LIBS_DIR}" ${ossl_mngw}
 make build_libs
-mkdir -p "${LIBS_DIR}/include/crypto" "${LIBS_DIR}/include/openssl"
-cp -vf libcrypto.a libssl.a "${LIBS_DIR}/lib"
-cp -vf include/crypto/*.h "${LIBS_DIR}/include/crypto"
-cp -vf include/openssl/*.h "${LIBS_DIR}/include/openssl"
+make install_dev
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
