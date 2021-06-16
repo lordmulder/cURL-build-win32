@@ -89,9 +89,10 @@ rm -rf "${BROT_DIR}" && mkdir "${BROT_DIR}"
 tar -xvf "${pkg_brot}" --strip-components=1 -C "${BROT_DIR}"
 pushd "${BROT_DIR}"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" make lib
+for fname in enc dec common; do
+  cp -vf libbrotli.a "${LIBS_DIR}/lib/libbrotli${fname}.a"
+done
 mkdir -p "${LIBS_DIR}/include/brotli"
-cp -vf libbrotli.a "${LIBS_DIR}/lib/libbrotlienc.a"
-cp -vf libbrotli.a "${LIBS_DIR}/lib/libbrotlidec.a"
 cp -vf c/include/brotli/*.h "${LIBS_DIR}/include/brotli"
 for fname in scripts/*.pc.in; do
   sed -e "s|@prefix@|${LIBS_DIR}|g" -e 's|@exec_prefix@|${prefix}|g' -e 's|@includedir@|${prefix}/include|g' -e 's|@libdir@|${prefix}/lib|g' -e 's|@PACKAGE_VERSION@|1.0.9|g' ${fname} > "${LIBS_DIR}/lib/pkgconfig/$(basename "${fname}" .in)"
@@ -193,7 +194,7 @@ patch -p1 -b < "${BASE_DIR}/patch/curl_threads.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_doswin.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_parsecfg.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_url.diff"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${LIBS_DIR}/include" CPPFLAGS="-D_WIN32_WINNT=0x0501 -DNGHTTP2_STATICLIB -DUNICODE -D_UNICODE" LDFLAGS="-static -no-pthread -L${LIBS_DIR}/lib" LIBS="-latomic -liconv -lcrypt32" PKG_CONFIG_PATH="${LIBS_DIR}/pkgconfig" ./configure --enable-static --disable-shared --disable-pthreads --disable-libcurl-option --disable-openssl-auto-load-config --with-zlib="${LIBS_DIR}" --with-zstd="${LIBS_DIR}" --with-brotli="${LIBS_DIR}" --with-openssl="${LIBS_DIR}" --with-libssh2="${LIBS_DIR}" --with-nghttp2="${LIBS_DIR}" --with-libidn2="${LIBS_DIR}" --with-gsasl="${LIBS_DIR}" --without-ca-bundle
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${LIBS_DIR}/include" CPPFLAGS="-D_WIN32_WINNT=0x0501 -DNGHTTP2_STATICLIB -DUNICODE -D_UNICODE" LDFLAGS="-static -no-pthread -L${LIBS_DIR}/lib" LIBS="-latomic -liconv -lcrypt32" PKG_CONFIG_PATH="${LIBS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --disable-pthreads --disable-libcurl-option --disable-openssl-auto-load-config --with-zlib --with-zstd --with-brotli --with-openssl --with-libssh2 --with-nghttp2="${LIBS_DIR}" --with-libidn2 --with-gsasl --without-ca-bundle
 make curl_LDFLAGS="-all-static -municode -mconsole"
 strip -s src/curl.exe
 popd
