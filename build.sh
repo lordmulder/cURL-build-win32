@@ -33,7 +33,7 @@ esac
 readonly BASE_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 readonly LIBS_DIR="${BASE_DIR}/.local/${MY_CPU}"
 find "${BASE_DIR}" -maxdepth 1 -type d -name "*-${MY_CPU}" -exec rm -rf "{}" \;
-rm -rf "${LIBS_DIR}" && mkdir -p "${LIBS_DIR}/include" "${LIBS_DIR}/lib"
+rm -rf "${LIBS_DIR}" && mkdir -p "${LIBS_DIR}/bin" "${LIBS_DIR}/include" "${LIBS_DIR}/lib/pkgconfig" "${LIBS_DIR}/share"
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Download
@@ -76,6 +76,7 @@ pushd "${ZSTD_DIR}"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" make lib
 cp -vf lib/libzstd.a "${LIBS_DIR}/lib"
 cp -vf lib/zstd.h lib/zstd_errors.h lib/zdict.h "${LIBS_DIR}/include"
+sed -e "s|@PREFIX@|${LIBS_DIR}|g" -e 's|@EXEC_PREFIX@|${prefix}|g' -e 's|@INCLUDEDIR@|${prefix}/include|g' -e 's|@LIBDIR@|${prefix}/lib|g' -e 's|@VERSION@|1.5.0|g' lib/libzstd.pc.in > "${LIBS_DIR}/lib/pkgconfig/libzstd.pc"
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -92,6 +93,9 @@ mkdir -p "${LIBS_DIR}/include/brotli"
 cp -vf libbrotli.a "${LIBS_DIR}/lib/libbrotlienc.a"
 cp -vf libbrotli.a "${LIBS_DIR}/lib/libbrotlidec.a"
 cp -vf c/include/brotli/*.h "${LIBS_DIR}/include/brotli"
+for fname in scripts/*.pc.in; do
+  sed -e "s|@prefix@|${LIBS_DIR}|g" -e 's|@exec_prefix@|${prefix}|g' -e 's|@includedir@|${prefix}/include|g' -e 's|@libdir@|${prefix}/lib|g' -e 's|@PACKAGE_VERSION@|1.0.9|g' ${fname} > "${LIBS_DIR}/lib/pkgconfig/$(basename "${fname}" .in)"
+done
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -106,8 +110,7 @@ tar -xvf "${pkg_ossl}" --strip-components=1 -C "${OSSL_DIR}"
 [[ "${MY_CPU}" == "x64" ]] && readonly ossl_mngw="mingw64" || readonly ossl_mngw="mingw"
 pushd "${OSSL_DIR}"
 ./Configure no-hw no-shared no-engine no-capieng no-dso zlib ${ossl_flag} -static -march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I"${LIBS_DIR}/include" -L"${LIBS_DIR}/lib" -latomic --prefix="${LIBS_DIR}" ${ossl_mngw}
-make build_libs
-make install_dev
+make build_libs && make install_dev
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -120,10 +123,8 @@ rm -rf "${SSH2_DIR}" && mkdir "${SSH2_DIR}"
 tar -xvf "${pkg_ssh2}" --strip-components=1 -C "${SSH2_DIR}"
 pushd "${SSH2_DIR}"
 patch -p1 -b < "${BASE_DIR}/patch/ssh2_session.diff"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" LIBS="-latomic" ./configure --disable-examples-build --disable-shared --with-libz
-make
-cp -v src/.libs/libssh2.a "${LIBS_DIR}/lib"
-cp -v include/libssh2.h include/libssh2_publickey.h include/libssh2_sftp.h "${LIBS_DIR}/include"
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" LIBS="-latomic" ./configure --prefix="${LIBS_DIR}" --disable-examples-build --disable-shared --with-libz
+make && make install
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -135,12 +136,8 @@ pkg_ngh2="$(find "${LIBS_DIR}" -maxdepth 1 -name 'nghttp2-*.tar.gz' | sort -rn |
 rm -rf "${NGH2_DIR}" && mkdir "${NGH2_DIR}"
 tar -xvf "${pkg_ngh2}" --strip-components=1 -C "${NGH2_DIR}"
 pushd "${NGH2_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" OPENSSL_CFLAGS="-I${LIBS_DIR}/include" OPENSSL_LIBS="-L${LIBS_DIR}/lib -lssl -lcrypto" ZLIB_CFLAGS="-I${LIBS_DIR}/include" ZLIB_LIBS="-L${LIBS_DIR}/lib -lz" ./configure --enable-lib-only --disable-threads --disable-shared
-make
-mkdir -p "${LIBS_DIR}/include/nghttp2" "${LIBS_DIR}/pkgconfig"
-cp -v lib/.libs/libnghttp2.a "${LIBS_DIR}/lib"
-cp -v lib/includes/nghttp2/*.h "${LIBS_DIR}/include/nghttp2"
-cp -v lib/libnghttp2.pc "${LIBS_DIR}/pkgconfig"
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" OPENSSL_CFLAGS="-I${LIBS_DIR}/include" OPENSSL_LIBS="-L${LIBS_DIR}/lib -lssl -lcrypto" ZLIB_CFLAGS="-I${LIBS_DIR}/include" ZLIB_LIBS="-L${LIBS_DIR}/lib -lz" ./configure --prefix="${LIBS_DIR}" --enable-lib-only --disable-threads --disable-shared
+make && make install
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -152,10 +149,8 @@ pkg_icnv="$(find "${LIBS_DIR}" -maxdepth 1 -name 'libiconv-*.tar.gz' | sort -rn 
 rm -rf "${ICNV_DIR}" && mkdir "${ICNV_DIR}"
 tar -xvf "${pkg_icnv}" --strip-components=1 -C "${ICNV_DIR}"
 pushd "${ICNV_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" ./configure --disable-rpath --disable-shared
-make
-cp -v lib/.libs/libiconv.a "${LIBS_DIR}/lib"
-cp -v include/iconv.h "${LIBS_DIR}/include"
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" ./configure --prefix="${LIBS_DIR}" --disable-rpath --disable-shared
+make && make install
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -167,10 +162,8 @@ pkg_idn2="$(find "${LIBS_DIR}" -maxdepth 1 -name 'libidn2-*.tar.gz' | sort -rn |
 rm -rf "${IDN2_DIR}" && mkdir "${IDN2_DIR}"
 tar -xvf "${pkg_idn2}" --strip-components=1 -C "${IDN2_DIR}"
 pushd "${IDN2_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" ./configure --disable-shared --disable-doc --without-libiconv-prefix --without-libunistring-prefix --disable-valgrind-tests
-make
-cp -v lib/.libs/libidn2.a "${LIBS_DIR}/lib"
-cp -v lib/idn2.h "${LIBS_DIR}/include"
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" ./configure --prefix="${LIBS_DIR}" --disable-shared --disable-doc --without-libiconv-prefix --without-libunistring-prefix --disable-valgrind-tests
+make && make install
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -183,10 +176,8 @@ rm -rf "${SASL_DIR}" && mkdir "${SASL_DIR}"
 tar -xvf "${pkg_sasl}" --strip-components=1 -C "${SASL_DIR}"
 pushd "${SASL_DIR}"
 patch -p1 -b < "${BASE_DIR}/patch/gsasl_error.diff"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" ./configure --disable-shared --disable-valgrind-tests --disable-obsolete -without-libintl-prefix
-make
-cp -v src/.libs/libgsasl.a "${LIBS_DIR}/lib"
-cp -v src/gsasl.h src/gsasl-*.h "${LIBS_DIR}/include"
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" ./configure --prefix="${LIBS_DIR}" --disable-shared --disable-valgrind-tests --disable-obsolete -without-libintl-prefix
+make && make install
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
