@@ -89,12 +89,10 @@ rm -rf "${BROT_DIR}" && mkdir "${BROT_DIR}"
 tar -xvf "${pkg_brot}" --strip-components=1 -C "${BROT_DIR}"
 pushd "${BROT_DIR}"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" make lib
-for fname in enc dec common; do
-  cp -vf libbrotli.a "${LIBS_DIR}/lib/libbrotli${fname}.a"
-done
 mkdir -p "${LIBS_DIR}/include/brotli"
 cp -vf c/include/brotli/*.h "${LIBS_DIR}/include/brotli"
 for fname in scripts/*.pc.in; do
+  cp -vf libbrotli.a "${LIBS_DIR}/lib/$(basename "${fname}" .pc.in).a"
   sed -e "s|@prefix@|${LIBS_DIR}|g" -e 's|@exec_prefix@|${prefix}|g' -e 's|@includedir@|${prefix}/include|g' -e 's|@libdir@|${prefix}/lib|g' -e 's|@PACKAGE_VERSION@|1.0.9|g' ${fname} > "${LIBS_DIR}/lib/pkgconfig/$(basename "${fname}" .in)"
 done
 popd
