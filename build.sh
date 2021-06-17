@@ -143,7 +143,7 @@ readonly GTXT_DIR="${BASE_DIR}/gettext-${MY_CPU}"
 rm -rf "${GTXT_DIR}" && mkdir "${GTXT_DIR}"
 tar -xvf "${LIBS_DIR}/.pkg/gettext.tar.gz" --strip-components=1 -C "${GTXT_DIR}"
 pushd "${GTXT_DIR}/gettext-runtime"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" ./configure --prefix="${LIBS_DIR}" --disable-shared --disable-libasprintf --without-emacs --disable-java --disable-native-java --disable-csharp --disable-openmp
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" LIBS="-latomic" ./configure --prefix="${LIBS_DIR}" --disable-shared --disable-libasprintf --without-emacs --disable-java --disable-native-java --disable-csharp --disable-openmp
 make && make install
 popd
 
