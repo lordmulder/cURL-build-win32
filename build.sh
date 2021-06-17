@@ -13,7 +13,7 @@ set -e
 case "$(cc -dumpmachine)" in
   i686-*)
     readonly MY_CPU=x86
-    readonly MY_MARCH=i386
+    readonly MY_MARCH=i486
     readonly MY_MTUNE=intel
     ;;
   x86_64-*)
@@ -106,7 +106,7 @@ tar -xvf "${LIBS_DIR}/.pkg/openssl.tar.gz" --strip-components=1 -C "${OSSL_DIR}"
 [[ "${MY_CPU}" == "x64" ]] && readonly ossl_flag="no-sse2" || readonly ossl_flag="386"
 [[ "${MY_CPU}" == "x64" ]] && readonly ossl_mngw="mingw64" || readonly ossl_mngw="mingw"
 pushd "${OSSL_DIR}"
-./Configure no-hw no-shared no-engine no-capieng no-dso zlib ${ossl_flag} -static -march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I"${LIBS_DIR}/include" -L"${LIBS_DIR}/lib" -latomic --prefix="${LIBS_DIR}" ${ossl_mngw}
+./Configure no-hw no-shared no-engine no-capieng no-dso zlib ${ossl_flag} -static -march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I"${LIBS_DIR}/include" -L"${LIBS_DIR}/lib" --prefix="${LIBS_DIR}" ${ossl_mngw}
 make build_libs && make install_dev
 popd
 
@@ -119,7 +119,7 @@ rm -rf "${RTMP_DIR}" && mkdir "${RTMP_DIR}"
 tar -xvf "${LIBS_DIR}/.pkg/rtmpdump.tar.gz" --strip-components=1 -C "${RTMP_DIR}"
 pushd "${RTMP_DIR}"
 patch -p1 -b < "${BASE_DIR}/patch/librtmp_openssl.diff"
-make SYS=mingw SHARED= prefix="${LIBS_DIR}" XCFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" XLDFLAGS="-L${LIBS_DIR}/lib" XLIBS="-latomic -lws2_32"
+make SYS=mingw SHARED= prefix="${LIBS_DIR}" XCFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" XLDFLAGS="-L${LIBS_DIR}/lib" XLIBS="-lws2_32"
 make SYS=mingw SHARED= prefix="${LIBS_DIR}" install
 popd
 
@@ -143,7 +143,7 @@ readonly GTXT_DIR="${BASE_DIR}/gettext-${MY_CPU}"
 rm -rf "${GTXT_DIR}" && mkdir "${GTXT_DIR}"
 tar -xvf "${LIBS_DIR}/.pkg/gettext.tar.gz" --strip-components=1 -C "${GTXT_DIR}"
 pushd "${GTXT_DIR}/gettext-runtime"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" LIBS="-latomic" ./configure --prefix="${LIBS_DIR}" --disable-shared --disable-libasprintf --without-emacs --disable-java --disable-native-java --disable-csharp --disable-openmp
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" ./configure --prefix="${LIBS_DIR}" --disable-shared --disable-libasprintf --without-emacs --disable-java --disable-native-java --disable-csharp --disable-openmp
 make && make install
 popd
 
@@ -156,7 +156,7 @@ rm -rf "${SSH2_DIR}" && mkdir "${SSH2_DIR}"
 tar -xvf "${LIBS_DIR}/.pkg/libssh2.tar.gz" --strip-components=1 -C "${SSH2_DIR}"
 pushd "${SSH2_DIR}"
 patch -p1 -b < "${BASE_DIR}/patch/ssh2_session.diff"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" LIBS="-latomic" ./configure --prefix="${LIBS_DIR}" --disable-examples-build --disable-shared --with-libz
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" ./configure --prefix="${LIBS_DIR}" --disable-examples-build --disable-shared --with-libz
 make && make install
 popd
 
@@ -209,7 +209,7 @@ patch -p1 -b < "${BASE_DIR}/patch/curl_threads.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_doswin.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_parsecfg.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_url.diff"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${LIBS_DIR}/include" CPPFLAGS="-D_WIN32_WINNT=0x0501 -DNGHTTP2_STATICLIB -DUNICODE -D_UNICODE" LDFLAGS="-static -no-pthread -L${LIBS_DIR}/lib" LIBS="-latomic -liconv -lcrypt32 -lwinmm" PKG_CONFIG_PATH="${LIBS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --disable-pthreads --disable-libcurl-option --disable-openssl-auto-load-config --with-zlib --with-zstd --with-brotli --with-openssl --with-librtmp --with-libssh2 --with-nghttp2="${LIBS_DIR}" --with-libidn2 --with-gsasl --without-ca-bundle
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${LIBS_DIR}/include" CPPFLAGS="-D_WIN32_WINNT=0x0501 -DNGHTTP2_STATICLIB -DUNICODE -D_UNICODE" LDFLAGS="-static -no-pthread -L${LIBS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm" PKG_CONFIG_PATH="${LIBS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --disable-pthreads --disable-libcurl-option --disable-openssl-auto-load-config --with-zlib --with-zstd --with-brotli --with-openssl --with-librtmp --with-libssh2 --with-nghttp2="${LIBS_DIR}" --with-libidn2 --with-gsasl --without-ca-bundle
 make curl_LDFLAGS="-all-static -municode -mconsole -Wl,--trace"
 strip -s src/curl.exe
 popd
