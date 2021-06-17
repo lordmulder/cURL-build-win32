@@ -33,32 +33,32 @@ esac
 readonly BASE_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 readonly LIBS_DIR="${BASE_DIR}/.local/${MY_CPU}"
 find "${BASE_DIR}" -maxdepth 1 -type d -name "*-${MY_CPU}" -exec rm -rf "{}" \;
-rm -rf "${LIBS_DIR}" && mkdir -p "${LIBS_DIR}/bin" "${LIBS_DIR}/include" "${LIBS_DIR}/lib/pkgconfig" "${LIBS_DIR}/share"
+rm -rf "${LIBS_DIR}" && mkdir -p "${LIBS_DIR}/.pkg" "${LIBS_DIR}/bin" "${LIBS_DIR}/include" "${LIBS_DIR}/lib/pkgconfig" "${LIBS_DIR}/share"
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Download
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-wget -4 -P "${LIBS_DIR}" https://zlib.net/zlib-1.2.11.tar.gz
-wget -4 -P "${LIBS_DIR}" https://github.com/facebook/zstd/releases/download/v1.5.0/zstd-1.5.0.tar.gz
-wget -4 -P "${LIBS_DIR}" https://github.com/google/brotli/archive/v1.0.9/brotli-1.0.9.tar.gz
-wget -4 -P "${LIBS_DIR}" https://www.openssl.org/source/openssl-1.1.1k.tar.gz
-wget -4 -P "${LIBS_DIR}" https://www.libssh2.org/download/libssh2-1.9.0.tar.gz
-wget -4 -P "${LIBS_DIR}" https://github.com/nghttp2/nghttp2/releases/download/v1.43.0/nghttp2-1.43.0.tar.gz
-wget -4 -P "${LIBS_DIR}" https://ftp.gnu.org/gnu/libidn/libidn2-2.3.1.tar.gz
-wget -4 -P "${LIBS_DIR}" https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.16.tar.gz
-wget -4 -P "${LIBS_DIR}" https://ftp.gnu.org/gnu/gsasl/libgsasl-1.10.0.tar.gz
-wget -4 -P "${LIBS_DIR}" https://curl.se/download/curl-7.77.0.tar.gz
-wget -4 -P "${LIBS_DIR}" https://curl.se/ca/cacert.pem
-wget -4 -P "${LIBS_DIR}" https://curl.se/docs/manpage.html
+wget -4 -O "${LIBS_DIR}/.pkg/zlib.tar.gz"     https://zlib.net/zlib-1.2.11.tar.gz
+wget -4 -O "${LIBS_DIR}/.pkg/zstd.tar.gz"     https://github.com/facebook/zstd/releases/download/v1.5.0/zstd-1.5.0.tar.gz
+wget -4 -O "${LIBS_DIR}/.pkg/brotli.tar.gz"   https://github.com/google/brotli/archive/v1.0.9/brotli-1.0.9.tar.gz
+wget -4 -O "${LIBS_DIR}/.pkg/openssl.tar.gz"  https://www.openssl.org/source/openssl-1.1.1k.tar.gz
+wget -4 -O "${LIBS_DIR}/.pkg/rtmpdump.tar.gz" http://git.ffmpeg.org/gitweb/rtmpdump.git/snapshot/f1b83c10d8beb43fcc70a6e88cf4325499f25857.tar.gz
+wget -4 -O "${LIBS_DIR}/.pkg/libssh2.tar.gz"  https://www.libssh2.org/download/libssh2-1.9.0.tar.gz
+wget -4 -O "${LIBS_DIR}/.pkg/nghttp2.tar.gz"  https://github.com/nghttp2/nghttp2/releases/download/v1.43.0/nghttp2-1.43.0.tar.gz
+wget -4 -O "${LIBS_DIR}/.pkg/libidn2.tar.gz"  https://ftp.gnu.org/gnu/libidn/libidn2-2.3.1.tar.gz
+wget -4 -O "${LIBS_DIR}/.pkg/libiconv.tar.gz" https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.16.tar.gz
+wget -4 -O "${LIBS_DIR}/.pkg/libgsasl.tar.gz" https://ftp.gnu.org/gnu/gsasl/libgsasl-1.10.0.tar.gz
+wget -4 -O "${LIBS_DIR}/.pkg/curl.tar.gz"     https://curl.se/download/curl-7.77.0.tar.gz
+wget -4 -O "${LIBS_DIR}/.pkg/cacert.pem"      https://curl.se/ca/cacert.pem
+wget -4 -O "${LIBS_DIR}/.pkg/manpage.html"    https://curl.se/docs/manpage.html
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # zlib
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== zlib ====================\n\n"
 readonly ZLIB_DIR="${BASE_DIR}/zlib-${MY_CPU}"
-pkg_zlib="$(find "${LIBS_DIR}" -maxdepth 1 -name 'zlib-*.tar.gz' | sort -rn | head -n1)"
 rm -rf "${ZLIB_DIR}" && mkdir "${ZLIB_DIR}"
-tar -xvf "${pkg_zlib}" --strip-components=1 -C "${ZLIB_DIR}"
+tar -xvf "${LIBS_DIR}/.pkg/zlib.tar.gz" --strip-components=1 -C "${ZLIB_DIR}"
 pushd "${ZLIB_DIR}"
 make -f win32/Makefile.gcc LOC="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501"
 make -f win32/Makefile.gcc install BINARY_PATH="${LIBS_DIR}/include" INCLUDE_PATH="${LIBS_DIR}/include" LIBRARY_PATH="${LIBS_DIR}/lib"
@@ -69,9 +69,8 @@ popd
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== Zstandard ====================\n\n"
 readonly ZSTD_DIR="${BASE_DIR}/zstd-${MY_CPU}"
-pkg_zstd="$(find "${LIBS_DIR}" -maxdepth 1 -name 'zstd-*.tar.gz' | sort -rn | head -n1)"
 rm -rf "${ZSTD_DIR}" && mkdir "${ZSTD_DIR}"
-tar -xvf "${pkg_zstd}" --strip-components=1 -C "${ZSTD_DIR}"
+tar -xvf "${LIBS_DIR}/.pkg/zstd.tar.gz" --strip-components=1 -C "${ZSTD_DIR}"
 pushd "${ZSTD_DIR}"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" make lib
 cp -vf lib/libzstd.a "${LIBS_DIR}/lib"
@@ -84,9 +83,8 @@ popd
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== Brotli ====================\n\n"
 readonly BROT_DIR="${BASE_DIR}/brotli-${MY_CPU}"
-pkg_brot="$(find "${LIBS_DIR}" -maxdepth 1 -name 'brotli-*.tar.gz' | sort -rn | head -n1)"
 rm -rf "${BROT_DIR}" && mkdir "${BROT_DIR}"
-tar -xvf "${pkg_brot}" --strip-components=1 -C "${BROT_DIR}"
+tar -xvf "${LIBS_DIR}/.pkg/brotli.tar.gz" --strip-components=1 -C "${BROT_DIR}"
 pushd "${BROT_DIR}"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" make lib
 mkdir -p "${LIBS_DIR}/include/brotli"
@@ -102,9 +100,8 @@ popd
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== OpenSSL ====================\n\n"
 readonly OSSL_DIR="${BASE_DIR}/openssl-${MY_CPU}"
-pkg_ossl="$(find "${LIBS_DIR}" -maxdepth 1 -name 'openssl-*.tar.gz' | sort -rn | head -n1)"
 rm -rf "${OSSL_DIR}" && mkdir "${OSSL_DIR}"
-tar -xvf "${pkg_ossl}" --strip-components=1 -C "${OSSL_DIR}"
+tar -xvf "${LIBS_DIR}/.pkg/openssl.tar.gz" --strip-components=1 -C "${OSSL_DIR}"
 [[ "${MY_CPU}" == "x64" ]] && readonly ossl_flag="no-sse2" || readonly ossl_flag="386"
 [[ "${MY_CPU}" == "x64" ]] && readonly ossl_mngw="mingw64" || readonly ossl_mngw="mingw"
 pushd "${OSSL_DIR}"
@@ -113,13 +110,25 @@ make build_libs && make install_dev
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# librtmp
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+printf "\n==================== librtmp ====================\n\n"
+readonly RTMP_DIR="${BASE_DIR}/librtmp-${MY_CPU}"
+rm -rf "${RTMP_DIR}" && mkdir "${RTMP_DIR}"
+tar -xvf "${LIBS_DIR}/.pkg/rtmpdump.tar.gz" --strip-components=1 -C "${RTMP_DIR}"
+pushd "${RTMP_DIR}"
+patch -p1 -b < "${BASE_DIR}/patch/librtmp_openssl.diff"
+make SYS=mingw SHARED= prefix="${LIBS_DIR}" XCFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" XLDFLAGS="-L${LIBS_DIR}/lib" XLIBS="-latomic -lws2_32"
+make SYS=mingw SHARED= prefix="${LIBS_DIR}" install
+popd
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # libssh2
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== libssh2 ====================\n\n"
 readonly SSH2_DIR="${BASE_DIR}/libssh2-${MY_CPU}"
-pkg_ssh2="$(find "${LIBS_DIR}" -maxdepth 1 -name 'libssh2-*.tar.gz' | sort -rn | head -n1)"
 rm -rf "${SSH2_DIR}" && mkdir "${SSH2_DIR}"
-tar -xvf "${pkg_ssh2}" --strip-components=1 -C "${SSH2_DIR}"
+tar -xvf "${LIBS_DIR}/.pkg/libssh2.tar.gz" --strip-components=1 -C "${SSH2_DIR}"
 pushd "${SSH2_DIR}"
 patch -p1 -b < "${BASE_DIR}/patch/ssh2_session.diff"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" LIBS="-latomic" ./configure --prefix="${LIBS_DIR}" --disable-examples-build --disable-shared --with-libz
@@ -131,9 +140,8 @@ popd
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== nghttp2 ====================\n\n"
 readonly NGH2_DIR="${BASE_DIR}/nghttp2-${MY_CPU}"
-pkg_ngh2="$(find "${LIBS_DIR}" -maxdepth 1 -name 'nghttp2-*.tar.gz' | sort -rn | head -n1)"
 rm -rf "${NGH2_DIR}" && mkdir "${NGH2_DIR}"
-tar -xvf "${pkg_ngh2}" --strip-components=1 -C "${NGH2_DIR}"
+tar -xvf "${LIBS_DIR}/.pkg/nghttp2.tar.gz" --strip-components=1 -C "${NGH2_DIR}"
 pushd "${NGH2_DIR}"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" OPENSSL_CFLAGS="-I${LIBS_DIR}/include" OPENSSL_LIBS="-L${LIBS_DIR}/lib -lssl -lcrypto" ZLIB_CFLAGS="-I${LIBS_DIR}/include" ZLIB_LIBS="-L${LIBS_DIR}/lib -lz" ./configure --prefix="${LIBS_DIR}" --enable-lib-only --disable-threads --disable-shared
 make && make install
@@ -144,9 +152,8 @@ popd
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== libiconv ====================\n\n"
 readonly ICNV_DIR="${BASE_DIR}/libiconv-${MY_CPU}"
-pkg_icnv="$(find "${LIBS_DIR}" -maxdepth 1 -name 'libiconv-*.tar.gz' | sort -rn | head -n1)"
 rm -rf "${ICNV_DIR}" && mkdir "${ICNV_DIR}"
-tar -xvf "${pkg_icnv}" --strip-components=1 -C "${ICNV_DIR}"
+tar -xvf "${LIBS_DIR}/libiconv.tar.gz" --strip-components=1 -C "${ICNV_DIR}"
 pushd "${ICNV_DIR}"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" ./configure --prefix="${LIBS_DIR}" --disable-rpath --disable-shared
 make && make install
@@ -157,9 +164,8 @@ popd
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== libidn2 ====================\n\n"
 readonly IDN2_DIR="${BASE_DIR}/libidn2-${MY_CPU}"
-pkg_idn2="$(find "${LIBS_DIR}" -maxdepth 1 -name 'libidn2-*.tar.gz' | sort -rn | head -n1)"
 rm -rf "${IDN2_DIR}" && mkdir "${IDN2_DIR}"
-tar -xvf "${pkg_idn2}" --strip-components=1 -C "${IDN2_DIR}"
+tar -xvf "${LIBS_DIR}/.pkg/libidn2.tar.gz" --strip-components=1 -C "${IDN2_DIR}"
 pushd "${IDN2_DIR}"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" ./configure --prefix="${LIBS_DIR}" --disable-shared --disable-doc --without-libiconv-prefix --without-libunistring-prefix --disable-valgrind-tests
 make && make install
@@ -170,9 +176,8 @@ popd
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== libgsasl ====================\n\n"
 readonly SASL_DIR="${BASE_DIR}/libgsasl-${MY_CPU}"
-pkg_sasl="$(find "${LIBS_DIR}" -maxdepth 1 -name 'libgsasl-*.tar.gz' | sort -rn | head -n1)"
 rm -rf "${SASL_DIR}" && mkdir "${SASL_DIR}"
-tar -xvf "${pkg_sasl}" --strip-components=1 -C "${SASL_DIR}"
+tar -xvf "${LIBS_DIR}/.pkg/libgsasl.tar.gz" --strip-components=1 -C "${SASL_DIR}"
 pushd "${SASL_DIR}"
 patch -p1 -b < "${BASE_DIR}/patch/gsasl_error.diff"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" ./configure --prefix="${LIBS_DIR}" --disable-shared --disable-valgrind-tests --disable-obsolete -without-libintl-prefix
@@ -184,15 +189,14 @@ popd
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== cURL ====================\n\n"
 readonly CURL_DIR="${BASE_DIR}/curl-${MY_CPU}"
-pkg_curl="$(find "${LIBS_DIR}" -maxdepth 1 -name 'curl-*.tar.gz' | sort -rn | head -n1)"
 rm -rf "${CURL_DIR}" && mkdir "${CURL_DIR}"
-tar -xvf ${pkg_curl} --strip-components=1 -C "${CURL_DIR}"
+tar -xvf "${LIBS_DIR}/.pkg/curl.tar.gz" --strip-components=1 -C "${CURL_DIR}"
 pushd "${CURL_DIR}"
 patch -p1 -b < "${BASE_DIR}/patch/curl_threads.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_doswin.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_parsecfg.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_url.diff"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${LIBS_DIR}/include" CPPFLAGS="-D_WIN32_WINNT=0x0501 -DNGHTTP2_STATICLIB -DUNICODE -D_UNICODE" LDFLAGS="-static -no-pthread -L${LIBS_DIR}/lib" LIBS="-latomic -liconv -lcrypt32" PKG_CONFIG_PATH="${LIBS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --disable-pthreads --disable-libcurl-option --disable-openssl-auto-load-config --with-zlib --with-zstd --with-brotli --with-openssl --with-libssh2 --with-nghttp2="${LIBS_DIR}" --with-libidn2 --with-gsasl --without-ca-bundle
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${LIBS_DIR}/include" CPPFLAGS="-D_WIN32_WINNT=0x0501 -DNGHTTP2_STATICLIB -DUNICODE -D_UNICODE" LDFLAGS="-static -no-pthread -L${LIBS_DIR}/lib" LIBS="-latomic -liconv -lcrypt32" PKG_CONFIG_PATH="${LIBS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --disable-pthreads --disable-libcurl-option --disable-openssl-auto-load-config --with-zlib --with-zstd --with-brotli --with-openssl --with-librtmp --with-libssh2 --with-nghttp2="${LIBS_DIR}" --with-libidn2 --with-gsasl --without-ca-bundle
 make curl_LDFLAGS="-all-static -municode -mconsole"
 strip -s src/curl.exe
 popd
@@ -204,9 +208,9 @@ printf "\n==================== Output ====================\n\n"
 readonly OUT_DIR="${BASE_DIR}/.bin/${MY_CPU}"
 rm -rf "${OUT_DIR}" && mkdir -p "${OUT_DIR}"
 pushd "${OUT_DIR}"
-cp -vf "${CURL_DIR}/src/curl.exe" curl.exe
-cp -vf "${LIBS_DIR}/cacert.pem"   curl-ca-bundle.crt
-cp -vf "${LIBS_DIR}/manpage.html" manpage.html
+cp -vf "${CURL_DIR}/src/curl.exe"      curl.exe
+cp -vf "${LIBS_DIR}/.pkg/cacert.pem"   curl-ca-bundle.crt
+cp -vf "${LIBS_DIR}/.pkg/manpage.html" manpage.html
 sed -n "/Configured to build curl\/libcurl:$/,/^[[:space:]]*Features:/p" "${CURL_DIR}/config.log" | sed -r "s/configure:[[:digit:]]+://" | sed -r "s/^[[:blank:]]*//" | unix2dos > config.log
 mkdir -p "${OUT_DIR}/legal"
 unix2dos -n "${BROT_DIR}/LICENSE"    legal/brotli.LICENSE.txt
