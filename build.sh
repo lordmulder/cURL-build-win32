@@ -43,10 +43,11 @@ wget -4 -O "${LIBS_DIR}/.pkg/zstd.tar.gz"     https://github.com/facebook/zstd/r
 wget -4 -O "${LIBS_DIR}/.pkg/brotli.tar.gz"   https://github.com/google/brotli/archive/v1.0.9/brotli-1.0.9.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/openssl.tar.gz"  https://www.openssl.org/source/openssl-1.1.1k.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/rtmpdump.tar.gz" http://git.ffmpeg.org/gitweb/rtmpdump.git/snapshot/f1b83c10d8beb43fcc70a6e88cf4325499f25857.tar.gz
+wget -4 -O "${LIBS_DIR}/.pkg/libiconv.tar.gz" https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.16.tar.gz
+wget -4 -O "${LIBS_DIR}/.pkg/gettext.tar.gz"  https://ftp.gnu.org/pub/gnu/gettext/gettext-0.21.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/libssh2.tar.gz"  https://www.libssh2.org/download/libssh2-1.9.0.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/nghttp2.tar.gz"  https://github.com/nghttp2/nghttp2/releases/download/v1.43.0/nghttp2-1.43.0.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/libidn2.tar.gz"  https://ftp.gnu.org/gnu/libidn/libidn2-2.3.1.tar.gz
-wget -4 -O "${LIBS_DIR}/.pkg/libiconv.tar.gz" https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.16.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/libgsasl.tar.gz" https://ftp.gnu.org/gnu/gsasl/libgsasl-1.10.0.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/curl.tar.gz"     https://curl.se/download/curl-7.77.0.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/cacert.pem"      https://curl.se/ca/cacert.pem
@@ -123,6 +124,30 @@ make SYS=mingw SHARED= prefix="${LIBS_DIR}" install
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# libiconv
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+printf "\n==================== libiconv ====================\n\n"
+readonly ICNV_DIR="${BASE_DIR}/libiconv-${MY_CPU}"
+rm -rf "${ICNV_DIR}" && mkdir "${ICNV_DIR}"
+tar -xvf "${LIBS_DIR}/.pkg/libiconv.tar.gz" --strip-components=1 -C "${ICNV_DIR}"
+pushd "${ICNV_DIR}"
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" ./configure --prefix="${LIBS_DIR}" --disable-rpath --disable-shared
+make && make install
+popd
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# gettext
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+printf "\n==================== gettext ====================\n\n"
+readonly GTXT_DIR="${BASE_DIR}/gettext-${MY_CPU}"
+rm -rf "${GTXT_DIR}" && mkdir "${GTXT_DIR}"
+tar -xvf "${LIBS_DIR}/.pkg/gettext.tar.gz" --strip-components=1 -C "${GTXT_DIR}"
+pushd "${GTXT_DIR}/gettext-runtime"
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" ./configure --prefix="${LIBS_DIR}" --disable-shared --disable-libasprintf --without-emacs --disable-java --disable-native-java --disable-csharp --disable-openmp
+make && make install
+popd
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # libssh2
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== libssh2 ====================\n\n"
@@ -144,18 +169,6 @@ rm -rf "${NGH2_DIR}" && mkdir "${NGH2_DIR}"
 tar -xvf "${LIBS_DIR}/.pkg/nghttp2.tar.gz" --strip-components=1 -C "${NGH2_DIR}"
 pushd "${NGH2_DIR}"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" OPENSSL_CFLAGS="-I${LIBS_DIR}/include" OPENSSL_LIBS="-L${LIBS_DIR}/lib -lssl -lcrypto" ZLIB_CFLAGS="-I${LIBS_DIR}/include" ZLIB_LIBS="-L${LIBS_DIR}/lib -lz" ./configure --prefix="${LIBS_DIR}" --enable-lib-only --disable-threads --disable-shared
-make && make install
-popd
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# libiconv
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-printf "\n==================== libiconv ====================\n\n"
-readonly ICNV_DIR="${BASE_DIR}/libiconv-${MY_CPU}"
-rm -rf "${ICNV_DIR}" && mkdir "${ICNV_DIR}"
-tar -xvf "${LIBS_DIR}/.pkg/libiconv.tar.gz" --strip-components=1 -C "${ICNV_DIR}"
-pushd "${ICNV_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" ./configure --prefix="${LIBS_DIR}" --disable-rpath --disable-shared
 make && make install
 popd
 
