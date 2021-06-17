@@ -153,7 +153,7 @@ popd
 printf "\n==================== libiconv ====================\n\n"
 readonly ICNV_DIR="${BASE_DIR}/libiconv-${MY_CPU}"
 rm -rf "${ICNV_DIR}" && mkdir "${ICNV_DIR}"
-tar -xvf "${LIBS_DIR}/libiconv.tar.gz" --strip-components=1 -C "${ICNV_DIR}"
+tar -xvf "${LIBS_DIR}/.pkg/libiconv.tar.gz" --strip-components=1 -C "${ICNV_DIR}"
 pushd "${ICNV_DIR}"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" ./configure --prefix="${LIBS_DIR}" --disable-rpath --disable-shared
 make && make install
