@@ -196,8 +196,8 @@ patch -p1 -b < "${BASE_DIR}/patch/curl_threads.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_doswin.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_parsecfg.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_url.diff"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${LIBS_DIR}/include" CPPFLAGS="-D_WIN32_WINNT=0x0501 -DNGHTTP2_STATICLIB -DUNICODE -D_UNICODE" LDFLAGS="-static -no-pthread -L${LIBS_DIR}/lib" LIBS="-latomic -liconv -lcrypt32" PKG_CONFIG_PATH="${LIBS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --disable-pthreads --disable-libcurl-option --disable-openssl-auto-load-config --with-zlib --with-zstd --with-brotli --with-openssl --with-librtmp --with-libssh2 --with-nghttp2="${LIBS_DIR}" --with-libidn2 --with-gsasl --without-ca-bundle
-make curl_LDFLAGS="-all-static -municode -mconsole"
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${LIBS_DIR}/include" CPPFLAGS="-D_WIN32_WINNT=0x0501 -DNGHTTP2_STATICLIB -DUNICODE -D_UNICODE" LDFLAGS="-static -no-pthread -L${LIBS_DIR}/lib" LIBS="-latomic -liconv -lcrypt32 -lwinmm" PKG_CONFIG_PATH="${LIBS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --disable-pthreads --disable-libcurl-option --disable-openssl-auto-load-config --with-zlib --with-zstd --with-brotli --with-openssl --with-librtmp --with-libssh2 --with-nghttp2="${LIBS_DIR}" --with-libidn2 --with-gsasl --without-ca-bundle
+make curl_LDFLAGS="-all-static -municode -mconsole -Wl,--trace"
 strip -s src/curl.exe
 popd
 
