@@ -231,6 +231,9 @@ unix2dos -n "${BROT_DIR}/README.md"  legal/brotli.README.md
 unix2dos -n "${CURL_DIR}/CHANGES"    legal/curl.CHANGES.txt
 unix2dos -n "${CURL_DIR}/COPYING"    legal/curl.COPYING.txt
 unix2dos -n "${CURL_DIR}/README"     legal/curl.README.txt
+unix2dos -n "${GTXT_DIR}/AUTHORS"    legal/gettext.AUTHORS.txt
+unix2dos -n "${GTXT_DIR}/COPYING"    legal/gettext.COPYING.txt
+unix2dos -n "${GTXT_DIR}/README"     legal/gettext.README.txt
 unix2dos -n "${ICNV_DIR}/AUTHORS"    legal/libiconv.AUTHORS.txt
 unix2dos -n "${ICNV_DIR}/COPYING"    legal/libiconv.COPYING.txt
 unix2dos -n "${ICNV_DIR}/README"     legal/libiconv.README
@@ -243,6 +246,8 @@ unix2dos -n "${NGH2_DIR}/README.rst" legal/nghttp2.README.rst
 unix2dos -n "${OSSL_DIR}/AUTHORS"    legal/openssl.AUTHORS.txt
 unix2dos -n "${OSSL_DIR}/LICENSE"    legal/openssl.LICENSE.txt
 unix2dos -n "${OSSL_DIR}/README"     legal/openssl.README.txt
+unix2dos -n "${RTMP_DIR}/COPYING"    legal/librtmp.COPYING.txt
+unix2dos -n "${RTMP_DIR}/README"     legal/librtmp.README.txt
 unix2dos -n "${SASL_DIR}/AUTHORS"    legal/libgsasl.AUTHORS.txt
 unix2dos -n "${SASL_DIR}/COPYING"    legal/libgsasl.COPYING.txt
 unix2dos -n "${SASL_DIR}/README"     legal/libgsasl.README.txt
@@ -260,3 +265,4 @@ chmod 444 "${zfile}"
 popd
 
 printf "\nCompleted.\n\n"
+read -p "Press any key to continue..." x
