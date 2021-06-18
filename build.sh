@@ -192,7 +192,6 @@ readonly SASL_DIR="${BASE_DIR}/libgsasl-${MY_CPU}"
 rm -rf "${SASL_DIR}" && mkdir "${SASL_DIR}"
 tar -xvf "${LIBS_DIR}/.pkg/libgsasl.tar.gz" --strip-components=1 -C "${SASL_DIR}"
 pushd "${SASL_DIR}"
-patch -p1 -b < "${BASE_DIR}/patch/gsasl_error.diff"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" ./configure --prefix="${LIBS_DIR}" --disable-shared --disable-valgrind-tests --disable-obsolete -without-libintl-prefix
 make && make install
 popd
