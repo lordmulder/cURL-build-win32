@@ -6,6 +6,7 @@
 #                         \___|\___/|_| \_\_____|
 
 set -e
+trap 'read -p "Press any key..." x' EXIT
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Set up compiler
@@ -265,4 +266,3 @@ chmod 444 "${zfile}"
 popd
 
 printf "\nCompleted.\n\n"
-read -p "Press any key to continue..." x

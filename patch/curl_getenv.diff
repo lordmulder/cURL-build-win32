@@ -1,14 +1,18 @@
 diff --git "a/D:\\_Sandbox\\curl\\curl-x86\\lib\\getenv.c.orig" "b/D:\\_Sandbox\\curl\\curl-x86\\lib\\getenv.c"
-index 92c5350..f73d00b 100644
+index 92c5350..1d3b0cb 100644
 --- "a/lib/getenv.c"
 +++ "b/lib/getenv.c"
-@@ -27,22 +27,19 @@
+@@ -24,25 +24,23 @@
+ 
+ #include <curl/curl.h>
+ #include "curl_memory.h"
++#include "curlx.h"
  
  #include "memdebug.h"
  
 -static char *GetEnv(const char *variable)
 +#ifdef WIN32
-+static TCHAR *GetEnvWin32(const TCHAR *variable)
++static TCHAR *GetEnv(const TCHAR *variable)
  {
 -#if defined(_WIN32_WCE) || defined(CURL_WINDOWS_APP)
 -  (void)variable;
@@ -30,7 +34,7 @@ index 92c5350..f73d00b 100644
      if(!tmp) {
        free(buf);
        return NULL;
-@@ -53,18 +50,42 @@ static char *GetEnv(const char *variable)
+@@ -53,25 +51,44 @@ static char *GetEnv(const char *variable)
  
      /* It's possible for rc to be 0 if the variable was found but empty.
         Since getenv doesn't make that distinction we ignore it as well. */
@@ -52,7 +56,7 @@ index 92c5350..f73d00b 100644
 +}
 +#endif
 +
-+static char *GetEnv(const char *variable)
++char *curl_getenv(const char *variable)
 +{
 +#if defined(_WIN32_WCE) || defined(CURL_WINDOWS_APP)
 +  (void)variable;
@@ -62,7 +66,7 @@ index 92c5350..f73d00b 100644
 +  char *value = NULL;
 +  wchar_t *variable_w = curlx_convert_UTF8_to_wchar(variable);
 +  if(variable_w) {
-+    wchar_t *value_w = GetEnvWin32(variable_w);
++    wchar_t *value_w = GetEnv(variable_w);
 +    if(value_w) {
 +      value = curlx_convert_wchar_to_UTF8(value_w);
 +      free(value_w);
@@ -71,8 +75,15 @@ index 92c5350..f73d00b 100644
 +  }
 +  return value;
 +#else
-+  return GetEnvWin32(variable);
++  return GetEnv(variable);
 +#endif
  #else
    char *env = getenv(variable);
    return (env && env[0])?strdup(env):NULL;
+ #endif
+ }
+-
+-char *curl_getenv(const char *v)
+-{
+-  return GetEnv(v);
+-}
