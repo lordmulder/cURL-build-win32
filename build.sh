@@ -39,10 +39,10 @@ rm -rf "${LIBS_DIR}" && mkdir -p "${LIBS_DIR}/.pkg" "${LIBS_DIR}/bin" "${LIBS_DI
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Download
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-wget -4 -O "${LIBS_DIR}/.pkg/zlib.tar.gz"     https://zlib.net/zlib-1.2.11.tar.gz
+wget -4 -O "${LIBS_DIR}/.pkg/zlib.tar.gz"     https://zlib.net/zlib-1.2.12.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/zstd.tar.gz"     https://github.com/facebook/zstd/releases/download/v1.5.0/zstd-1.5.0.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/brotli.tar.gz"   https://github.com/google/brotli/archive/v1.0.9/brotli-1.0.9.tar.gz
-wget -4 -O "${LIBS_DIR}/.pkg/openssl.tar.gz"  https://www.openssl.org/source/openssl-1.1.1k.tar.gz
+wget -4 -O "${LIBS_DIR}/.pkg/openssl.tar.gz"  https://www.openssl.org/source/openssl-1.1.1o.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/rtmpdump.tar.gz" http://git.ffmpeg.org/gitweb/rtmpdump.git/snapshot/f1b83c10d8beb43fcc70a6e88cf4325499f25857.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/libiconv.tar.gz" https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.16.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/gettext.tar.gz"  https://ftp.gnu.org/pub/gnu/gettext/gettext-0.21.tar.gz
@@ -50,7 +50,7 @@ wget -4 -O "${LIBS_DIR}/.pkg/libssh2.tar.gz"  https://www.libssh2.org/download/l
 wget -4 -O "${LIBS_DIR}/.pkg/nghttp2.tar.gz"  https://github.com/nghttp2/nghttp2/releases/download/v1.43.0/nghttp2-1.43.0.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/libidn2.tar.gz"  https://ftp.gnu.org/gnu/libidn/libidn2-2.3.1.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/libgsasl.tar.gz" https://ftp.gnu.org/gnu/gsasl/libgsasl-1.10.0.tar.gz
-wget -4 -O "${LIBS_DIR}/.pkg/curl.tar.gz"     https://curl.se/download/curl-7.77.0.tar.gz
+wget -4 -O "${LIBS_DIR}/.pkg/curl.tar.gz"     https://curl.se/download/curl-7.79.1.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/cacert.pem"      https://curl.se/ca/cacert.pem
 wget -4 -O "${LIBS_DIR}/.pkg/manpage.html"    https://curl.se/docs/manpage.html
 
@@ -205,13 +205,13 @@ readonly CURL_DIR="${BASE_DIR}/curl-${MY_CPU}"
 rm -rf "${CURL_DIR}" && mkdir "${CURL_DIR}"
 tar -xvf "${LIBS_DIR}/.pkg/curl.tar.gz" --strip-components=1 -C "${CURL_DIR}"
 pushd "${CURL_DIR}"
+sed -i -E 's/\bmain[[:space:]]*\(([^\(\)]*)\)/wmain(\1)/g' configure
 patch -p1 -b < "${BASE_DIR}/patch/curl_getenv.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_threads.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_doswin.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_parsecfg.diff"
-patch -p1 -b < "${BASE_DIR}/patch/curl_url.diff"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${LIBS_DIR}/include" CPPFLAGS="-D_WIN32_WINNT=0x0501 -DNGHTTP2_STATICLIB -DUNICODE -D_UNICODE" LDFLAGS="-static -no-pthread -L${LIBS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm" PKG_CONFIG_PATH="${LIBS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --disable-pthreads --disable-libcurl-option --disable-openssl-auto-load-config --with-zlib --with-zstd --with-brotli --with-openssl --with-librtmp --with-libssh2 --with-nghttp2="${LIBS_DIR}" --with-libidn2 --with-gsasl --without-ca-bundle
-make curl_LDFLAGS="-all-static -municode -mconsole -Wl,--trace"
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${LIBS_DIR}/include" CPPFLAGS="-D_WIN32_WINNT=0x0501 -DNGHTTP2_STATICLIB -DUNICODE -D_UNICODE" LDFLAGS="-municode -mconsole -Wl,--trace -static -no-pthread -L${LIBS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm" PKG_CONFIG_PATH="${LIBS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --disable-pthreads --disable-libcurl-option --disable-openssl-auto-load-config --with-zlib --with-zstd --with-brotli --with-openssl --with-librtmp --with-libssh2 --with-nghttp2="${LIBS_DIR}" --with-libidn2 --with-gsasl --without-ca-bundle
+make
 strip -s src/curl.exe
 popd
 
