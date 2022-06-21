@@ -1,7 +1,7 @@
-diff --git "a/D:\\_Sandbox\\curl\\curl-src\\src\\tool_doswin.c.orig" "b/D:\\_Sandbox\\curl\\curl-src\\src\\tool_doswin.c"
-index 98e13bc..9f83c16 100644
---- "a/src/tool_doswin.c"
-+++ "b/src/tool_doswin.c"
+diff --git a/src/tool_doswin.c b/src/tool_doswin.c
+index 9b6a7d5..93d0814 100644
+--- a/src/tool_doswin.c
++++ b/src/tool_doswin.c
 @@ -612,6 +612,37 @@ char **__crt0_glob_function(char *arg)
   * HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\SafeProcessSearchMode
   */
@@ -40,7 +40,7 @@ index 98e13bc..9f83c16 100644
  CURLcode FindWin32CACert(struct OperationConfig *config,
                           curl_sslbackend backend,
                           const TCHAR *bundle_file)
-@@ -627,22 +658,10 @@ CURLcode FindWin32CACert(struct OperationConfig *config,
+@@ -627,21 +658,9 @@ CURLcode FindWin32CACert(struct OperationConfig *config,
    if((curlinfo->features & CURL_VERSION_SSL) &&
       backend != CURLSSLBACKEND_SCHANNEL) {
  
@@ -52,16 +52,15 @@ index 98e13bc..9f83c16 100644
 -
 -    res_len = SearchPath(NULL, bundle_file, NULL, PATH_MAX, buf, &ptr);
 -    if(res_len > 0) {
-+    char *cacert = execpath(bundle_file);
-+    if (cacert) {
-       Curl_safefree(config->cacert);
--#ifdef UNICODE
--      config->cacert = curlx_convert_wchar_to_UTF8(buf);
--#else
--      config->cacert = strdup(buf);
--#endif
+-      char *mstr = curlx_convert_tchar_to_UTF8(buf);
+-      Curl_safefree(config->cacert);
+-      if(mstr)
+-        config->cacert = strdup(mstr);
+-      curlx_unicodefree(mstr);
 -      if(!config->cacert)
 -        result = CURLE_OUT_OF_MEMORY;
++    char *cacert = execpath(bundle_file);
++    if (cacert) {
 +      config->cacert = cacert;
      }
    }
