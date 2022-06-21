@@ -1,15 +1,15 @@
-diff --git "a/D:\\_Sandbox\\curl\\curl-src\\src\\tool_parsecfg.c.orig" "b/D:\\_Sandbox\\curl\\curl-src\\src\\tool_parsecfg.c"
-index d26774f..6b26101 100644
+diff --git "a/src/tool_parsecfg.c" "b/src/tool_parsecfg.c"
+index 3630cec..8a44369 100644
 --- "a/src/tool_parsecfg.c"
 +++ "b/src/tool_parsecfg.c"
-@@ -45,29 +45,22 @@ static const char *unslashquote(const char *line, char *param);
+@@ -45,29 +45,20 @@ static const char *unslashquote(const char *line, char *param);
  static bool my_get_line(FILE *fp, struct curlx_dynbuf *, bool *error);
  
  #ifdef WIN32
--static FILE *execpath(const char *filename)
+-static FILE *execpath(const char *filename, char **pathp)
 +static FILE *execpath(const TCHAR *filename)
  {
--  char filebuffer[512];
+-  static char filebuffer[512];
 -  /* Get the filename of our executable. GetModuleFileName is already declared
 -   * via inclusions done in setup header file.  We assume that we are using
 -   * the ASCII version here.
@@ -29,8 +29,11 @@ index d26774f..6b26101 100644
 -      /* If we have enough space, build the RC filename */
 -      remaining = sizeof(filebuffer) - strlen(filebuffer);
 -      if(strlen(filename) < remaining - 1) {
+-        FILE *f;
 -        msnprintf(lastdirchar, remaining, "%s%s", DIR_CHAR, filename);
--        return fopen(filebuffer, FOPEN_READTEXT);
+-        *pathp = filebuffer;
+-        f = fopen(filebuffer, FOPEN_READTEXT);
+-        return f;
 -      }
 +      *lastdirchar = TEXT('\0');
 +    }
@@ -40,28 +43,31 @@ index d26774f..6b26101 100644
 +      return _tfopen(filebuffer, TEXT(FOPEN_READTEXT));
      }
    }
--
-   return NULL;
- }
- #endif
-@@ -85,7 +78,7 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
-   if(!filename || !*filename) {
-     /* NULL or no file name attempts to load .curlrc from the homedir! */
  
--    char *home = homedir(".curlrc");
-+    char *home = NULL; /* homedir(".curlrc"); */
- #ifndef WIN32
-     if(home) {
-       pathalloc = curl_maprintf("%s%s.curlrc", home, DIR_CHAR);
-@@ -120,9 +113,9 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
+@@ -87,7 +78,7 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
+ 
+   if(!filename) {
+     /* NULL means load .curlrc from homedir! */
+-    char *curlrc = findfile(".curlrc", CURLRC_DOTSCORE);
++    char *curlrc = NULL; /* findfile(".curlrc", CURLRC_DOTSCORE); */
+     if(curlrc) {
+       file = fopen(curlrc, FOPEN_READTEXT);
+       if(!file) {
+@@ -98,14 +89,13 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
      }
-     if(!filename) {
+ #ifdef WIN32 /* Windows */
+     else {
+-      char *fullp;
        /* check for .curlrc then _curlrc in the dir of the executable */
--      file = execpath(".curlrc");
-+      file = execpath(TEXT(".curlrc"));
+-      file = execpath(".curlrc", &fullp);
++      file = execpath(TEXT(".curlrc") /*,&fullp*/);
        if(!file)
--        file = execpath("_curlrc");
-+        file = execpath(TEXT("_curlrc"));
+-        file = execpath("_curlrc", &fullp);
++        file = execpath(TEXT("_curlrc") /*,&fullp*/);
+       if(file)
+         /* this is the filename we read from */
+-        filename = fullp;
++        filename = ".curlrc";
      }
  #endif
- 
+   }
