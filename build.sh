@@ -276,7 +276,7 @@ unix2dos -n "${TCP2_DIR}/COPYING"    legal/ngtcp2.COPYING.txt
 unix2dos -n "${TCP2_DIR}/README.rst" legal/ngtcp2.README.rst
 unix2dos -n "${OSSL_DIR}/AUTHORS"    legal/openssl.AUTHORS.txt
 unix2dos -n "${OSSL_DIR}/LICENSE"    legal/openssl.LICENSE.txt
-unix2dos -n "${OSSL_DIR}/README"     legal/openssl.README.txt
+unix2dos -n "${OSSL_DIR}/README.md"  legal/openssl.README.md
 unix2dos -n "${RTMP_DIR}/COPYING"    legal/librtmp.COPYING.txt
 unix2dos -n "${RTMP_DIR}/README"     legal/librtmp.README.txt
 unix2dos -n "${SASL_DIR}/AUTHORS"    legal/libgsasl.AUTHORS.txt
