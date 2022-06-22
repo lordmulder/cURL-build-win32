@@ -48,6 +48,8 @@ wget -4 -O "${LIBS_DIR}/.pkg/libiconv.tar.gz" https://ftp.gnu.org/pub/gnu/libico
 wget -4 -O "${LIBS_DIR}/.pkg/gettext.tar.gz"  https://ftp.gnu.org/pub/gnu/gettext/gettext-0.21.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/libssh2.tar.gz"  https://www.libssh2.org/download/libssh2-1.10.0.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/nghttp2.tar.gz"  https://github.com/nghttp2/nghttp2/releases/download/v1.47.0/nghttp2-1.47.0.tar.gz
+wget -4 -O "${LIBS_DIR}/.pkg/nghttp3.tar.gz"  https://github.com/ngtcp2/nghttp3/releases/download/v0.5.0/nghttp3-0.5.0.tar.gz
+wget -4 -O "${LIBS_DIR}/.pkg/ngtcp2.tar.gz"   https://github.com/ngtcp2/ngtcp2/releases/download/v0.6.0/ngtcp2-0.6.0.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/libidn2.tar.gz"  https://ftp.gnu.org/gnu/libidn/libidn2-2.3.2.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/libgsasl.tar.gz" https://ftp.gnu.org/gnu/gsasl/libgsasl-1.10.0.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/curl.tar.gz"     https://curl.se/download/curl-7.83.1.tar.gz
@@ -174,6 +176,30 @@ make && make install
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# nghttp3
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+printf "\n==================== nghttp3 ====================\n\n"
+readonly NGH3_DIR="${BASE_DIR}/nghttp3-${MY_CPU}"
+rm -rf "${NGH3_DIR}" && mkdir "${NGH3_DIR}"
+tar -xvf "${LIBS_DIR}/.pkg/nghttp3.tar.gz" --strip-components=1 -C "${NGH3_DIR}"
+pushd "${NGH3_DIR}"
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" OPENSSL_CFLAGS="-I${LIBS_DIR}/include" OPENSSL_LIBS="-L${LIBS_DIR}/lib -lssl -lcrypto" ZLIB_CFLAGS="-I${LIBS_DIR}/include" ZLIB_LIBS="-L${LIBS_DIR}/lib -lz" ./configure --prefix="${LIBS_DIR}" --enable-lib-only --disable-threads --disable-shared
+make && make install
+popd
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ngtcp2
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+printf "\n==================== ngtcp2 ====================\n\n"
+readonly TCP2_DIR="${BASE_DIR}/ngtcp2-${MY_CPU}"
+rm -rf "${TCP2_DIR}" && mkdir "${TCP2_DIR}"
+tar -xvf "${LIBS_DIR}/.pkg/ngtcp2.tar.gz" --strip-components=1 -C "${TCP2_DIR}"
+pushd "${TCP2_DIR}"
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" OPENSSL_CFLAGS="-I${LIBS_DIR}/include" OPENSSL_LIBS="-L${LIBS_DIR}/lib -lssl -lcrypto" ZLIB_CFLAGS="-I${LIBS_DIR}/include" ZLIB_LIBS="-L${LIBS_DIR}/lib -lz" ./configure --prefix="${LIBS_DIR}" --enable-lib-only --disable-threads --disable-shared
+make && make install
+popd
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # libidn2
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== libidn2 ====================\n\n"
@@ -210,8 +236,8 @@ patch -p1 -b < "${BASE_DIR}/patch/curl_getenv.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_threads.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_doswin.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_parsecfg.diff"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${LIBS_DIR}/include" CPPFLAGS="-D_WIN32_WINNT=0x0501 -DNGHTTP2_STATICLIB -DUNICODE -D_UNICODE" LDFLAGS="-municode -mconsole -Wl,--trace -static -no-pthread -L${LIBS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm" PKG_CONFIG_PATH="${LIBS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --disable-pthreads --disable-libcurl-option --disable-openssl-auto-load-config --with-zlib --with-zstd --with-brotli --with-openssl --with-librtmp --with-libssh2 --with-nghttp2="${LIBS_DIR}" --with-libidn2 --with-gsasl --without-ca-bundle
-make
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${LIBS_DIR}/include" CPPFLAGS="-D_WIN32_WINNT=0x0501 -DNGHTTP2_STATICLIB -DUNICODE -D_UNICODE" LDFLAGS="-municode -mconsole -Wl,--trace -static -no-pthread -L${LIBS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm" PKG_CONFIG_PATH="${LIBS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --disable-pthreads --disable-libcurl-option --disable-openssl-auto-load-config --with-zlib --with-zstd --with-brotli --with-openssl --with-librtmp --with-libssh2 --with-nghttp2="${LIBS_DIR}" --with-ngtcp2="${LIBS_DIR}" --with-nghttp3="${LIBS_DIR}" --with-libidn2 --with-gsasl --without-ca-bundle
+make V=1
 strip -s src/curl.exe
 popd
 
