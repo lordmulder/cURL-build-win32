@@ -1,8 +1,11 @@
-diff --git "a/D:\\_Sandbox\\curl\\curl-src\\lib\\curl_threads.h.orig" "b/D:\\_Sandbox\\curl\\curl-src\\lib\\curl_threads.h"
-index e10b7a1..22fdb49 100644
---- "a/lib/curl_threads.h"
-+++ "b/lib/curl_threads.h"
-@@ -37,13 +37,7 @@
+ lib/curl_threads.h | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
+
+diff --git a/lib/curl_threads.h b/lib/curl_threads.h
+index 63392f6..8a40108 100644
+--- a/lib/curl_threads.h
++++ b/lib/curl_threads.h
+@@ -39,13 +39,7 @@
  #  define curl_mutex_t           CRITICAL_SECTION
  #  define curl_thread_t          HANDLE
  #  define curl_thread_t_null     (HANDLE)0

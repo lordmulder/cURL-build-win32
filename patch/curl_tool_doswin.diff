@@ -1,8 +1,11 @@
+ src/tool_doswin.c | 49 ++++++++++++++++++++++++++++++++++---------------
+ 1 file changed, 34 insertions(+), 15 deletions(-)
+
 diff --git a/src/tool_doswin.c b/src/tool_doswin.c
-index 9b6a7d5..93d0814 100644
+index d8695e9..27dc9b6 100644
 --- a/src/tool_doswin.c
 +++ b/src/tool_doswin.c
-@@ -612,6 +612,37 @@ char **__crt0_glob_function(char *arg)
+@@ -614,6 +614,37 @@ char **__crt0_glob_function(char *arg)
   * HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\SafeProcessSearchMode
   */
  
@@ -40,7 +43,7 @@ index 9b6a7d5..93d0814 100644
  CURLcode FindWin32CACert(struct OperationConfig *config,
                           curl_sslbackend backend,
                           const TCHAR *bundle_file)
-@@ -627,21 +658,9 @@ CURLcode FindWin32CACert(struct OperationConfig *config,
+@@ -629,21 +660,9 @@ CURLcode FindWin32CACert(struct OperationConfig *config,
    if((curlinfo->features & CURL_VERSION_SSL) &&
       backend != CURLSSLBACKEND_SCHANNEL) {
  
