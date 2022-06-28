@@ -20,7 +20,7 @@ case "$(cc -dumpmachine)" in
   x86_64-*)
     readonly MY_CPU=x64
     readonly MY_MARCH=x86-64
-    readonly MY_MTUNE=corei7
+    readonly MY_MTUNE=znver3
     ;;
   *)
     echo "Unknown compiler detected!";
