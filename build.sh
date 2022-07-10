@@ -195,6 +195,7 @@ readonly TCP2_DIR="${BASE_DIR}/ngtcp2-${MY_CPU}"
 rm -rf "${TCP2_DIR}" && mkdir "${TCP2_DIR}"
 tar -xvf "${LIBS_DIR}/.pkg/ngtcp2.tar.gz" --strip-components=1 -C "${TCP2_DIR}"
 pushd "${TCP2_DIR}"
+patch -p1 -b < "${BASE_DIR}/patch/ngtcp2_htons.diff"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" OPENSSL_CFLAGS="-I${LIBS_DIR}/include" OPENSSL_LIBS="-L${LIBS_DIR}/lib -lssl -lcrypto -lws2_32 -lz" ZLIB_CFLAGS="-I${LIBS_DIR}/include" ZLIB_LIBS="-L${LIBS_DIR}/lib -lz" ./configure --prefix="${LIBS_DIR}" --enable-lib-only --with-openssl --disable-shared
 make && make install
 popd

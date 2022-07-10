@@ -1,0 +1,25 @@
+From 20995d0137b72fbbdb57f53bb8c272b2c5b61280 Mon Sep 17 00:00:00 2001
+From: Dmitry Karpov <dkarpov@roku.com>
+Date: Tue, 28 Jun 2022 18:02:36 -0700
+Subject: [PATCH] Fixed error in ngtcp2_htons.
+
+---
+ lib/ngtcp2_net.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/ngtcp2_net.h b/lib/ngtcp2_net.h
+index f8d8e518..b1f28096 100644
+--- a/lib/ngtcp2_net.h
++++ b/lib/ngtcp2_net.h
+@@ -101,7 +101,7 @@ STIN uint32_t ngtcp2_htonl(uint32_t hostlong) {
+ STIN uint16_t ngtcp2_htons(uint16_t hostshort) {
+   uint16_t res;
+   unsigned char *p = (unsigned char *)&res;
+-  *p++ = (unsigned char)hostshort >> 8;
++  *p++ = (unsigned char)(hostshort >> 8);
+   *p = hostshort & 0xffu;
+   return res;
+ }
+-- 
+2.35.1.windows.2
+
