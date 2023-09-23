@@ -39,7 +39,7 @@ rm -rf "${LIBS_DIR}" && mkdir -p "${LIBS_DIR}/.pkg" "${LIBS_DIR}/bin" "${LIBS_DI
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Download
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-wget -4 -O "${LIBS_DIR}/.pkg/zlib.tar.gz"     https://zlib.net/zlib-1.2.13.tar.gz
+wget -4 -O "${LIBS_DIR}/.pkg/zlib.tar.gz"     https://zlib.net/zlib-1.3.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/zstd.tar.gz"     https://github.com/facebook/zstd/releases/download/v1.5.2/zstd-1.5.2.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/brotli.tar.gz"   https://github.com/google/brotli/archive/v1.0.9/brotli-1.0.9.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/openssl.tar.gz"  https://github.com/quictls/openssl/archive/refs/tags/OpenSSL_1_1_1w.tar.gz
