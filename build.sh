@@ -40,7 +40,7 @@ rm -rf "${LIBS_DIR}" && mkdir -p "${LIBS_DIR}/.pkg" "${LIBS_DIR}/bin" "${LIBS_DI
 # Download
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 wget -4 -O "${LIBS_DIR}/.pkg/zlib.tar.gz"     https://zlib.net/zlib-1.3.tar.gz
-wget -4 -O "${LIBS_DIR}/.pkg/zstd.tar.gz"     https://github.com/facebook/zstd/releases/download/v1.5.2/zstd-1.5.2.tar.gz
+wget -4 -O "${LIBS_DIR}/.pkg/zstd.tar.gz"     https://github.com/facebook/zstd/releases/download/v1.5.5/zstd-1.5.5.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/brotli.tar.gz"   https://github.com/google/brotli/archive/v1.0.9/brotli-1.0.9.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/openssl.tar.gz"  https://github.com/quictls/openssl/archive/refs/heads/OpenSSL_1_1_1w+quic.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/rtmpdump.tar.gz" http://git.ffmpeg.org/gitweb/rtmpdump.git/snapshot/f1b83c10d8beb43fcc70a6e88cf4325499f25857.tar.gz
@@ -74,7 +74,7 @@ popd
 printf "\n==================== Zstandard ====================\n\n"
 readonly ZSTD_DIR="${BASE_DIR}/zstd-${MY_CPU}"
 rm -rf "${ZSTD_DIR}" && mkdir "${ZSTD_DIR}"
-tar -xvf "${LIBS_DIR}/.pkg/zstd.tar.gz" --strip-components=1 -C "${ZSTD_DIR}"
+tar -xvf "${LIBS_DIR}/.pkg/zstd.tar.gz" --strip-components=1 -C "${ZSTD_DIR}" || true
 pushd "${ZSTD_DIR}"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" make lib
 cp -vf lib/libzstd.a "${LIBS_DIR}/lib"
