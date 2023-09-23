@@ -42,7 +42,7 @@ rm -rf "${LIBS_DIR}" && mkdir -p "${LIBS_DIR}/.pkg" "${LIBS_DIR}/bin" "${LIBS_DI
 wget -4 -O "${LIBS_DIR}/.pkg/zlib.tar.gz"     https://zlib.net/zlib-1.2.13.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/zstd.tar.gz"     https://github.com/facebook/zstd/releases/download/v1.5.2/zstd-1.5.2.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/brotli.tar.gz"   https://github.com/google/brotli/archive/v1.0.9/brotli-1.0.9.tar.gz
-wget -4 -O "${LIBS_DIR}/.pkg/openssl.tar.gz"  https://github.com/quictls/openssl/archive/refs/tags/OpenSSL_1_1_1t-quic1.tar.gz
+wget -4 -O "${LIBS_DIR}/.pkg/openssl.tar.gz"  https://github.com/quictls/openssl/archive/refs/tags/OpenSSL_1_1_1w.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/rtmpdump.tar.gz" http://git.ffmpeg.org/gitweb/rtmpdump.git/snapshot/f1b83c10d8beb43fcc70a6e88cf4325499f25857.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/libiconv.tar.gz" https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.17.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/gettext.tar.gz"  https://ftp.gnu.org/pub/gnu/gettext/gettext-0.21.1.tar.gz
@@ -52,7 +52,7 @@ wget -4 -O "${LIBS_DIR}/.pkg/nghttp3.tar.gz"  https://github.com/ngtcp2/nghttp3/
 wget -4 -O "${LIBS_DIR}/.pkg/ngtcp2.tar.gz"   https://github.com/ngtcp2/ngtcp2/releases/download/v0.15.0/ngtcp2-0.15.0.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/libidn2.tar.gz"  https://ftp.gnu.org/gnu/libidn/libidn2-2.3.2.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/libgsasl.tar.gz" https://ftp.gnu.org/gnu/gsasl/libgsasl-1.10.0.tar.gz
-wget -4 -O "${LIBS_DIR}/.pkg/curl.tar.gz"     https://curl.se/download/curl-8.1.2.tar.gz
+wget -4 -O "${LIBS_DIR}/.pkg/curl.tar.gz"     https://curl.se/download/curl-8.3.0.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/cacert.pem"      https://curl.se/ca/cacert.pem
 wget -4 -O "${LIBS_DIR}/.pkg/manpage.html"    https://curl.se/docs/manpage.html
 
