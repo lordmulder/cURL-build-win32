@@ -41,7 +41,7 @@ rm -rf "${LIBS_DIR}" && mkdir -p "${LIBS_DIR}/.pkg" "${LIBS_DIR}/bin" "${LIBS_DI
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 wget -4 -O "${LIBS_DIR}/.pkg/zlib.tar.gz"     https://zlib.net/zlib-1.3.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/zstd.tar.gz"     https://github.com/facebook/zstd/releases/download/v1.5.5/zstd-1.5.5.tar.gz
-wget -4 -O "${LIBS_DIR}/.pkg/brotli.tar.gz"   https://github.com/google/brotli/archive/v1.0.9/brotli-1.0.9.tar.gz
+wget -4 -O "${LIBS_DIR}/.pkg/brotli.tar.gz"   https://github.com/google/brotli/archive/refs/tags/v1.1.0.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/openssl.tar.gz"  https://github.com/quictls/openssl/archive/refs/heads/OpenSSL_1_1_1w+quic.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/rtmpdump.tar.gz" http://git.ffmpeg.org/gitweb/rtmpdump.git/snapshot/f1b83c10d8beb43fcc70a6e88cf4325499f25857.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/libiconv.tar.gz" https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.17.tar.gz
@@ -76,7 +76,7 @@ readonly ZSTD_DIR="${BASE_DIR}/zstd-${MY_CPU}"
 rm -rf "${ZSTD_DIR}" && mkdir "${ZSTD_DIR}"
 tar -xvf "${LIBS_DIR}/.pkg/zstd.tar.gz" --strip-components=1 -C "${ZSTD_DIR}" || true
 pushd "${ZSTD_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" make lib
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" make lib V=1
 cp -vf lib/libzstd.a "${LIBS_DIR}/lib"
 cp -vf lib/zstd.h lib/zstd_errors.h lib/zdict.h "${LIBS_DIR}/include"
 sed -e "s|@PREFIX@|${LIBS_DIR}|g" -e 's|@EXEC_PREFIX@|${prefix}|g' -e 's|@INCLUDEDIR@|${prefix}/include|g' -e 's|@LIBDIR@|${prefix}/lib|g' -e 's|@VERSION@|1.5.0|g' lib/libzstd.pc.in > "${LIBS_DIR}/lib/pkgconfig/libzstd.pc"
@@ -89,14 +89,10 @@ printf "\n==================== Brotli ====================\n\n"
 readonly BROT_DIR="${BASE_DIR}/brotli-${MY_CPU}"
 rm -rf "${BROT_DIR}" && mkdir "${BROT_DIR}"
 tar -xvf "${LIBS_DIR}/.pkg/brotli.tar.gz" --strip-components=1 -C "${BROT_DIR}"
-pushd "${BROT_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" make lib
-mkdir -p "${LIBS_DIR}/include/brotli"
-cp -vf c/include/brotli/*.h "${LIBS_DIR}/include/brotli"
-for fname in scripts/*.pc.in; do
-  cp -vf libbrotli.a "${LIBS_DIR}/lib/$(basename "${fname}" .pc.in).a"
-  sed -e "s|@prefix@|${LIBS_DIR}|g" -e 's|@exec_prefix@|${prefix}|g' -e 's|@includedir@|${prefix}/include|g' -e 's|@libdir@|${prefix}/lib|g' -e 's|@PACKAGE_VERSION@|1.0.9|g' ${fname} > "${LIBS_DIR}/lib/pkgconfig/$(basename "${fname}" .in)"
-done
+mkdir "${BROT_DIR}/out"
+pushd "${BROT_DIR}/out"
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib -static" cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_VERBOSE_MAKEFILE=TRUE -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX="${LIBS_DIR}" ..
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib -static" cmake --build . --config Release --target install
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -237,7 +233,7 @@ patch -p1 -b < "${BASE_DIR}/patch/curl_threads.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_doswin.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_getparam.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_parsecfg.diff"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${LIBS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DNGHTTP2_STATICLIB -DNGHTTP3_STATICLIB -DNGTCP2_STATICLIB -DUNICODE -D_UNICODE" LDFLAGS="-municode -mconsole -Wl,--trace -static -no-pthread -L${LIBS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm" PKG_CONFIG_PATH="${LIBS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --disable-pthreads --disable-libcurl-option --disable-openssl-auto-load-config --with-zlib --with-zstd --with-brotli --with-openssl --with-librtmp --with-libssh2 --with-nghttp2="${LIBS_DIR}" --with-ngtcp2="${LIBS_DIR}" --with-nghttp3="${LIBS_DIR}" --with-libidn2 --with-gsasl --without-ca-bundle
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${LIBS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DNGHTTP2_STATICLIB -DNGHTTP3_STATICLIB -DNGTCP2_STATICLIB -DUNICODE -D_UNICODE" LDFLAGS="-municode -mconsole -Wl,--trace -static -no-pthread -L${LIBS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm -lbrotlicommon" PKG_CONFIG_PATH="${LIBS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --disable-pthreads --disable-libcurl-option --disable-openssl-auto-load-config --with-zlib --with-zstd --with-brotli --with-openssl --with-librtmp --with-libssh2 --with-nghttp2="${LIBS_DIR}" --with-ngtcp2="${LIBS_DIR}" --with-nghttp3="${LIBS_DIR}" --with-libidn2 --with-gsasl --without-ca-bundle
 make V=1
 strip -s src/curl.exe
 popd
