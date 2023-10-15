@@ -230,6 +230,7 @@ pushd "${CURL_DIR}"
 sed -i -E 's/\bmain[[:space:]]*\(([^\(\)]*)\)/wmain(\1)/g' configure
 patch -p1 -b < "${BASE_DIR}/patch/curl_getenv.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_threads.diff"
+patch -p1 -b < "${BASE_DIR}/patch/curl_tool_cb_wrt.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_doswin.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_getparam.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_parsecfg.diff"
