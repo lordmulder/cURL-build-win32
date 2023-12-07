@@ -1,11 +1,11 @@
- lib/getenv.c | 49 +++++++++++++++++++++++++++++++++----------------
- 1 file changed, 33 insertions(+), 16 deletions(-)
+ lib/getenv.c | 47 ++++++++++++++++++++++++++++++-----------------
+ 1 file changed, 30 insertions(+), 17 deletions(-)
 
 diff --git a/lib/getenv.c b/lib/getenv.c
-index 5f00fd1..3eff07a 100644
+index 48ee972..fe27a24 100644
 --- a/lib/getenv.c
 +++ b/lib/getenv.c
-@@ -26,25 +26,23 @@
+@@ -26,26 +26,23 @@
  
  #include <curl/curl.h>
  #include "curl_memory.h"
@@ -14,35 +14,36 @@ index 5f00fd1..3eff07a 100644
  #include "memdebug.h"
  
 -static char *GetEnv(const char *variable)
-+#ifdef WIN32
-+static TCHAR *GetEnv(const TCHAR *variable)
++#if defined(_WIN32)
++static wchar_t *GetEnv(const wchar_t *variable)
  {
--#if defined(_WIN32_WCE) || defined(CURL_WINDOWS_APP)
+-#if defined(_WIN32_WCE) || defined(CURL_WINDOWS_APP) || \
+-  defined(__ORBIS__) || defined(__PROSPERO__) /* PlayStation 4 and 5 */
 -  (void)variable;
 -  return NULL;
--#elif defined(WIN32)
+-#elif defined(_WIN32)
    /* This uses Windows API instead of C runtime getenv() to get the environment
       variable since some changes aren't always visible to the latter. #4774 */
 -  char *buf = NULL;
 -  char *tmp;
-+  TCHAR *buf = NULL;
-+  TCHAR *tmp;
++  wchar_t *buf = NULL;
++  wchar_t *tmp;
    DWORD bufsize;
    DWORD rc = 1;
    const DWORD max = 32768; /* max env var size from MSCRT source */
  
    for(;;) {
 -    tmp = realloc(buf, rc);
-+    tmp = (TCHAR*)realloc(buf, rc * sizeof(TCHAR));
++    tmp = (wchar_t*)realloc(buf, rc * sizeof(wchar_t));
      if(!tmp) {
        free(buf);
        return NULL;
-@@ -55,25 +53,44 @@ static char *GetEnv(const char *variable)
+@@ -56,25 +53,41 @@ static char *GetEnv(const char *variable)
  
      /* It's possible for rc to be 0 if the variable was found but empty.
         Since getenv doesn't make that distinction we ignore it as well. */
 -    rc = GetEnvironmentVariableA(variable, buf, bufsize);
-+    rc = GetEnvironmentVariable(variable, buf, bufsize);
++    rc = GetEnvironmentVariableW(variable, buf, bufsize);
      if(!rc || rc == bufsize || rc > max) {
        free(buf);
        return NULL;
@@ -61,11 +62,11 @@ index 5f00fd1..3eff07a 100644
 +
 +char *curl_getenv(const char *variable)
 +{
-+#if defined(_WIN32_WCE) || defined(CURL_WINDOWS_APP)
++#if defined(_WIN32_WCE) || defined(CURL_WINDOWS_APP) || \
++  defined(__ORBIS__) || defined(__PROSPERO__) /* PlayStation 4 and 5 */
 +  (void)variable;
 +  return NULL;
-+#elif defined(WIN32)
-+#ifdef UNICODE
++#elif defined(_WIN32)
 +  char *value = NULL;
 +  wchar_t *variable_w = curlx_convert_UTF8_to_wchar(variable);
 +  if(variable_w) {
@@ -77,9 +78,6 @@ index 5f00fd1..3eff07a 100644
 +    free(variable_w);
 +  }
 +  return value;
-+#else
-+  return GetEnv(variable);
-+#endif
  #else
    char *env = getenv(variable);
    return (env && env[0])?strdup(env):NULL;

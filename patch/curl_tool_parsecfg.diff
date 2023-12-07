@@ -1,14 +1,11 @@
- src/tool_parsecfg.c | 42 ++++++++++++++++--------------------------
- 1 file changed, 16 insertions(+), 26 deletions(-)
-
-diff --git a/src/tool_parsecfg.c b/src/tool_parsecfg.c
-index a166757..6a00b80 100644
---- a/src/tool_parsecfg.c
-+++ b/src/tool_parsecfg.c
+diff --git "a/src/tool_parsecfg.c" "b/src/tool_parsecfg.c"
+index da48700..60e7b44 100644
+--- "a/src/tool_parsecfg.c"
++++ "b/src/tool_parsecfg.c"
 @@ -47,29 +47,20 @@ static const char *unslashquote(const char *line, char *param);
  static bool my_get_line(FILE *fp, struct curlx_dynbuf *, bool *error);
  
- #ifdef WIN32
+ #ifdef _WIN32
 -static FILE *execpath(const char *filename, char **pathp)
 +static FILE *execpath(const TCHAR *filename)
  {
@@ -58,7 +55,7 @@ index a166757..6a00b80 100644
        if(!file) {
 @@ -100,14 +91,13 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
      }
- #ifdef WIN32 /* Windows */
+ #ifdef _WIN32 /* Windows */
      else {
 -      char *fullp;
        /* check for .curlrc then _curlrc in the dir of the executable */

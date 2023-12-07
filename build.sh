@@ -9,6 +9,11 @@ set -e
 trap 'read -p "Press any key..." x' EXIT
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# cURL version
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+readonly MY_VERSION=8.5.0
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Set up compiler
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 case "$(cc -dumpmachine)" in
@@ -52,7 +57,7 @@ wget -4 -O "${LIBS_DIR}/.pkg/nghttp3.tar.gz"  https://github.com/ngtcp2/nghttp3/
 wget -4 -O "${LIBS_DIR}/.pkg/ngtcp2.tar.gz"   https://github.com/ngtcp2/ngtcp2/releases/download/v1.1.0/ngtcp2-1.1.0.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/libidn2.tar.gz"  https://ftp.gnu.org/gnu/libidn/libidn2-2.3.4.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/libgsasl.tar.gz" https://ftp.gnu.org/gnu/gsasl/libgsasl-1.10.0.tar.gz
-wget -4 -O "${LIBS_DIR}/.pkg/curl.tar.gz"     https://curl.se/download/curl-8.5.0.tar.gz
+wget -4 -O "${LIBS_DIR}/.pkg/curl.tar.gz"     https://curl.se/download/curl-${MY_VERSION}.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/cacert.pem"      https://curl.se/ca/cacert.pem
 wget -4 -O "${LIBS_DIR}/.pkg/manpage.html"    https://curl.se/docs/manpage.html
 
@@ -230,7 +235,6 @@ pushd "${CURL_DIR}"
 sed -i -E 's/\bmain[[:space:]]*\(([^\(\)]*)\)/wmain(\1)/g' configure
 patch -p1 -b < "${BASE_DIR}/patch/curl_getenv.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_threads.diff"
-patch -p1 -b < "${BASE_DIR}/patch/curl_tool_cb_wrt.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_doswin.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_getparam.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_parsecfg.diff"
@@ -288,7 +292,7 @@ unix2dos -n "${ZSTD_DIR}/README.md"  legal/zstandard.README.md
 mkdir -p "${OUT_DIR}/patch"
 cp -vf "${BASE_DIR}/patch/"*.diff "${OUT_DIR}/patch"
 find "${OUT_DIR}" -type f -exec chmod 444 "{}" \;
-readonly zfile="${BASE_DIR}/curl-windows-${MY_CPU}.$(date +"%Y-%m-%d").zip"
+readonly zfile="${BASE_DIR}/curl-${MY_VERSION}-windows-${MY_CPU}.$(date +"%Y-%m-%d").zip"
 rm -rf "${zfile}" && zip -v -r -9 "${zfile}" "."
 chmod 444 "${zfile}"
 popd

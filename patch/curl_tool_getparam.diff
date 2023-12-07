@@ -1,11 +1,8 @@
- src/tool_getparam.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/src/tool_getparam.c b/src/tool_getparam.c
-index e446762..a3be6ac 100644
---- a/src/tool_getparam.c
-+++ b/src/tool_getparam.c
-@@ -562,8 +562,13 @@ static void cleanarg(argv_item_t str)
+diff --git "a/src/tool_getparam.c" "b/src/tool_getparam.c"
+index 5fa1ace..a1b54f4 100644
+--- "a/src/tool_getparam.c"
++++ "b/src/tool_getparam.c"
+@@ -563,8 +563,13 @@ static void cleanarg(argv_item_t str)
     * argument out so that the username:password isn't displayed in the
     * system process list */
    if(str) {
