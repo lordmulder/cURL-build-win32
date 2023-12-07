@@ -172,6 +172,7 @@ readonly NGH2_DIR="${BASE_DIR}/nghttp2-${MY_CPU}"
 rm -rf "${NGH2_DIR}" && mkdir "${NGH2_DIR}"
 tar -xvf "${LIBS_DIR}/.pkg/nghttp2.tar.gz" --strip-components=1 -C "${NGH2_DIR}"
 pushd "${NGH2_DIR}"
+patch -p1 -b < "${BASE_DIR}/patch/nghttp2_time.diff"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" OPENSSL_CFLAGS="-I${LIBS_DIR}/include" OPENSSL_LIBS="-L${LIBS_DIR}/lib -lssl -lcrypto" ZLIB_CFLAGS="-I${LIBS_DIR}/include" ZLIB_LIBS="-L${LIBS_DIR}/lib -lz" ./configure --prefix="${LIBS_DIR}" --enable-lib-only --disable-threads --disable-shared
 make && make install
 popd
