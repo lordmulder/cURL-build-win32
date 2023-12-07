@@ -1,8 +1,19 @@
 diff --git "a/src/tool_getparam.c" "b/src/tool_getparam.c"
-index 5fa1ace..a1b54f4 100644
+index 5fa1ace..730400c 100644
 --- "a/src/tool_getparam.c"
 +++ "b/src/tool_getparam.c"
-@@ -563,8 +563,13 @@ static void cleanarg(argv_item_t str)
+@@ -23,6 +23,10 @@
+  ***************************************************************************/
+ #include "tool_setup.h"
+ 
++#ifndef HAVE_WRITABLE_ARGV
++#define HAVE_WRITABLE_ARGV 1
++#endif
++
+ #include "strcase.h"
+ 
+ #define ENABLE_CURLX_PRINTF
+@@ -563,8 +567,13 @@ static void cleanarg(argv_item_t str)
     * argument out so that the username:password isn't displayed in the
     * system process list */
    if(str) {

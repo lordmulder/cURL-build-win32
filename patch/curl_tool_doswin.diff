@@ -1,10 +1,7 @@
- src/tool_doswin.c | 49 ++++++++++++++++++++++++++++++++++---------------
- 1 file changed, 34 insertions(+), 15 deletions(-)
-
-diff --git a/src/tool_doswin.c b/src/tool_doswin.c
-index e9347d2..558d15d 100644
---- a/src/tool_doswin.c
-+++ b/src/tool_doswin.c
+diff --git "a/src/tool_doswin.c" "b/src/tool_doswin.c"
+index db2b8b7..fb267ae 100644
+--- "a/src/tool_doswin.c"
++++ "b/src/tool_doswin.c"
 @@ -614,6 +614,37 @@ char **__crt0_glob_function(char *arg)
   * HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\SafeProcessSearchMode
   */
@@ -67,4 +64,26 @@ index e9347d2..558d15d 100644
 +      config->cacert = cacert;
      }
    }
+ 
+@@ -776,6 +795,8 @@ bool tool_isVistaOrGreater;
+ 
+ CURLcode win32_init(void)
+ {
++  size_t acmdln_len, wcmdln_len;
++
+   /* curlx_verify_windows_version must be called during init at least once
+      because it has its own initialization routine. */
+   if(curlx_verify_windows_version(6, 0, 0, PLATFORM_WINNT,
+@@ -788,6 +809,12 @@ CURLcode win32_init(void)
+ 
+   init_terminal();
+ 
++  SecureZeroMemory(_acmdln, acmdln_len = strlen(_acmdln) * sizeof(char));
++  SecureZeroMemory(_wcmdln, wcmdln_len = wcslen(_wcmdln) * sizeof(wchar_t));
++
++  if (acmdln_len >= 4) strcpy(_acmdln,  "curl");
++  if (wcmdln_len >= 4) wcscpy(_wcmdln, L"curl");
++
+   return CURLE_OK;
+ }
  
