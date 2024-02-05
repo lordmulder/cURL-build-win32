@@ -56,6 +56,7 @@ wget -4 -O "${LIBS_DIR}/.pkg/nghttp2.tar.gz"  https://github.com/nghttp2/nghttp2
 wget -4 -O "${LIBS_DIR}/.pkg/nghttp3.tar.gz"  https://github.com/ngtcp2/nghttp3/releases/download/v1.1.0/nghttp3-1.1.0.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/ngtcp2.tar.gz"   https://github.com/ngtcp2/ngtcp2/releases/download/v1.2.0/ngtcp2-1.2.0.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/libidn2.tar.gz"  https://ftp.gnu.org/gnu/libidn/libidn2-2.3.7.tar.gz
+wget -4 -O "${LIBS_DIR}/.pkg/libpsl.tar.gz"   https://github.com/rockdaboot/libpsl/releases/download/0.21.5/libpsl-0.21.5.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/libgsasl.tar.gz" https://ftp.gnu.org/gnu/gsasl/libgsasl-1.10.0.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/curl.tar.gz"     https://curl.se/download/curl-${MY_VERSION}.tar.gz
 wget -4 -O "${LIBS_DIR}/.pkg/cacert.pem"      https://curl.se/ca/cacert.pem
@@ -210,6 +211,18 @@ rm -rf "${IDN2_DIR}" && mkdir "${IDN2_DIR}"
 tar -xvf "${LIBS_DIR}/.pkg/libidn2.tar.gz" --strip-components=1 -C "${IDN2_DIR}"
 pushd "${IDN2_DIR}"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" ./configure --prefix="${LIBS_DIR}" --disable-shared --disable-doc --without-libiconv-prefix --without-libunistring-prefix --disable-valgrind-tests
+make && make install
+popd
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# libpsl
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+printf "\n==================== libpsl ====================\n\n"
+readonly LPSL_DIR="${BASE_DIR}/libpsl-${MY_CPU}"
+rm -rf "${LPSL_DIR}" && mkdir "${LPSL_DIR}"
+tar -xvf "${LIBS_DIR}/.pkg/libpsl.tar.gz" --strip-components=1 -C "${LPSL_DIR}"
+pushd "${LPSL_DIR}"
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501 -I${LIBS_DIR}/include" LDFLAGS="-L${LIBS_DIR}/lib" ./configure --prefix="${LIBS_DIR}" --disable-shared
 make && make install
 popd
 
