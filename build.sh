@@ -79,10 +79,12 @@ fi
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Mutex
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+readonly SIGNATURE="$(date +"%s")-$$"
 readonly LOCK_FILE="${BASE_DIR}/build/lockfile.${MY_CPU}"
 readonly TEMP_FILE="$(mktemp /tmp/lockfile_XXXXX)"
-echo "$$" > "${TEMP_FILE}" && mv -n "${TEMP_FILE}" "${LOCK_FILE}"
-if [ "$(cat "${LOCK_FILE}")" != "$$" ] ; then
+printf "%s" "${SIGNATURE}" > "${TEMP_FILE}"
+mv -n "${TEMP_FILE}" "${LOCK_FILE}"; rm -f "${TEMP_FILE}"
+if [ "$(sed '/^$/d' "${LOCK_FILE}" | head -n1)" != "${SIGNATURE}" ] ; then
     echo 'Error: Build process is already in progress !!!'
     exit 1
 fi
