@@ -11,7 +11,7 @@ trap 'read -p "Press any key..." x' EXIT
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # cURL version
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-readonly MY_VERSION=8.6.0
+readonly MY_VERSION=8.7.1
 
 ###############################################################################
 # PREPARATION
@@ -133,20 +133,20 @@ function fetch_pkg () {
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== download ====================\n\n"
 fetch_pkg "9a93b2b7dfdac77ceba5a558a580e74667dd6fede4585b91eefb60f03b72df23" "${PKGS_DIR}/zlib.tar.gz"     https://zlib.net/zlib-1.3.1.tar.gz
-fetch_pkg "9c4396cc829cfae319a6e2615202e82aad41372073482fce286fac78646d3ee4" "${PKGS_DIR}/zstd.tar.gz"     https://github.com/facebook/zstd/releases/download/v1.5.5/zstd-1.5.5.tar.gz
+fetch_pkg "8c29e06cf42aacc1eafc4077ae2ec6c6fcb96a626157e0593d5e82a34fd403c1" "${PKGS_DIR}/zstd.tar.gz"     https://github.com/facebook/zstd/releases/download/v1.5.6/zstd-1.5.6.tar.gz
 fetch_pkg "e720a6ca29428b803f4ad165371771f5398faba397edf6778837a18599ea13ff" "${PKGS_DIR}/brotli.tar.gz"   https://github.com/google/brotli/archive/refs/tags/v1.1.0.tar.gz
-fetch_pkg "38dab789b4fa43da0e8f33da41423f5036ed0e464146d18540f04e037c147b9b" "${PKGS_DIR}/openssl.tar.gz"  https://github.com/quictls/openssl/archive/refs/tags/opernssl-3.1.5-quic1.tar.gz
+fetch_pkg "928a0c484fca5a5b9ae484e7b14e6691e946220d77d86ac4031cbb408655b644" "${PKGS_DIR}/openssl.tar.gz"  https://github.com/quictls/openssl/archive/refs/tags/openssl-3.1.5-quic1.tar.gz
 fetch_pkg "c68e05989a93c002e3ba8df3baef0021c17099aa2123a9c096a5cc8e029caf95" "${PKGS_DIR}/rtmpdump.tar.gz" https://distfiles.macports.org/rtmpdump/f1b83c10d8beb43fcc70a6e88cf4325499f25857.tar.gz
 fetch_pkg "8f74213b56238c85a50a5329f77e06198771e70dd9a739779f4c02f65d971313" "${PKGS_DIR}/libiconv.tar.gz" https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.17.tar.gz
 fetch_pkg "c1e0bb2a4427a9024390c662cd532d664c4b36b8ff444ed5e54b115fdb7a1aea" "${PKGS_DIR}/gettext.tar.gz"  https://ftp.gnu.org/pub/gnu/gettext/gettext-0.22.4.tar.gz
 fetch_pkg "3736161e41e2693324deb38c26cfdc3efe6209d634ba4258db1cecff6a5ad461" "${PKGS_DIR}/libssh2.tar.gz"  https://www.libssh2.org/download/libssh2-1.11.0.tar.gz
-fetch_pkg "90fd27685120404544e96a60ed40398a3457102840c38e7215dc6dec8684470f" "${PKGS_DIR}/nghttp2.tar.gz"  https://github.com/nghttp2/nghttp2/releases/download/v1.59.0/nghttp2-1.59.0.tar.gz
+fetch_pkg "ca2333c13d1af451af68de3bd13462de7e9a0868f0273dea3da5bc53ad70b379" "${PKGS_DIR}/nghttp2.tar.gz"  https://github.com/nghttp2/nghttp2/releases/download/v1.60.0/nghttp2-1.60.0.tar.gz
 fetch_pkg "0cc9b943f61a135e08b80bdcc4c1181f695df18fbb5fa93509a58d7d971dca75" "${PKGS_DIR}/nghttp3.tar.gz"  https://github.com/ngtcp2/nghttp3/releases/download/v1.2.0/nghttp3-1.2.0.tar.gz
-fetch_pkg "7d4244ac15a83a0f908ff810ba90a3fcd8352fb0020a6f9176e26507c9d3c3e4" "${PKGS_DIR}/ngtcp2.tar.gz"   https://github.com/ngtcp2/ngtcp2/releases/download/v1.3.0/ngtcp2-1.3.0.tar.gz
+fetch_pkg "163e26e6e7531b8bbcd7ec53d2c6b4ff3cb7d3654fde37b091e3174d37a8acd7" "${PKGS_DIR}/ngtcp2.tar.gz"   https://github.com/ngtcp2/ngtcp2/releases/download/v1.4.0/ngtcp2-1.4.0.tar.gz
 fetch_pkg "4c21a791b610b9519b9d0e12b8097bf2f359b12f8dd92647611a929e6bfd7d64" "${PKGS_DIR}/libidn2.tar.gz"  https://ftp.gnu.org/gnu/libidn/libidn2-2.3.7.tar.gz
 fetch_pkg "1dcc9ceae8b128f3c0b3f654decd0e1e891afc6ff81098f227ef260449dae208" "${PKGS_DIR}/libpsl.tar.gz"   https://github.com/rockdaboot/libpsl/releases/download/0.21.5/libpsl-0.21.5.tar.gz
 fetch_pkg "f1b553384dedbd87478449775546a358d6f5140c15cccc8fb574136fdc77329f" "${PKGS_DIR}/libgsasl.tar.gz" https://ftp.gnu.org/gnu/gsasl/libgsasl-1.10.0.tar.gz
-fetch_pkg "9c6db808160015f30f3c656c0dec125feb9dc00753596bf858a272b5dd8dc398" "${PKGS_DIR}/curl.tar.gz"     https://curl.se/download/curl-${MY_VERSION}.tar.gz
+fetch_pkg "f91249c87f68ea00cf27c44fdfa5a78423e41e71b7d408e5901a9896d905c495" "${PKGS_DIR}/curl.tar.gz"     https://curl.se/download/curl-${MY_VERSION}.tar.gz
 fetch_pkg "ccbdfc2fe1a0d7bbbb9cc15710271acf1bb1afe4c8f1725fe95c4c7733fcbe5a" "${PKGS_DIR}/cacert.pem"      https://curl.se/ca/cacert-2023-12-12.pem
 fetch_pkg "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz" "${PKGS_DIR}/manpage.html"    https://curl.se/docs/manpage.html
 
