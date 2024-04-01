@@ -138,7 +138,7 @@ fetch_pkg "e720a6ca29428b803f4ad165371771f5398faba397edf6778837a18599ea13ff" "${
 fetch_pkg "928a0c484fca5a5b9ae484e7b14e6691e946220d77d86ac4031cbb408655b644" "${PKGS_DIR}/openssl.tar.gz"  https://github.com/quictls/openssl/archive/refs/tags/openssl-3.1.5-quic1.tar.gz
 fetch_pkg "c68e05989a93c002e3ba8df3baef0021c17099aa2123a9c096a5cc8e029caf95" "${PKGS_DIR}/rtmpdump.tar.gz" https://distfiles.macports.org/rtmpdump/f1b83c10d8beb43fcc70a6e88cf4325499f25857.tar.gz
 fetch_pkg "8f74213b56238c85a50a5329f77e06198771e70dd9a739779f4c02f65d971313" "${PKGS_DIR}/libiconv.tar.gz" https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.17.tar.gz
-fetch_pkg "c1e0bb2a4427a9024390c662cd532d664c4b36b8ff444ed5e54b115fdb7a1aea" "${PKGS_DIR}/gettext.tar.gz"  https://ftp.gnu.org/pub/gnu/gettext/gettext-0.22.4.tar.gz
+fetch_pkg "ec1705b1e969b83a9f073144ec806151db88127f5e40fe5a94cb6c8fa48996a0" "${PKGS_DIR}/gettext.tar.gz"  https://ftp.gnu.org/pub/gnu/gettext/gettext-0.22.5.tar.gz
 fetch_pkg "3736161e41e2693324deb38c26cfdc3efe6209d634ba4258db1cecff6a5ad461" "${PKGS_DIR}/libssh2.tar.gz"  https://www.libssh2.org/download/libssh2-1.11.0.tar.gz
 fetch_pkg "ca2333c13d1af451af68de3bd13462de7e9a0868f0273dea3da5bc53ad70b379" "${PKGS_DIR}/nghttp2.tar.gz"  https://github.com/nghttp2/nghttp2/releases/download/v1.60.0/nghttp2-1.60.0.tar.gz
 fetch_pkg "0cc9b943f61a135e08b80bdcc4c1181f695df18fbb5fa93509a58d7d971dca75" "${PKGS_DIR}/nghttp3.tar.gz"  https://github.com/ngtcp2/nghttp3/releases/download/v1.2.0/nghttp3-1.2.0.tar.gz
