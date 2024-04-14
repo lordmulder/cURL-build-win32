@@ -140,14 +140,14 @@ fetch_pkg "c68e05989a93c002e3ba8df3baef0021c17099aa2123a9c096a5cc8e029caf95" "${
 fetch_pkg "8f74213b56238c85a50a5329f77e06198771e70dd9a739779f4c02f65d971313" "${PKGS_DIR}/libiconv.tar.gz" https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.17.tar.gz
 fetch_pkg "ec1705b1e969b83a9f073144ec806151db88127f5e40fe5a94cb6c8fa48996a0" "${PKGS_DIR}/gettext.tar.gz"  https://ftp.gnu.org/pub/gnu/gettext/gettext-0.22.5.tar.gz
 fetch_pkg "3736161e41e2693324deb38c26cfdc3efe6209d634ba4258db1cecff6a5ad461" "${PKGS_DIR}/libssh2.tar.gz"  https://www.libssh2.org/download/libssh2-1.11.0.tar.gz
-fetch_pkg "ca2333c13d1af451af68de3bd13462de7e9a0868f0273dea3da5bc53ad70b379" "${PKGS_DIR}/nghttp2.tar.gz"  https://github.com/nghttp2/nghttp2/releases/download/v1.60.0/nghttp2-1.60.0.tar.gz
+fetch_pkg "aa7594c846e56a22fbf3d6e260e472268808d3b49d5e0ed339f589e9cc9d484c" "${PKGS_DIR}/nghttp2.tar.gz"  https://github.com/nghttp2/nghttp2/releases/download/v1.61.0/nghttp2-1.61.0.tar.gz
 fetch_pkg "0cc9b943f61a135e08b80bdcc4c1181f695df18fbb5fa93509a58d7d971dca75" "${PKGS_DIR}/nghttp3.tar.gz"  https://github.com/ngtcp2/nghttp3/releases/download/v1.2.0/nghttp3-1.2.0.tar.gz
 fetch_pkg "163e26e6e7531b8bbcd7ec53d2c6b4ff3cb7d3654fde37b091e3174d37a8acd7" "${PKGS_DIR}/ngtcp2.tar.gz"   https://github.com/ngtcp2/ngtcp2/releases/download/v1.4.0/ngtcp2-1.4.0.tar.gz
 fetch_pkg "4c21a791b610b9519b9d0e12b8097bf2f359b12f8dd92647611a929e6bfd7d64" "${PKGS_DIR}/libidn2.tar.gz"  https://ftp.gnu.org/gnu/libidn/libidn2-2.3.7.tar.gz
 fetch_pkg "1dcc9ceae8b128f3c0b3f654decd0e1e891afc6ff81098f227ef260449dae208" "${PKGS_DIR}/libpsl.tar.gz"   https://github.com/rockdaboot/libpsl/releases/download/0.21.5/libpsl-0.21.5.tar.gz
 fetch_pkg "f1b553384dedbd87478449775546a358d6f5140c15cccc8fb574136fdc77329f" "${PKGS_DIR}/libgsasl.tar.gz" https://ftp.gnu.org/gnu/gsasl/libgsasl-1.10.0.tar.gz
 fetch_pkg "f91249c87f68ea00cf27c44fdfa5a78423e41e71b7d408e5901a9896d905c495" "${PKGS_DIR}/curl.tar.gz"     https://curl.se/download/curl-${MY_VERSION}.tar.gz
-fetch_pkg "ccbdfc2fe1a0d7bbbb9cc15710271acf1bb1afe4c8f1725fe95c4c7733fcbe5a" "${PKGS_DIR}/cacert.pem"      https://curl.se/ca/cacert-2023-12-12.pem
+fetch_pkg "1794c1d4f7055b7d02c2170337b61b48a2ef6c90d77e95444fd2596f4cac609f" "${PKGS_DIR}/cacert.pem"      https://curl.se/ca/cacert-2024-03-11.pem
 fetch_pkg "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz" "${PKGS_DIR}/manpage.html"    https://curl.se/docs/manpage.html
 
 ###############################################################################
