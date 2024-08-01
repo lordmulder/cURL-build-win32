@@ -11,7 +11,7 @@ trap 'read -p "Press any key..." x' EXIT
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # cURL version
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-readonly MY_VERSION=8.8.0
+readonly MY_VERSION=8.9.0
 
 ###############################################################################
 # PREPARATION
@@ -146,8 +146,8 @@ fetch_pkg "fbd9c40848c235736377ba3fd0b8677a05d39e7c39406769588a6595dda5636f" "${
 fetch_pkg "4c21a791b610b9519b9d0e12b8097bf2f359b12f8dd92647611a929e6bfd7d64" "${PKGS_DIR}/libidn2.tar.gz"  https://ftp.gnu.org/gnu/libidn/libidn2-2.3.7.tar.gz
 fetch_pkg "1dcc9ceae8b128f3c0b3f654decd0e1e891afc6ff81098f227ef260449dae208" "${PKGS_DIR}/libpsl.tar.gz"   https://github.com/rockdaboot/libpsl/releases/download/0.21.5/libpsl-0.21.5.tar.gz
 fetch_pkg "f1b553384dedbd87478449775546a358d6f5140c15cccc8fb574136fdc77329f" "${PKGS_DIR}/libgsasl.tar.gz" https://ftp.gnu.org/gnu/gsasl/libgsasl-1.10.0.tar.gz
-fetch_pkg "77c0e1cd35ab5b45b659645a93b46d660224d0024f1185e8a95cdb27ae3d787d" "${PKGS_DIR}/curl.tar.gz"     https://curl.se/download/curl-${MY_VERSION}.tar.gz
-fetch_pkg "1794c1d4f7055b7d02c2170337b61b48a2ef6c90d77e95444fd2596f4cac609f" "${PKGS_DIR}/cacert.pem"      https://curl.se/ca/cacert-2024-03-11.pem
+fetch_pkg "14d931fa98a329310dca7b190d047c3d4987674b1f466481f5490e4e12067ba4" "${PKGS_DIR}/curl.tar.gz"     https://curl.se/download/curl-${MY_VERSION}.tar.gz
+fetch_pkg "1bf458412568e134a4514f5e170a328d11091e071c7110955c9884ed87972ac9" "${PKGS_DIR}/cacert.pem"      https://curl.se/ca/cacert-2024-07-02.pem
 fetch_pkg "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz" "${PKGS_DIR}/manpage.html"    https://curl.se/docs/manpage.html
 
 ###############################################################################
@@ -379,6 +379,8 @@ unix2dos -n "${ICNV_DIR}/README"      "legal/libiconv.README"
 unix2dos -n "${IDN2_DIR}/AUTHORS"     "legal/libidn2.AUTHORS.txt"
 unix2dos -n "${IDN2_DIR}/COPYING"     "legal/libidn2.COPYING.txt"
 unix2dos -n "${IDN2_DIR}/README.md"   "legal/libidn2.README.md"
+unix2dos -n "${LPSL_DIR}/AUTHORS"     "legal/libpsl.AUTHORS.txt"
+unix2dos -n "${LPSL_DIR}/COPYING"     "legal/libpsl.COPYING.txt"
 unix2dos -n "${NGH2_DIR}/AUTHORS"     "legal/nghttp2.AUTHORS.txt"
 unix2dos -n "${NGH2_DIR}/COPYING"     "legal/nghttp2.COPYING.txt"
 unix2dos -n "${NGH2_DIR}/README.rst"  "legal/nghttp2.README.rst"
