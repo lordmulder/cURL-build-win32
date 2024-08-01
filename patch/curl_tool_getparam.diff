@@ -1,7 +1,10 @@
-diff --git "a/src/tool_getparam.c" "b/src/tool_getparam.c"
-index 508e567..a745b22 100644
---- "a/src/tool_getparam.c"
-+++ "b/src/tool_getparam.c"
+ src/tool_getparam.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/src/tool_getparam.c b/src/tool_getparam.c
+index 4c9392c..d7310d4 100644
+--- a/src/tool_getparam.c
++++ b/src/tool_getparam.c
 @@ -23,6 +23,10 @@
   ***************************************************************************/
  #include "tool_setup.h"
@@ -13,8 +16,8 @@ index 508e567..a745b22 100644
  #include "strcase.h"
  
  #define ENABLE_CURLX_PRINTF
-@@ -830,8 +834,13 @@ static void cleanarg(argv_item_t str)
-    * argument out so that the username:password isn't displayed in the
+@@ -838,8 +842,13 @@ static void cleanarg(argv_item_t str)
+    * argument out so that the username:password is not displayed in the
     * system process list */
    if(str) {
 +#ifdef _UNICODE

@@ -1,8 +1,11 @@
-diff --git "a/src/tool_doswin.c" "b/src/tool_doswin.c"
-index db2b8b7..fb267ae 100644
---- "a/src/tool_doswin.c"
-+++ "b/src/tool_doswin.c"
-@@ -614,6 +614,37 @@ char **__crt0_glob_function(char *arg)
+ src/tool_doswin.c | 57 ++++++++++++++++++++++++++++++++++++++++---------------
+ 1 file changed, 42 insertions(+), 15 deletions(-)
+
+diff --git a/src/tool_doswin.c b/src/tool_doswin.c
+index 38ef0a0..8e976e9 100644
+--- a/src/tool_doswin.c
++++ b/src/tool_doswin.c
+@@ -615,6 +615,37 @@ char **__crt0_glob_function(char *arg)
   * HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\SafeProcessSearchMode
   */
  
@@ -40,7 +43,7 @@ index db2b8b7..fb267ae 100644
  CURLcode FindWin32CACert(struct OperationConfig *config,
                           curl_sslbackend backend,
                           const TCHAR *bundle_file)
-@@ -628,21 +659,9 @@ CURLcode FindWin32CACert(struct OperationConfig *config,
+@@ -634,21 +665,9 @@ CURLcode FindWin32CACert(struct OperationConfig *config,
     */
    if(feature_ssl && backend != CURLSSLBACKEND_SCHANNEL) {
  
@@ -64,8 +67,8 @@ index db2b8b7..fb267ae 100644
 +      config->cacert = cacert;
      }
    }
- 
-@@ -776,6 +795,8 @@ bool tool_isVistaOrGreater;
+ #endif
+@@ -785,6 +804,8 @@ bool tool_isVistaOrGreater;
  
  CURLcode win32_init(void)
  {
@@ -74,9 +77,9 @@ index db2b8b7..fb267ae 100644
    /* curlx_verify_windows_version must be called during init at least once
       because it has its own initialization routine. */
    if(curlx_verify_windows_version(6, 0, 0, PLATFORM_WINNT,
-@@ -788,6 +809,12 @@ CURLcode win32_init(void)
- 
+@@ -799,6 +820,12 @@ CURLcode win32_init(void)
    init_terminal();
+ #endif
  
 +  SecureZeroMemory(_acmdln, acmdln_len = strlen(_acmdln) * sizeof(char));
 +  SecureZeroMemory(_wcmdln, wcmdln_len = wcslen(_wcmdln) * sizeof(wchar_t));

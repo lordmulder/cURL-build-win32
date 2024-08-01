@@ -1,7 +1,10 @@
-diff --git "a/src/tool_parsecfg.c" "b/src/tool_parsecfg.c"
-index da48700..60e7b44 100644
---- "a/src/tool_parsecfg.c"
-+++ "b/src/tool_parsecfg.c"
+ src/tool_parsecfg.c | 42 ++++++++++++++++--------------------------
+ 1 file changed, 16 insertions(+), 26 deletions(-)
+
+diff --git a/src/tool_parsecfg.c b/src/tool_parsecfg.c
+index d0a3159..6034b17 100644
+--- a/src/tool_parsecfg.c
++++ b/src/tool_parsecfg.c
 @@ -47,29 +47,20 @@ static const char *unslashquote(const char *line, char *param);
  static bool my_get_line(FILE *fp, struct curlx_dynbuf *, bool *error);
  
@@ -11,7 +14,7 @@ index da48700..60e7b44 100644
  {
 -  static char filebuffer[512];
 -  /* Get the filename of our executable. GetModuleFileName is already declared
--   * via inclusions done in setup header file.  We assume that we are using
+-   * via inclusions done in setup header file. We assume that we are using
 -   * the ASCII version here.
 -   */
 -  unsigned long len = GetModuleFileNameA(0, filebuffer, sizeof(filebuffer));
