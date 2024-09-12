@@ -135,7 +135,7 @@ printf "\n==================== download ====================\n\n"
 fetch_pkg "9a93b2b7dfdac77ceba5a558a580e74667dd6fede4585b91eefb60f03b72df23" "${PKGS_DIR}/zlib.tar.gz"     https://zlib.net/zlib-1.3.1.tar.gz
 fetch_pkg "8c29e06cf42aacc1eafc4077ae2ec6c6fcb96a626157e0593d5e82a34fd403c1" "${PKGS_DIR}/zstd.tar.gz"     https://github.com/facebook/zstd/releases/download/v1.5.6/zstd-1.5.6.tar.gz
 fetch_pkg "e720a6ca29428b803f4ad165371771f5398faba397edf6778837a18599ea13ff" "${PKGS_DIR}/brotli.tar.gz"   https://github.com/google/brotli/archive/refs/tags/v1.1.0.tar.gz
-fetch_pkg "928a0c484fca5a5b9ae484e7b14e6691e946220d77d86ac4031cbb408655b644" "${PKGS_DIR}/openssl.tar.gz"  https://github.com/quictls/openssl/archive/refs/tags/openssl-3.1.5-quic1.tar.gz
+fetch_pkg "e7e514ea033c290f09c7250dd43a845bc1e08066b793274f3ad3fe04c76a5206" "${PKGS_DIR}/openssl.tar.gz"  https://github.com/quictls/openssl/archive/refs/tags/openssl-3.1.7-quic1.tar.gz
 fetch_pkg "c68e05989a93c002e3ba8df3baef0021c17099aa2123a9c096a5cc8e029caf95" "${PKGS_DIR}/rtmpdump.tar.gz" https://distfiles.macports.org/rtmpdump/f1b83c10d8beb43fcc70a6e88cf4325499f25857.tar.gz
 fetch_pkg "8f74213b56238c85a50a5329f77e06198771e70dd9a739779f4c02f65d971313" "${PKGS_DIR}/libiconv.tar.gz" https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.17.tar.gz
 fetch_pkg "ec1705b1e969b83a9f073144ec806151db88127f5e40fe5a94cb6c8fa48996a0" "${PKGS_DIR}/gettext.tar.gz"  https://ftp.gnu.org/pub/gnu/gettext/gettext-0.22.5.tar.gz
