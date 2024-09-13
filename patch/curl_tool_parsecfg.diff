@@ -2,10 +2,10 @@
  1 file changed, 16 insertions(+), 26 deletions(-)
 
 diff --git a/src/tool_parsecfg.c b/src/tool_parsecfg.c
-index d0a3159..6034b17 100644
+index 6da5a9250..e6f7ad786 100644
 --- a/src/tool_parsecfg.c
 +++ b/src/tool_parsecfg.c
-@@ -47,29 +47,20 @@ static const char *unslashquote(const char *line, char *param);
+@@ -45,29 +45,20 @@ static const char *unslashquote(const char *line, char *param);
  static bool my_get_line(FILE *fp, struct curlx_dynbuf *, bool *error);
  
  #ifdef _WIN32
@@ -47,7 +47,7 @@ index d0a3159..6034b17 100644
      }
    }
  
-@@ -89,7 +80,7 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
+@@ -87,7 +78,7 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
  
    if(!filename) {
      /* NULL means load .curlrc from homedir! */
@@ -56,7 +56,7 @@ index d0a3159..6034b17 100644
      if(curlrc) {
        file = fopen(curlrc, FOPEN_READTEXT);
        if(!file) {
-@@ -100,14 +91,13 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
+@@ -98,14 +89,13 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
      }
  #ifdef _WIN32 /* Windows */
      else {
