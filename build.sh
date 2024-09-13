@@ -140,9 +140,9 @@ fetch_pkg "c68e05989a93c002e3ba8df3baef0021c17099aa2123a9c096a5cc8e029caf95" "${
 fetch_pkg "8f74213b56238c85a50a5329f77e06198771e70dd9a739779f4c02f65d971313" "${PKGS_DIR}/libiconv.tar.gz" https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.17.tar.gz
 fetch_pkg "ec1705b1e969b83a9f073144ec806151db88127f5e40fe5a94cb6c8fa48996a0" "${PKGS_DIR}/gettext.tar.gz"  https://ftp.gnu.org/pub/gnu/gettext/gettext-0.22.5.tar.gz
 fetch_pkg "3736161e41e2693324deb38c26cfdc3efe6209d634ba4258db1cecff6a5ad461" "${PKGS_DIR}/libssh2.tar.gz"  https://www.libssh2.org/download/libssh2-1.11.0.tar.gz
-fetch_pkg "d0b0b9d00500ee4aa3bfcac00145d3b1ef372fd301c35bff96cf019c739db1b4" "${PKGS_DIR}/nghttp2.tar.gz"  https://github.com/nghttp2/nghttp2/releases/download/v1.62.1/nghttp2-1.62.1.tar.gz
-fetch_pkg "43a78073b103acd4668c8d3314eb98e5d002095c1e49014e48ca20bd3094408f" "${PKGS_DIR}/nghttp3.tar.gz"  https://github.com/ngtcp2/nghttp3/releases/download/v1.4.0/nghttp3-1.4.0.tar.gz
-fetch_pkg "0c6f140268ef80a86b146714f7dc7c03a94699d019cd1815870ba222cb112bf0" "${PKGS_DIR}/ngtcp2.tar.gz"   https://github.com/ngtcp2/ngtcp2/releases/download/v1.6.0/ngtcp2-1.6.0.tar.gz
+fetch_pkg "9318a2cc00238f5dd6546212109fb833f977661321a2087f03034e25444d3dbb" "${PKGS_DIR}/nghttp2.tar.gz"  https://github.com/nghttp2/nghttp2/releases/download/v1.63.0/nghttp2-1.63.0.tar.gz
+fetch_pkg "13d68a48867d2eb0679b81e2e6e065de074abc64246fb11417c3e40988e5ff23" "${PKGS_DIR}/nghttp3.tar.gz"  https://github.com/ngtcp2/nghttp3/releases/download/v1.5.0/nghttp3-1.5.0.tar.gz
+fetch_pkg "59dccb5c9a615eaf9de3e3cc3299134c22a88513b865b78a3e91d873c08a0664" "${PKGS_DIR}/ngtcp2.tar.gz"   https://github.com/ngtcp2/ngtcp2/releases/download/v1.7.0/ngtcp2-1.7.0.tar.gz
 fetch_pkg "4c21a791b610b9519b9d0e12b8097bf2f359b12f8dd92647611a929e6bfd7d64" "${PKGS_DIR}/libidn2.tar.gz"  https://ftp.gnu.org/gnu/libidn/libidn2-2.3.7.tar.gz
 fetch_pkg "1dcc9ceae8b128f3c0b3f654decd0e1e891afc6ff81098f227ef260449dae208" "${PKGS_DIR}/libpsl.tar.gz"   https://github.com/rockdaboot/libpsl/releases/download/0.21.5/libpsl-0.21.5.tar.gz
 fetch_pkg "f1b553384dedbd87478449775546a358d6f5140c15cccc8fb574136fdc77329f" "${PKGS_DIR}/libgsasl.tar.gz" https://ftp.gnu.org/gnu/gsasl/libgsasl-1.10.0.tar.gz
