@@ -338,13 +338,12 @@ readonly CURL_DIR="${WORK_DIR}/curl"
 rm -rf "${CURL_DIR}" && mkdir "${CURL_DIR}"
 tar -xvf "${PKGS_DIR}/curl.tar.gz" --strip-components=1 -C "${CURL_DIR}"
 pushd "${CURL_DIR}"
-sed -i -E 's/\bmain[[:space:]]*\(([^\(\)]*)\)/wmain(\1)/g' configure
 patch -p1 -b < "${BASE_DIR}/patch/curl_getenv.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_threads.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_doswin.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_getparam.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_parsecfg.diff"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${DEPS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DNGHTTP2_STATICLIB -DNGHTTP3_STATICLIB -DNGTCP2_STATICLIB -DUNICODE -D_UNICODE" LDFLAGS="-municode -mconsole -Wl,--trace -static -no-pthread -L${DEPS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm -lbrotlicommon" PKG_CONFIG_PATH="${DEPS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --enable-windows-unicode --disable-pthreads --disable-libcurl-option --disable-openssl-auto-load-config --with-zlib --with-zstd --with-brotli --with-openssl --with-librtmp --with-libssh2 --with-nghttp2="${DEPS_DIR}" --with-ngtcp2="${DEPS_DIR}" --with-nghttp3="${DEPS_DIR}" --with-libidn2 --with-gsasl --without-ca-bundle
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${DEPS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DNGHTTP2_STATICLIB -DNGHTTP3_STATICLIB -DNGTCP2_STATICLIB -DUNICODE -D_UNICODE" LDFLAGS="-mconsole -Wl,--trace -static -no-pthread -L${DEPS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm -lbrotlicommon" PKG_CONFIG_PATH="${DEPS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --enable-windows-unicode --disable-pthreads --disable-libcurl-option --disable-openssl-auto-load-config --with-zlib --with-zstd --with-brotli --with-openssl --with-librtmp --with-libssh2 --with-nghttp2="${DEPS_DIR}" --with-ngtcp2="${DEPS_DIR}" --with-nghttp3="${DEPS_DIR}" --with-libidn2 --with-gsasl --without-ca-bundle
 make V=1
 strip -s src/curl.exe
 popd
@@ -367,7 +366,7 @@ sed -n "/Configured to build curl\/libcurl:$/,/^[[:space:]]*Features:/p" "${CURL
 mkdir -p "${OUT_DIR}/legal"
 unix2dos -n "${BROT_DIR}/LICENSE"     "legal/brotli.LICENSE.txt"
 unix2dos -n "${BROT_DIR}/README.md"   "legal/brotli.README.md"
-unix2dos -n "${CURL_DIR}/CHANGES"     "legal/curl.CHANGES.txt"
+unix2dos -n "${CURL_DIR}/CHANGES.md"  "legal/curl.CHANGES.txt"
 unix2dos -n "${CURL_DIR}/COPYING"     "legal/curl.COPYING.txt"
 unix2dos -n "${CURL_DIR}/README"      "legal/curl.README.txt"
 unix2dos -n "${GTXT_DIR}/AUTHORS"     "legal/gettext.AUTHORS.txt"
