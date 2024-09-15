@@ -32,6 +32,10 @@ jobs:
         with:
           name: curl-windows-${{ matrix.flavor }}
           path: build/curl-*.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build-log-${{ matrix.flavor }}
+          path: build/curl_build-*.log
 
   release:
     name: release files
