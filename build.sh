@@ -6,7 +6,7 @@
 #                         \___|\___/|_| \_\_____|
 
 set -e
-trap 'read -p "Press any key..." x' EXIT
+trap 'read -p "Press any key..." x || true' EXIT
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # cURL version
@@ -92,7 +92,7 @@ if [ "$(sed '/^$/d' "${LOCK_FILE}" | head -n1)" != "${SIGNATURE}" ] ; then
     echo 'Error: Build process is already in progress !!!'
     exit 1
 else
-    trap "rm -f \"${LOCK_FILE}\"; read -p \"Press any key...\" x" EXIT
+    trap "{ rm -f \"${LOCK_FILE}\"; read -p \"Press any key...\" x; } || true" EXIT
 fi
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

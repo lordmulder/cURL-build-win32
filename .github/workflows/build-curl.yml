@@ -1,0 +1,53 @@
+name: "CI/CD"
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    name: Build cURL
+    runs-on: windows-2019
+    strategy:
+      matrix:
+        include:
+          - flavor: "x86"
+            msystem: "MINGW32"
+            toolchain: "i686"
+          - flavor: "x64"
+            msystem: "MINGW64"
+            toolchain: "x86_64"
+    steps:
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: ${{ matrix.msystem }}
+          update: true
+          install: mingw-w64-${{ matrix.toolchain }}-toolchain base-devel cmake zip
+      - uses: actions/checkout@v4
+      - shell: msys2 {0}
+        run: ./build.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: curl-windows-${{ matrix.flavor }}
+          path: build/curl-*.zip
+
+  release:
+    name: release files
+    if: ${{ github.event_name == 'release' }}
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: curl-windows-*
+          path: artifacts
+          merge-multiple: true
+      - uses: Roang-zero1/github-upload-release-artifacts-action@v2
+        with:
+          args: artifacts/
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
