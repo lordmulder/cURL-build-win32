@@ -1,75 +1,11 @@
- src/tool_doswin.c | 60 +++++++++++++++++++++++++++++++++++++++----------------
- 1 file changed, 43 insertions(+), 17 deletions(-)
+ src/tool_doswin.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
 diff --git a/src/tool_doswin.c b/src/tool_doswin.c
-index 70b263113..399d49a7b 100644
+index 70b263113..28489a521 100644
 --- a/src/tool_doswin.c
 +++ b/src/tool_doswin.c
-@@ -586,28 +586,46 @@ char **__crt0_glob_function(char *arg)
-  * For WinXP and later search order actually depends on registry value:
-  * HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\SafeProcessSearchMode
-  */
-+static BOOL check_file_exists(const TCHAR *filename)
-+{
-+  const DWORD attr = GetFileAttributes(filename);
-+  return (attr != INVALID_FILE_ATTRIBUTES) && (!(attr & FILE_ATTRIBUTE_DIRECTORY));
-+}
-+
-+static char *execpath(const TCHAR *filename)
-+{
-+  static const size_t BUFFSIZE = 512;
-+  TCHAR filebuffer[BUFFSIZE];
-+  unsigned long len = GetModuleFileName(0, filebuffer, BUFFSIZE);
-+  if((len > 0) && (len < BUFFSIZE)) {
-+    TCHAR *lastdirchar = _tcsrchr(filebuffer, TEXT('\\'));
-+    if(lastdirchar) {
-+      *lastdirchar = TEXT('\0');
-+    }
-+    if (_tcslen(filebuffer) + _tcslen(filename) + 2U < BUFFSIZE) {
-+      _tcscat(filebuffer, TEXT("\\"));
-+      _tcscat(filebuffer, filename);
-+      if (check_file_exists(filebuffer)) {
-+#ifdef UNICODE
-+        return curlx_convert_wchar_to_UTF8(filebuffer);
-+#else
-+        return strdup(filebuffer);
-+#endif
-+      }
-+    }
-+  }
-+  return NULL;
-+}
-+
- CURLcode FindWin32CACert(struct OperationConfig *config,
-                          const TCHAR *bundle_file)
- {
--  CURLcode result = CURLE_OK;
--  DWORD res_len;
--  TCHAR buf[PATH_MAX];
--  TCHAR *ptr = NULL;
--
--  buf[0] = TEXT('\0');
--
--  res_len = SearchPath(NULL, bundle_file, NULL, PATH_MAX, buf, &ptr);
--  if(res_len > 0) {
--    char *mstr = curlx_convert_tchar_to_UTF8(buf);
--    Curl_safefree(config->cacert);
--    if(mstr)
--      config->cacert = strdup(mstr);
--    curlx_unicodefree(mstr);
--    if(!config->cacert)
--      result = CURLE_OUT_OF_MEMORY;
-+  char *cacert = execpath(bundle_file);
-+  if (cacert) {
-+      config->cacert = cacert;
-   }
- 
--  return result;
-+  return CURLE_OK;
- }
- #endif
- 
-@@ -739,6 +757,8 @@ bool tool_isVistaOrGreater;
+@@ -739,6 +739,8 @@ bool tool_isVistaOrGreater;
  
  CURLcode win32_init(void)
  {
@@ -78,7 +14,7 @@ index 70b263113..399d49a7b 100644
    /* curlx_verify_windows_version must be called during init at least once
       because it has its own initialization routine. */
    if(curlx_verify_windows_version(6, 0, 0, PLATFORM_WINNT,
-@@ -753,6 +773,12 @@ CURLcode win32_init(void)
+@@ -753,6 +755,12 @@ CURLcode win32_init(void)
    init_terminal();
  #endif
  

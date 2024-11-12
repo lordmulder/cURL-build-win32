@@ -342,9 +342,10 @@ patch -p1 -b < "${BASE_DIR}/patch/curl_getenv.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_threads.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_doswin.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_getparam.diff"
+patch -p1 -b < "${BASE_DIR}/patch/curl_tool_operate.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_parsecfg.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_util.diff"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${DEPS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DNGHTTP2_STATICLIB -DNGHTTP3_STATICLIB -DNGTCP2_STATICLIB -DUNICODE -D_UNICODE" LDFLAGS="-mconsole -Wl,--trace -static -no-pthread -L${DEPS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm -lbrotlicommon" PKG_CONFIG_PATH="${DEPS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --enable-windows-unicode --disable-pthreads --disable-libcurl-option --disable-openssl-auto-load-config --with-zlib --with-zstd --with-brotli --with-openssl --with-librtmp --with-libssh2 --with-nghttp2="${DEPS_DIR}" --with-ngtcp2="${DEPS_DIR}" --with-nghttp3="${DEPS_DIR}" --with-libidn2 --without-ca-bundle
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${DEPS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DNGHTTP2_STATICLIB -DNGHTTP3_STATICLIB -DNGTCP2_STATICLIB -DUNICODE -D_UNICODE" LDFLAGS="-mconsole -Wl,--trace -static -no-pthread -L${DEPS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm -lbrotlicommon" PKG_CONFIG_PATH="${DEPS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --enable-windows-unicode --disable-pthreads --disable-libcurl-option --disable-openssl-auto-load-config --enable-ca-search-safe --with-zlib --with-zstd --with-brotli --with-openssl --with-librtmp --with-libssh2 --with-nghttp2="${DEPS_DIR}" --with-ngtcp2="${DEPS_DIR}" --with-nghttp3="${DEPS_DIR}" --with-libidn2 --without-ca-bundle
 make V=1
 strip -s src/curl.exe
 popd
