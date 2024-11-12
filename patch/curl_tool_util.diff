@@ -1,8 +1,9 @@
  src/tool_util.c | 33 +++++++++++++--------------------
- 1 file changed, 13 insertions(+), 20 deletions(-)
+ src/tool_util.h |  2 +-
+ 2 files changed, 14 insertions(+), 21 deletions(-)
 
 diff --git a/src/tool_util.c b/src/tool_util.c
-index e657dacf0..926e43644 100644
+index e657dacf0..7044ca008 100644
 --- a/src/tool_util.c
 +++ b/src/tool_util.c
 @@ -191,28 +191,21 @@ int tool_ftruncate64(int fd, curl_off_t where)
@@ -10,6 +11,7 @@ index e657dacf0..926e43644 100644
  
  #ifdef _WIN32
 -FILE *Curl_execpath(const char *filename, char **pathp)
++#define BUFFSIZE 512U
 +FILE *Curl_execpath(const TCHAR *filename, TCHAR **pathp)
  {
 -  static char filebuffer[512];
@@ -22,8 +24,7 @@ index e657dacf0..926e43644 100644
 -  if(len > 0 && len < sizeof(filebuffer)) {
 -    /* We got a valid filename - get the directory part */
 -    char *lastdirchar = strrchr(filebuffer, DIR_CHAR[0]);
-+  static const size_t BUFFSIZE = 512;
-+  TCHAR filebuffer[BUFFSIZE];
++  static TCHAR filebuffer[BUFFSIZE];
 +  unsigned long len = GetModuleFileName(0, filebuffer, BUFFSIZE);
 +  if((len > 0) && (len < BUFFSIZE)) {
 +    TCHAR *lastdirchar = _tcsrchr(filebuffer, TEXT('\\'));
@@ -47,9 +48,6 @@ index e657dacf0..926e43644 100644
      }
    }
  
- src/tool_util.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
 diff --git a/src/tool_util.h b/src/tool_util.h
 index 9fec7e873..93d7ef9fc 100644
 --- a/src/tool_util.h
