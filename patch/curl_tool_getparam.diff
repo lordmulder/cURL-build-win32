@@ -1,10 +1,7 @@
- src/tool_getparam.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
-
-diff --git a/src/tool_getparam.c b/src/tool_getparam.c
-index be41aa35d..b1b032b9f 100644
---- a/src/tool_getparam.c
-+++ b/src/tool_getparam.c
+diff --git "a/src/tool_getparam.c" "b/src/tool_getparam.c"
+index 1231b3bd6..434e9ddd3 100644
+--- "a/src/tool_getparam.c"
++++ "b/src/tool_getparam.c"
 @@ -23,6 +23,10 @@
   ***************************************************************************/
  #include "tool_setup.h"
@@ -16,7 +13,7 @@ index be41aa35d..b1b032b9f 100644
  #include "strcase.h"
  
  #include "curlx.h"
-@@ -551,8 +555,13 @@ static void cleanarg(argv_item_t str)
+@@ -554,8 +558,13 @@ static void cleanarg(argv_item_t str)
     * argument out so that the username:password is not displayed in the
     * system process list */
    if(str) {

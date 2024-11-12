@@ -17,7 +17,7 @@ index 49a2e50..dbf2642 100644
 +#if defined(_WIN32)
 +static wchar_t *GetEnv(const wchar_t *variable)
  {
--#if defined(_WIN32_WCE) || defined(CURL_WINDOWS_APP) || \
+-#if defined(_WIN32_WCE) || defined(CURL_WINDOWS_UWP) || \
 -  defined(__ORBIS__) || defined(__PROSPERO__) /* PlayStation 4 and 5 */
 -  (void)variable;
 -  return NULL;
@@ -62,7 +62,7 @@ index 49a2e50..dbf2642 100644
 +
 +char *curl_getenv(const char *variable)
 +{
-+#if defined(_WIN32_WCE) || defined(CURL_WINDOWS_APP) || \
++#if defined(_WIN32_WCE) || defined(CURL_WINDOWS_UWP) || \
 +  defined(__ORBIS__) || defined(__PROSPERO__) /* PlayStation 4 and 5 */
 +  (void)variable;
 +  return NULL;
@@ -80,7 +80,7 @@ index 49a2e50..dbf2642 100644
 +  return value;
  #else
    char *env = getenv(variable);
-   return (env && env[0])?strdup(env):NULL;
+   return (env && env[0]) ? strdup(env) : NULL;
  #endif
  }
 -

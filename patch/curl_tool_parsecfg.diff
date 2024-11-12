@@ -1,53 +1,11 @@
- src/tool_parsecfg.c | 42 ++++++++++++++++--------------------------
- 1 file changed, 16 insertions(+), 26 deletions(-)
+ src/tool_parsecfg.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
 diff --git a/src/tool_parsecfg.c b/src/tool_parsecfg.c
-index 6da5a9250..e6f7ad786 100644
+index d79e869f0..93eb2a428 100644
 --- a/src/tool_parsecfg.c
 +++ b/src/tool_parsecfg.c
-@@ -45,29 +45,20 @@ static const char *unslashquote(const char *line, char *param);
- static bool my_get_line(FILE *fp, struct curlx_dynbuf *, bool *error);
- 
- #ifdef _WIN32
--static FILE *execpath(const char *filename, char **pathp)
-+static FILE *execpath(const TCHAR *filename)
- {
--  static char filebuffer[512];
--  /* Get the filename of our executable. GetModuleFileName is already declared
--   * via inclusions done in setup header file. We assume that we are using
--   * the ASCII version here.
--   */
--  unsigned long len = GetModuleFileNameA(0, filebuffer, sizeof(filebuffer));
--  if(len > 0 && len < sizeof(filebuffer)) {
--    /* We got a valid filename - get the directory part */
--    char *lastdirchar = strrchr(filebuffer, '\\');
-+  static const size_t BUFFSIZE = 512;
-+  TCHAR filebuffer[BUFFSIZE];
-+  unsigned long len = GetModuleFileName(0, filebuffer, BUFFSIZE);
-+  if((len > 0) && (len < BUFFSIZE)) {
-+    TCHAR *lastdirchar = _tcsrchr(filebuffer, TEXT('\\'));
-     if(lastdirchar) {
--      size_t remaining;
--      *lastdirchar = 0;
--      /* If we have enough space, build the RC filename */
--      remaining = sizeof(filebuffer) - strlen(filebuffer);
--      if(strlen(filename) < remaining - 1) {
--        FILE *f;
--        msnprintf(lastdirchar, remaining, "%s%s", DIR_CHAR, filename);
--        *pathp = filebuffer;
--        f = fopen(filebuffer, FOPEN_READTEXT);
--        return f;
--      }
-+      *lastdirchar = TEXT('\0');
-+    }
-+    if (_tcslen(filebuffer) + _tcslen(filename) + 2U < BUFFSIZE) {
-+      _tcscat(filebuffer, TEXT("\\"));
-+      _tcscat(filebuffer, filename);
-+      return _tfopen(filebuffer, TEXT(FOPEN_READTEXT));
-     }
-   }
- 
-@@ -87,7 +78,7 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
+@@ -57,7 +57,7 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
  
    if(!filename) {
      /* NULL means load .curlrc from homedir! */
@@ -56,21 +14,26 @@ index 6da5a9250..e6f7ad786 100644
      if(curlrc) {
        file = fopen(curlrc, FOPEN_READTEXT);
        if(!file) {
-@@ -98,14 +89,13 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
+@@ -68,14 +68,16 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
      }
  #ifdef _WIN32 /* Windows */
      else {
 -      char *fullp;
++      TCHAR *fullp;
        /* check for .curlrc then _curlrc in the dir of the executable */
--      file = execpath(".curlrc", &fullp);
-+      file = execpath(TEXT(".curlrc") /*,&fullp*/);
-       if(!file)
--        file = execpath("_curlrc", &fullp);
-+        file = execpath(TEXT("_curlrc") /*,&fullp*/);
+-      file = Curl_execpath(".curlrc", &fullp);
+-      if(!file)
+-        file = Curl_execpath("_curlrc", &fullp);
++      file = Curl_execpath(TEXT(".curlrc"), &fullp);
        if(file)
-         /* this is the filename we read from */
+-        /* this is the filename we read from */
 -        filename = fullp;
 +        filename = ".curlrc";
++      else {
++        file = Curl_execpath(TEXT("_curlrc"), &fullp);
++        if(file)
++          filename = "_curlrc";
++      }
      }
  #endif
    }

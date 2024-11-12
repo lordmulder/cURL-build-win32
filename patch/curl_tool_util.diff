@@ -1,0 +1,65 @@
+ src/tool_util.c | 33 +++++++++++++--------------------
+ 1 file changed, 13 insertions(+), 20 deletions(-)
+
+diff --git a/src/tool_util.c b/src/tool_util.c
+index e657dacf0..926e43644 100644
+--- a/src/tool_util.c
++++ b/src/tool_util.c
+@@ -191,28 +191,21 @@ int tool_ftruncate64(int fd, curl_off_t where)
+ #endif /* USE_TOOL_FTRUNCATE */
+ 
+ #ifdef _WIN32
+-FILE *Curl_execpath(const char *filename, char **pathp)
++FILE *Curl_execpath(const TCHAR *filename, TCHAR **pathp)
+ {
+-  static char filebuffer[512];
+-  unsigned long len;
+-  /* Get the filename of our executable. GetModuleFileName is already declared
+-   * via inclusions done in setup header file. We assume that we are using
+-   * the ASCII version here.
+-   */
+-  len = GetModuleFileNameA(0, filebuffer, sizeof(filebuffer));
+-  if(len > 0 && len < sizeof(filebuffer)) {
+-    /* We got a valid filename - get the directory part */
+-    char *lastdirchar = strrchr(filebuffer, DIR_CHAR[0]);
++  static const size_t BUFFSIZE = 512;
++  TCHAR filebuffer[BUFFSIZE];
++  unsigned long len = GetModuleFileName(0, filebuffer, BUFFSIZE);
++  if((len > 0) && (len < BUFFSIZE)) {
++    TCHAR *lastdirchar = _tcsrchr(filebuffer, TEXT('\\'));
+     if(lastdirchar) {
+-      size_t remaining;
+-      *lastdirchar = 0;
+-      /* If we have enough space, build the RC filename */
+-      remaining = sizeof(filebuffer) - strlen(filebuffer);
+-      if(strlen(filename) < remaining - 1) {
+-        msnprintf(lastdirchar, remaining, "%s%s", DIR_CHAR, filename);
+-        *pathp = filebuffer;
+-        return fopen(filebuffer, FOPEN_READTEXT);
+-      }
++      *lastdirchar = TEXT('\0');
++    }
++    if (_tcslen(filebuffer) + _tcslen(filename) + 2U < BUFFSIZE) {
++      _tcscat(filebuffer, TEXT("\\"));
++      _tcscat(filebuffer, filename);
++      *pathp = filebuffer;
++      return _tfopen(filebuffer, TEXT(FOPEN_READTEXT));
+     }
+   }
+ 
+ src/tool_util.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/tool_util.h b/src/tool_util.h
+index 9fec7e873..93d7ef9fc 100644
+--- a/src/tool_util.h
++++ b/src/tool_util.h
+@@ -40,7 +40,7 @@ int struplocompare(const char *p1, const char *p2);
+ int struplocompare4sort(const void *p1, const void *p2);
+ 
+ #ifdef _WIN32
+-FILE *Curl_execpath(const char *filename, char **pathp);
++FILE *Curl_execpath(const TCHAR *filename, TCHAR **pathp);
+ #endif
+ 
+ #endif /* HEADER_CURL_TOOL_UTIL_H */
