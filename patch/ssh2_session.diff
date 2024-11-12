@@ -2,10 +2,10 @@
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/src/session.c b/src/session.c
-index a4d602b..e653f1d 100644
+index 2d77b05..79809cc 100644
 --- a/src/session.c
 +++ b/src/session.c
-@@ -66,6 +66,8 @@
+@@ -68,6 +68,8 @@
  #undef libssh2_usec_t
  #endif
  
@@ -14,7 +14,7 @@ index a4d602b..e653f1d 100644
  /* libssh2_default_alloc
   */
  static
-@@ -602,7 +604,7 @@ int _libssh2_wait_socket(LIBSSH2_SESSION *session, time_t start_time)
+@@ -628,7 +630,7 @@ int _libssh2_wait_socket(LIBSSH2_SESSION *session, time_t start_time)
          (seconds_to_next == 0 ||
           ms_to_next > session->api_timeout)) {
          time_t now = time(NULL);
