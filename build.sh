@@ -142,7 +142,7 @@ fetch_pkg "ec1705b1e969b83a9f073144ec806151db88127f5e40fe5a94cb6c8fa48996a0" "${
 fetch_pkg "d9ec76cbe34db98eec3539fe2c899d26b0c837cb3eb466a56b0f109cabf658f7" "${PKGS_DIR}/libssh2.tar.gz"  https://www.libssh2.org/download/libssh2-1.11.1.tar.gz
 fetch_pkg "20e73f3cf9db3f05988996ac8b3a99ed529f4565ca91a49eb0550498e10621e8" "${PKGS_DIR}/nghttp2.tar.gz"  https://github.com/nghttp2/nghttp2/releases/download/v1.64.0/nghttp2-1.64.0.tar.gz
 fetch_pkg "a1f92f113c10faca2014b004eb97be363674e23546eb72591c1ac3533f93cba0" "${PKGS_DIR}/nghttp3.tar.gz"  https://github.com/ngtcp2/nghttp3/releases/download/v1.6.0/nghttp3-1.6.0.tar.gz
-fetch_pkg "72b544d2509b8fb58c493f9d3d71fe93959f94bca48aa0c87ddd56bf61178cee" "${PKGS_DIR}/ngtcp2.tar.gz"   https://github.com/ngtcp2/ngtcp2/releases/download/v1.8.1/ngtcp2-1.8.1.tar.gz
+fetch_pkg "0d8ebc929d5aa444d848ac7ae971cb3cadaba7ccec7db21f3117fc7167e582c3" "${PKGS_DIR}/ngtcp2.tar.gz"   https://github.com/ngtcp2/ngtcp2/releases/download/v1.9.1/ngtcp2-1.9.1.tar.gz
 fetch_pkg "4c21a791b610b9519b9d0e12b8097bf2f359b12f8dd92647611a929e6bfd7d64" "${PKGS_DIR}/libidn2.tar.gz"  https://ftp.gnu.org/gnu/libidn/libidn2-2.3.7.tar.gz
 fetch_pkg "1dcc9ceae8b128f3c0b3f654decd0e1e891afc6ff81098f227ef260449dae208" "${PKGS_DIR}/libpsl.tar.gz"   https://github.com/rockdaboot/libpsl/releases/download/0.21.5/libpsl-0.21.5.tar.gz
 fetch_pkg "f1b553384dedbd87478449775546a358d6f5140c15cccc8fb574136fdc77329f" "${PKGS_DIR}/libgsasl.tar.gz" https://ftp.gnu.org/gnu/gsasl/libgsasl-1.10.0.tar.gz
