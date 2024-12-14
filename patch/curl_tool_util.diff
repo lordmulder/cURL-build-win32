@@ -3,10 +3,10 @@
  2 files changed, 14 insertions(+), 21 deletions(-)
 
 diff --git a/src/tool_util.c b/src/tool_util.c
-index e657dacf0..7044ca008 100644
+index 69b1d2b42..00557fdba 100644
 --- a/src/tool_util.c
 +++ b/src/tool_util.c
-@@ -191,28 +191,21 @@ int tool_ftruncate64(int fd, curl_off_t where)
+@@ -228,28 +228,21 @@ int tool_ftruncate64(int fd, curl_off_t where)
  #endif /* USE_TOOL_FTRUNCATE */
  
  #ifdef _WIN32
@@ -49,10 +49,10 @@ index e657dacf0..7044ca008 100644
    }
  
 diff --git a/src/tool_util.h b/src/tool_util.h
-index 9fec7e873..93d7ef9fc 100644
+index 9a4e87dc4..8092c1409 100644
 --- a/src/tool_util.h
 +++ b/src/tool_util.h
-@@ -40,7 +40,7 @@ int struplocompare(const char *p1, const char *p2);
+@@ -49,7 +49,7 @@ int struplocompare(const char *p1, const char *p2);
  int struplocompare4sort(const void *p1, const void *p2);
  
  #ifdef _WIN32

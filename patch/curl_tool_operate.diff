@@ -2,10 +2,10 @@
  1 file changed, 6 insertions(+), 2 deletions(-)
 
 diff --git a/src/tool_operate.c b/src/tool_operate.c
-index a1212c9dd..d88fa3242 100644
+index 2309495d8..2c494e63f 100644
 --- a/src/tool_operate.c
 +++ b/src/tool_operate.c
-@@ -3007,11 +3007,15 @@ static CURLcode cacertpaths(struct OperationConfig *config)
+@@ -3017,11 +3017,15 @@ static CURLcode cacertpaths(struct OperationConfig *config)
  #ifdef _WIN32
    if(!env) {
  #if defined(CURL_CA_SEARCH_SAFE)

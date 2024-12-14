@@ -2,10 +2,10 @@
  1 file changed, 8 insertions(+)
 
 diff --git a/src/tool_doswin.c b/src/tool_doswin.c
-index 70b263113..28489a521 100644
+index 301b2974e..6720ad5d7 100644
 --- a/src/tool_doswin.c
 +++ b/src/tool_doswin.c
-@@ -739,6 +739,8 @@ bool tool_isVistaOrGreater;
+@@ -741,6 +741,8 @@ bool tool_isVistaOrGreater;
  
  CURLcode win32_init(void)
  {
@@ -14,7 +14,7 @@ index 70b263113..28489a521 100644
    /* curlx_verify_windows_version must be called during init at least once
       because it has its own initialization routine. */
    if(curlx_verify_windows_version(6, 0, 0, PLATFORM_WINNT,
-@@ -753,6 +755,12 @@ CURLcode win32_init(void)
+@@ -755,6 +757,12 @@ CURLcode win32_init(void)
    init_terminal();
  #endif
  
