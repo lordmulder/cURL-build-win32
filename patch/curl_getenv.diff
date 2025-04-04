@@ -2,7 +2,7 @@
  1 file changed, 30 insertions(+), 17 deletions(-)
 
 diff --git a/lib/getenv.c b/lib/getenv.c
-index 49a2e50..dbf2642 100644
+index 3bfcf70..9b4101f 100644
 --- a/lib/getenv.c
 +++ b/lib/getenv.c
 @@ -26,26 +26,23 @@
@@ -17,7 +17,7 @@ index 49a2e50..dbf2642 100644
 +#if defined(_WIN32)
 +static wchar_t *GetEnv(const wchar_t *variable)
  {
--#if defined(_WIN32_WCE) || defined(CURL_WINDOWS_UWP) || \
+-#if defined(CURL_WINDOWS_UWP) || defined(UNDER_CE) || \
 -  defined(__ORBIS__) || defined(__PROSPERO__) /* PlayStation 4 and 5 */
 -  (void)variable;
 -  return NULL;

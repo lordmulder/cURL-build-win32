@@ -1,8 +1,8 @@
- src/tool_parsecfg.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+ src/tool_parsecfg.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
 diff --git a/src/tool_parsecfg.c b/src/tool_parsecfg.c
-index 651ec8e..406f774 100644
+index 7a23f35..8338ec7 100644
 --- a/src/tool_parsecfg.c
 +++ b/src/tool_parsecfg.c
 @@ -55,7 +55,7 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
@@ -14,19 +14,19 @@ index 651ec8e..406f774 100644
      if(curlrc) {
        file = fopen(curlrc, FOPEN_READTEXT);
        if(!file) {
-@@ -66,14 +66,16 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
+@@ -66,14 +66,17 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
      }
- #ifdef _WIN32 /* Windows */
+ #if defined(_WIN32) && !defined(UNDER_CE)
      else {
 -      char *fullp;
 +      TCHAR *fullp;
        /* check for .curlrc then _curlrc in the dir of the executable */
--      file = Curl_execpath(".curlrc", &fullp);
+-      file = tool_execpath(".curlrc", &fullp);
 -      if(!file)
--        file = Curl_execpath("_curlrc", &fullp);
-+      file = Curl_execpath(TEXT(".curlrc"), &fullp);
+-        file = tool_execpath("_curlrc", &fullp);
++      file = tool_execpath(TEXT(".curlrc"), &fullp);
        if(file)
--        /* this is the filename we read from */
+         /* this is the filename we read from */
 -        filename = fullp;
 +        filename = ".curlrc";
 +      else {

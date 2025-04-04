@@ -2,15 +2,15 @@
  1 file changed, 6 insertions(+), 2 deletions(-)
 
 diff --git a/src/tool_operate.c b/src/tool_operate.c
-index e4b53e2..5441e3d 100644
+index 426d1de..422eaa2 100644
 --- a/src/tool_operate.c
 +++ b/src/tool_operate.c
-@@ -3005,11 +3005,15 @@ static CURLcode cacertpaths(struct OperationConfig *config)
+@@ -3015,11 +3015,15 @@ static CURLcode cacertpaths(struct OperationConfig *config)
  #ifdef _WIN32
    if(!env) {
  #if defined(CURL_CA_SEARCH_SAFE)
 -    char *cacert = NULL;
--    FILE *cafile = Curl_execpath("curl-ca-bundle.crt", &cacert);
+-    FILE *cafile = tool_execpath("curl-ca-bundle.crt", &cacert);
 +    TCHAR *cacert = NULL;
 +    FILE *cafile = Curl_execpath(TEXT("curl-ca-bundle.crt"), &cacert);
      if(cafile) {
@@ -21,5 +21,5 @@ index e4b53e2..5441e3d 100644
        config->cacert = strdup(cacert);
 +#endif
      }
- #elif !defined(CURL_WINDOWS_UWP) && !defined(CURL_DISABLE_CA_SEARCH)
-     result = FindWin32CACert(config, TEXT("curl-ca-bundle.crt"));
+ #elif !defined(CURL_WINDOWS_UWP) && !defined(UNDER_CE) && \
+   !defined(CURL_DISABLE_CA_SEARCH)
