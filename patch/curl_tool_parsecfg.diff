@@ -2,7 +2,7 @@
  1 file changed, 9 insertions(+), 6 deletions(-)
 
 diff --git a/src/tool_parsecfg.c b/src/tool_parsecfg.c
-index 7a23f35..8338ec7 100644
+index 7a23f35..27edf10 100644
 --- a/src/tool_parsecfg.c
 +++ b/src/tool_parsecfg.c
 @@ -55,7 +55,7 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
@@ -30,7 +30,7 @@ index 7a23f35..8338ec7 100644
 -        filename = fullp;
 +        filename = ".curlrc";
 +      else {
-+        file = Curl_execpath(TEXT("_curlrc"), &fullp);
++        file = tool_execpath(TEXT("_curlrc"), &fullp);
 +        if(file)
 +          filename = "_curlrc";
 +      }
