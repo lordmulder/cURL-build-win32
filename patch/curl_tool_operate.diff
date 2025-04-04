@@ -2,7 +2,7 @@
  1 file changed, 6 insertions(+), 2 deletions(-)
 
 diff --git a/src/tool_operate.c b/src/tool_operate.c
-index 426d1de..422eaa2 100644
+index 426d1de..1eb7119 100644
 --- a/src/tool_operate.c
 +++ b/src/tool_operate.c
 @@ -3015,11 +3015,15 @@ static CURLcode cacertpaths(struct OperationConfig *config)
@@ -12,7 +12,7 @@ index 426d1de..422eaa2 100644
 -    char *cacert = NULL;
 -    FILE *cafile = tool_execpath("curl-ca-bundle.crt", &cacert);
 +    TCHAR *cacert = NULL;
-+    FILE *cafile = Curl_execpath(TEXT("curl-ca-bundle.crt"), &cacert);
++    FILE *cafile = tool_execpath(TEXT("curl-ca-bundle.crt"), &cacert);
      if(cafile) {
        fclose(cafile);
 +#ifdef UNICODE
