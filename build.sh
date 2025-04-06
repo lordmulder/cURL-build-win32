@@ -57,7 +57,7 @@ fi
 case "${CC_TARGET}" in
   i686-*)
     readonly MY_CPU=x86
-    readonly MY_MARCH=pentium-mmx
+    readonly MY_MARCH=i586
     readonly MY_MTUNE=generic
     ;;
   x86_64-*)
@@ -194,7 +194,7 @@ CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501 -I$
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# OpenSSL
+# OpenSSL / QuicTLS
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== OpenSSL ====================\n\n"
 readonly OSSL_DIR="${WORK_DIR}/openssl"
@@ -203,6 +203,7 @@ tar -xvf "${PKGS_DIR}/openssl.tar.gz" --strip-components=1 -C "${OSSL_DIR}"
 [[ "${MY_CPU}" == "x64" ]] && readonly ossl_flag="no-sse2" || readonly ossl_flag="386"
 [[ "${MY_CPU}" == "x64" ]] && readonly ossl_mngw="mingw64" || readonly ossl_mngw="mingw"
 pushd "${OSSL_DIR}"
+patch -p1 -b < "${BASE_DIR}/patch/quictls_x86_fix.diff"
 ./Configure no-hw no-shared no-engine no-capieng no-dso zlib ${ossl_flag} -static -march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501 -I"${DEPS_DIR}/include" -L"${DEPS_DIR}/lib" --prefix="${DEPS_DIR}" --libdir="lib" ${ossl_mngw}
 make build_libs && make install_dev
 popd
