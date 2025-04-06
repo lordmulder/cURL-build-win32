@@ -57,8 +57,8 @@ fi
 case "${CC_TARGET}" in
   i686-*)
     readonly MY_CPU=x86
-    readonly MY_MARCH=i486
-    readonly MY_MTUNE=intel
+    readonly MY_MARCH=pentium-mmx
+    readonly MY_MTUNE=generic
     ;;
   x86_64-*)
     readonly MY_CPU=x64
