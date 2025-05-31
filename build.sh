@@ -11,7 +11,7 @@ trap 'read -p "Press any key..." x || true' EXIT
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # cURL version
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-readonly MY_VERSION=8.13.0
+readonly MY_VERSION=8.14.0
 
 ###############################################################################
 # PREPARATION
@@ -146,8 +146,8 @@ fetch_pkg "41fc390d07b89e2285e1107279518e755cdd5cd046630da3301a9cadcfc9e4b6" "${
 fetch_pkg "f557911bf6171621e1f72ff35f5b1825bb35b52ed45325dcdee931e5d3c0787a" "${PKGS_DIR}/libidn2.tar.gz"  https://ftp.gnu.org/gnu/libidn/libidn2-2.3.8.tar.gz
 fetch_pkg "1dcc9ceae8b128f3c0b3f654decd0e1e891afc6ff81098f227ef260449dae208" "${PKGS_DIR}/libpsl.tar.gz"   https://github.com/rockdaboot/libpsl/releases/download/0.21.5/libpsl-0.21.5.tar.gz
 fetch_pkg "f1b553384dedbd87478449775546a358d6f5140c15cccc8fb574136fdc77329f" "${PKGS_DIR}/libgsasl.tar.gz" https://ftp.gnu.org/gnu/gsasl/libgsasl-1.10.0.tar.gz
-fetch_pkg "c261a4db579b289a7501565497658bbd52d3138fdbaccf1490fa918129ab45bc" "${PKGS_DIR}/curl.tar.gz"     https://curl.se/download/curl-${MY_VERSION}.tar.gz
-fetch_pkg "50a6277ec69113f00c5fd45f09e8b97a4b3e32daa35d3a95ab30137a55386cef" "${PKGS_DIR}/cacert.pem"      https://curl.se/ca/cacert-2025-02-25.pem
+fetch_pkg "5eba3ec2d898919a4b34cc89ace0068d9d09420b8643f265aebac59f8d126203" "${PKGS_DIR}/curl.tar.gz"     https://curl.se/download/curl-${MY_VERSION}.tar.gz
+fetch_pkg "ab3ee3651977a4178a702b0b828a4ee7b2bbb9127235b0ab740e2e15974bf5db" "${PKGS_DIR}/cacert.pem"      https://curl.se/ca/cacert-2025-05-20.pem
 fetch_pkg "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz" "${PKGS_DIR}/manpage.html"    https://curl.se/docs/manpage.html
 
 ###############################################################################
