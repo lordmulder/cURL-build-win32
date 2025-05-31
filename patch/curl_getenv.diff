@@ -9,7 +9,7 @@ index 3bfcf70..9b4101f 100644
  
  #include <curl/curl.h>
  #include "curl_memory.h"
-+#include "curlx.h"
++#include "curlx/curlx.h"
  
  #include "memdebug.h"
  
