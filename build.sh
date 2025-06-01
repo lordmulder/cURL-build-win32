@@ -135,7 +135,7 @@ printf "\n==================== download ====================\n\n"
 fetch_pkg "9a93b2b7dfdac77ceba5a558a580e74667dd6fede4585b91eefb60f03b72df23" "${PKGS_DIR}/zlib.tar.gz"     https://zlib.net/zlib-1.3.1.tar.gz
 fetch_pkg "eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3" "${PKGS_DIR}/zstd.tar.gz"     https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz
 fetch_pkg "e720a6ca29428b803f4ad165371771f5398faba397edf6778837a18599ea13ff" "${PKGS_DIR}/brotli.tar.gz"   https://github.com/google/brotli/archive/refs/tags/v1.1.0.tar.gz
-fetch_pkg "57085b448ab7b964419da0c0912c60c0a8869a9c1c6b012aca69ac55cb50cc92" "${PKGS_DIR}/openssl.tar.gz"  https://github.com/quictls/quictls/archive/23f9723928a15c046685c04e729502bb490260d3.tar.gz
+fetch_pkg "344d0a79f1a9b08029b0744e2cc401a43f9c90acd1044d09a530b4885a8e9fc0" "${PKGS_DIR}/openssl.tar.gz"  https://github.com/openssl/openssl/releases/download/openssl-3.5.0/openssl-3.5.0.tar.gz
 fetch_pkg "c68e05989a93c002e3ba8df3baef0021c17099aa2123a9c096a5cc8e029caf95" "${PKGS_DIR}/rtmpdump.tar.gz" https://distfiles.macports.org/rtmpdump/f1b83c10d8beb43fcc70a6e88cf4325499f25857.tar.gz
 fetch_pkg "3b08f5f4f9b4eb82f151a7040bfd6fe6c6fb922efe4b1659c66ea933276965e8" "${PKGS_DIR}/libiconv.tar.gz" https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.18.tar.gz
 fetch_pkg "c918503d593d70daf4844d175a13d816afacb667c06fba1ec9dcd5002c1518b7" "${PKGS_DIR}/gettext.tar.gz"  https://ftp.gnu.org/pub/gnu/gettext/gettext-0.24.tar.gz
@@ -203,7 +203,6 @@ tar -xvf "${PKGS_DIR}/openssl.tar.gz" --strip-components=1 -C "${OSSL_DIR}"
 [[ "${MY_CPU}" == "x64" ]] && readonly ossl_flag="no-sse2" || readonly ossl_flag="386"
 [[ "${MY_CPU}" == "x64" ]] && readonly ossl_mngw="mingw64" || readonly ossl_mngw="mingw"
 pushd "${OSSL_DIR}"
-patch -p1 -b < "${BASE_DIR}/patch/quictls_x86_fix.diff"
 ./Configure no-hw no-shared no-engine no-capieng no-dso zlib ${ossl_flag} -static -march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501 -I"${DEPS_DIR}/include" -L"${DEPS_DIR}/lib" --prefix="${DEPS_DIR}" --libdir="lib" ${ossl_mngw}
 make build_libs && make install_dev
 popd
