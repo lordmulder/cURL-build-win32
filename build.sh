@@ -331,10 +331,10 @@ make && make install
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# cURL
+# cURL (full)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-printf "\n==================== cURL ====================\n\n"
-readonly CURL_DIR="${WORK_DIR}/curl"
+printf "\n==================== cURL (full) ====================\n\n"
+readonly CURL_DIR="${WORK_DIR}/curl.full"
 rm -rf "${CURL_DIR}" && mkdir "${CURL_DIR}"
 tar -xvf "${PKGS_DIR}/curl.tar.gz" --strip-components=1 -C "${CURL_DIR}"
 pushd "${CURL_DIR}"
@@ -345,7 +345,27 @@ patch -p1 -b < "${BASE_DIR}/patch/curl_tool_getparam.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_operate.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_parsecfg.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_util.diff"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${DEPS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DNGHTTP2_STATICLIB -DNGHTTP3_STATICLIB -DNGTCP2_STATICLIB -DUNICODE -D_UNICODE" LDFLAGS="-mconsole -Wl,--trace -static -no-pthread -L${DEPS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm -lbrotlicommon" PKG_CONFIG_PATH="${DEPS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --enable-windows-unicode --disable-libcurl-option --disable-openssl-auto-load-config --enable-ca-search-safe --with-zlib --with-zstd --with-brotli --with-openssl --with-librtmp --with-libssh2 --with-nghttp2="${DEPS_DIR}" --with-ngtcp2="${DEPS_DIR}" --with-nghttp3="${DEPS_DIR}" --with-libidn2 --without-ca-bundle
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${DEPS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DNGHTTP2_STATICLIB -DNGHTTP3_STATICLIB -DNGTCP2_STATICLIB -DUNICODE -D_UNICODE" LDFLAGS="-mconsole -Wl,--trace -static -no-pthread -L${DEPS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm -lbrotlicommon" PKG_CONFIG_PATH="${DEPS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --enable-windows-unicode --disable-libcurl-option --disable-openssl-auto-load-config --enable-ca-search-safe --with-zlib --with-openssl --with-libidn2 --without-ca-bundle --with-zstd --with-brotli --with-librtmp --with-libssh2 --with-nghttp2="${DEPS_DIR}" --with-ngtcp2="${DEPS_DIR}" --with-nghttp3="${DEPS_DIR}"
+make V=1
+strip -s src/curl.exe
+popd
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# cURL (slim)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+printf "\n==================== cURL (slim) ====================\n\n"
+readonly SLIM_DIR="${WORK_DIR}/curl.slim"
+rm -rf "${SLIM_DIR}" && mkdir "${SLIM_DIR}"
+tar -xvf "${PKGS_DIR}/curl.tar.gz" --strip-components=1 -C "${SLIM_DIR}"
+pushd "${SLIM_DIR}"
+patch -p1 -b < "${BASE_DIR}/patch/curl_getenv.diff"
+patch -p1 -b < "${BASE_DIR}/patch/curl_threads.diff"
+patch -p1 -b < "${BASE_DIR}/patch/curl_tool_doswin.diff"
+patch -p1 -b < "${BASE_DIR}/patch/curl_tool_getparam.diff"
+patch -p1 -b < "${BASE_DIR}/patch/curl_tool_operate.diff"
+patch -p1 -b < "${BASE_DIR}/patch/curl_tool_parsecfg.diff"
+patch -p1 -b < "${BASE_DIR}/patch/curl_tool_util.diff"
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${DEPS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DUNICODE -D_UNICODE" LDFLAGS="-mconsole -Wl,--trace -static -no-pthread -L${DEPS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm" PKG_CONFIG_PATH="${DEPS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --enable-windows-unicode --disable-libcurl-option --disable-openssl-auto-load-config --enable-ca-search-safe --with-zlib --with-openssl --with-libidn2 --without-ca-bundle --without-zstd --without-brotli --without-librtmp --without-libssh2 --without-nghttp2 --without-ngtcp2 --without-nghttp3 --without-libgsasl
 make V=1
 strip -s src/curl.exe
 popd
@@ -355,10 +375,10 @@ popd
 ###############################################################################
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Output
+# Output (full)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-printf "\n==================== Output ====================\n\n"
-readonly OUT_DIR="${WORK_DIR}/_bin"
+printf "\n==================== Output (full) ====================\n\n"
+OUT_DIR="${WORK_DIR}/_bin/full"
 rm -rf "${OUT_DIR}" && mkdir -p "${OUT_DIR}"
 pushd "${OUT_DIR}"
 cp -vf "${CURL_DIR}/src/curl.exe" curl.exe
@@ -405,7 +425,45 @@ unix2dos -n "${ZSTD_DIR}/README.md"   "legal/zstandard.README.md"
 mkdir -p "${OUT_DIR}/patch"
 cp -vf "${BASE_DIR}/patch/"*.diff "${OUT_DIR}/patch"
 find "${OUT_DIR}" -type f -exec chmod 444 "{}" \;
-readonly zfile="${BASE_DIR}/build/curl-${MY_VERSION}-windows-${MY_CPU}.$(date +"%Y-%m-%d").zip"
+zfile="${BASE_DIR}/build/curl-${MY_VERSION}-windows-${MY_CPU}-full.$(date +"%Y-%m-%d").zip"
+rm -rf "${zfile}" && zip -v -r -9 "${zfile}" "."
+chmod 444 "${zfile}"
+popd
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Output (slim)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+printf "\n==================== Output (slim) ====================\n\n"
+OUT_DIR="${WORK_DIR}/_bin/slim"
+rm -rf "${OUT_DIR}" && mkdir -p "${OUT_DIR}"
+pushd "${OUT_DIR}"
+cp -vf "${SLIM_DIR}/src/curl.exe" curl.exe
+cp -vf "${PKGS_DIR}/cacert.pem"   curl-ca-bundle.crt
+cp -vf "${PKGS_DIR}/manpage.html" manpage.html
+sed -n "/Configured to build curl\/libcurl:$/,/^[[:space:]]*Features:/p" "${SLIM_DIR}/config.log" | sed -r "s/configure:[[:digit:]]+://" | sed -r "s/^[[:blank:]]*//" | unix2dos > config.log
+mkdir -p "${OUT_DIR}/legal"
+unix2dos -n "${SLIM_DIR}/CHANGES.md"  "legal/curl.CHANGES.txt"
+unix2dos -n "${SLIM_DIR}/COPYING"     "legal/curl.COPYING.txt"
+unix2dos -n "${SLIM_DIR}/README"      "legal/curl.README.txt"
+unix2dos -n "${GTXT_DIR}/AUTHORS"     "legal/gettext.AUTHORS.txt"
+unix2dos -n "${GTXT_DIR}/COPYING"     "legal/gettext.COPYING.txt"
+unix2dos -n "${GTXT_DIR}/README"      "legal/gettext.README.txt"
+unix2dos -n "${ICNV_DIR}/AUTHORS"     "legal/libiconv.AUTHORS.txt"
+unix2dos -n "${ICNV_DIR}/COPYING"     "legal/libiconv.COPYING.txt"
+unix2dos -n "${ICNV_DIR}/README"      "legal/libiconv.README"
+unix2dos -n "${IDN2_DIR}/AUTHORS"     "legal/libidn2.AUTHORS.txt"
+unix2dos -n "${IDN2_DIR}/COPYING"     "legal/libidn2.COPYING.txt"
+unix2dos -n "${IDN2_DIR}/README.md"   "legal/libidn2.README.md"
+unix2dos -n "${LPSL_DIR}/AUTHORS"     "legal/libpsl.AUTHORS.txt"
+unix2dos -n "${LPSL_DIR}/COPYING"     "legal/libpsl.COPYING.txt"
+unix2dos -n "${OSSL_DIR}/AUTHORS.md"  "legal/openssl.AUTHORS.md"
+unix2dos -n "${OSSL_DIR}/LICENSE.txt" "legal/openssl.LICENSE.txt"
+unix2dos -n "${OSSL_DIR}/README.md"   "legal/openssl.README.md"
+unix2dos -n "${ZLIB_DIR}/README"      "legal/zlib.README.txt"
+mkdir -p "${OUT_DIR}/patch"
+cp -vf "${BASE_DIR}/patch/"*.diff "${OUT_DIR}/patch"
+find "${OUT_DIR}" -type f -exec chmod 444 "{}" \;
+zfile="${BASE_DIR}/build/curl-${MY_VERSION}-windows-${MY_CPU}-slim.$(date +"%Y-%m-%d").zip"
 rm -rf "${zfile}" && zip -v -r -9 "${zfile}" "."
 chmod 444 "${zfile}"
 popd
