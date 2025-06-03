@@ -118,7 +118,7 @@ mkdir -p "${PKGS_DIR}" "${DEPS_DIR}/bin" "${DEPS_DIR}/include" "${DEPS_DIR}/lib/
 # Helper function
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function fetch_pkg () {
-    if ! wget -4 --tries=8 --retry-connrefused -O "${2}" "${3}"; then
+    if ! wget -4 --tries=8 --retry-connrefused --referer "$(dirname -- "${3}")" -O "${2}" "${3}"; then
         return 1
     fi
     local checksum_computed="$(sha256sum -b "${2}" | head -n 1 | grep -Po '^[[:xdigit:]]+')"
@@ -195,6 +195,19 @@ CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501 -I$
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# WolfSSL
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+printf "\n==================== WolfSSL ====================\n\n"
+readonly WOLF_DIR="${WORK_DIR}/wolfssl"
+rm -rf "${WOLF_DIR}" && mkdir "${WOLF_DIR}"
+tar -xvf "${PKGS_DIR}/wolfssl.tar.gz" --strip-components=1 -C "${WOLF_DIR}"
+pushd "${WOLF_DIR}"
+patch -p1 -b < "${BASE_DIR}/patch/wolfssl_inetpton.diff"
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" ./configure --enable-static --disable-shared --prefix="${DEPS_DIR}" --enable-opensslextra --disable-examples --disable-crypttests --disable-benchmark
+make && make install
+popd
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # OpenSSL
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== OpenSSL ====================\n\n"
@@ -206,18 +219,6 @@ tar -xvf "${PKGS_DIR}/openssl.tar.gz" --strip-components=1 -C "${OSSL_DIR}"
 pushd "${OSSL_DIR}"
 ./Configure no-hw no-shared no-engine no-capieng no-dso zlib ${ossl_flag} -static -march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501 -I"${DEPS_DIR}/include" -L"${DEPS_DIR}/lib" --prefix="${DEPS_DIR}" --libdir="lib" ${ossl_mngw}
 make build_libs && make install_dev
-popd
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# WolfSSL
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-printf "\n==================== WolfSSL ====================\n\n"
-readonly WOLF_DIR="${WORK_DIR}/wolfssl"
-rm -rf "${WOLF_DIR}" && mkdir "${WOLF_DIR}"
-tar -xvf "${PKGS_DIR}/wolfssl.tar.gz" --strip-components=1 -C "${WOLF_DIR}"
-pushd "${WOLF_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0600 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" ./configure --enable-static --disable-shared --enable-opensslextra --prefix="${DEPS_DIR}"
-make && make install
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

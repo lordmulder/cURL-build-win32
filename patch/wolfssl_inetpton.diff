@@ -1,0 +1,34 @@
+ wolfssl/wolfio.h | 20 ++------------------
+ 1 file changed, 2 insertions(+), 18 deletions(-)
+
+diff --git a/wolfssl/wolfio.h b/wolfssl/wolfio.h
+index de45a18..78bba18 100644
+--- a/wolfssl/wolfio.h
++++ b/wolfssl/wolfio.h
+@@ -908,24 +908,8 @@ WOLFSSL_API void wolfSSL_SetIOWriteFlags(WOLFSSL* ssl, int flags);
+         #define XINET_NTOP(a,b,c,d) inet_ntop((a),(b),(c),(d))
+     #endif
+ #endif
+-#ifndef XINET_PTON
+-    #if defined(__WATCOMC__)
+-        #if defined(__OS2__) || defined(__NT__) && \
+-                (NTDDI_VERSION >= NTDDI_VISTA)
+-            #define XINET_PTON(a,b,c)   inet_pton((a),(b),(c))
+-        #else
+-            #define XINET_PTON(a,b,c)   *(unsigned *)(c) = inet_addr((b))
+-        #endif
+-    #elif defined(USE_WINDOWS_API) /* Windows-friendly definition */
+-        #if defined(__MINGW64__) && !defined(UNICODE)
+-            #define XINET_PTON(a,b,c)   InetPton((a),(b),(c))
+-        #else
+-            #define XINET_PTON(a,b,c)   InetPton((a),(PCWSTR)(b),(c))
+-        #endif
+-    #else
+-        #define XINET_PTON(a,b,c)   inet_pton((a),(b),(c))
+-    #endif
+-#endif
++int curlx_inet_pton(int af, const char *src, void *dst);
++#define XINET_PTON(a,b,c) curlx_inet_pton((a),(b),(c))
+ 
+ #ifndef XHTONS
+     #if !defined(WOLFSSL_NO_SOCK) && (defined(USE_WOLFSSL_IO) || defined(HAVE_HTTP_CLIENT))
