@@ -203,6 +203,7 @@ rm -rf "${WOLF_DIR}" && mkdir "${WOLF_DIR}"
 tar -xvf "${PKGS_DIR}/wolfssl.tar.gz" --strip-components=1 -C "${WOLF_DIR}"
 pushd "${WOLF_DIR}"
 patch -p1 -b < "${BASE_DIR}/patch/wolfssl_inetpton.diff"
+patch -p1 -b < "${BASE_DIR}/patch/wolfssl_strcpy_s.diff"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" ./configure --enable-static --disable-shared --prefix="${DEPS_DIR}" --enable-curl --disable-examples --disable-crypttests --disable-benchmark
 make && make install
 popd

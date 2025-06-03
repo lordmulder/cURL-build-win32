@@ -1,0 +1,16 @@
+ src/wolfio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/wolfio.c b/src/wolfio.c
+index 0809734..70b129a 100644
+--- a/src/wolfio.c
++++ b/src/wolfio.c
+@@ -242,7 +242,7 @@ static int TranslateIoReturnCode(int err, SOCKET_T sd, int direction)
+     }
+ 
+ #if defined(_WIN32) && !defined(__WATCOMC__)
+-    strcpy_s(errstr, sizeof(errstr), "\tGeneral error: ");
++    strcpy(errstr, "\tGeneral error: ");
+     errstr_offset = strlen(errstr);
+     FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+         NULL,
