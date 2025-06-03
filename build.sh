@@ -136,6 +136,7 @@ fetch_pkg "9a93b2b7dfdac77ceba5a558a580e74667dd6fede4585b91eefb60f03b72df23" "${
 fetch_pkg "eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3" "${PKGS_DIR}/zstd.tar.gz"     https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz
 fetch_pkg "e720a6ca29428b803f4ad165371771f5398faba397edf6778837a18599ea13ff" "${PKGS_DIR}/brotli.tar.gz"   https://github.com/google/brotli/archive/refs/tags/v1.1.0.tar.gz
 fetch_pkg "344d0a79f1a9b08029b0744e2cc401a43f9c90acd1044d09a530b4885a8e9fc0" "${PKGS_DIR}/openssl.tar.gz"  https://github.com/openssl/openssl/releases/download/openssl-3.5.0/openssl-3.5.0.tar.gz
+fetch_pkg "e90cebbd25e0c2dd737541ea010ae1026d05e2ac011e72ff07f99da889ced3e7" "${PKGS_DIR}/wolfssl.tar.gz"  https://fossies.org/linux/misc/wolfssl-5.8.0.tar.gz
 fetch_pkg "c68e05989a93c002e3ba8df3baef0021c17099aa2123a9c096a5cc8e029caf95" "${PKGS_DIR}/rtmpdump.tar.gz" https://distfiles.macports.org/rtmpdump/f1b83c10d8beb43fcc70a6e88cf4325499f25857.tar.gz
 fetch_pkg "3b08f5f4f9b4eb82f151a7040bfd6fe6c6fb922efe4b1659c66ea933276965e8" "${PKGS_DIR}/libiconv.tar.gz" https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.18.tar.gz
 fetch_pkg "c918503d593d70daf4844d175a13d816afacb667c06fba1ec9dcd5002c1518b7" "${PKGS_DIR}/gettext.tar.gz"  https://ftp.gnu.org/pub/gnu/gettext/gettext-0.24.tar.gz
@@ -194,7 +195,7 @@ CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501 -I$
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# OpenSSL / QuicTLS
+# OpenSSL
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== OpenSSL ====================\n\n"
 readonly OSSL_DIR="${WORK_DIR}/openssl"
@@ -205,6 +206,18 @@ tar -xvf "${PKGS_DIR}/openssl.tar.gz" --strip-components=1 -C "${OSSL_DIR}"
 pushd "${OSSL_DIR}"
 ./Configure no-hw no-shared no-engine no-capieng no-dso zlib ${ossl_flag} -static -march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501 -I"${DEPS_DIR}/include" -L"${DEPS_DIR}/lib" --prefix="${DEPS_DIR}" --libdir="lib" ${ossl_mngw}
 make build_libs && make install_dev
+popd
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# WolfSSL
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+printf "\n==================== WolfSSL ====================\n\n"
+readonly WOLF_DIR="${WORK_DIR}/wolfssl"
+rm -rf "${WOLF_DIR}" && mkdir "${WOLF_DIR}"
+tar -xvf "${PKGS_DIR}/wolfssl.tar.gz" --strip-components=1 -C "${WOLF_DIR}"
+pushd "${WOLF_DIR}"
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0600 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" ./configure --enable-static --disable-shared --enable-opensslextra --prefix="${DEPS_DIR}"
+make && make install
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -365,7 +378,7 @@ patch -p1 -b < "${BASE_DIR}/patch/curl_tool_getparam.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_operate.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_parsecfg.diff"
 patch -p1 -b < "${BASE_DIR}/patch/curl_tool_util.diff"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${DEPS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DUNICODE -D_UNICODE" LDFLAGS="-mconsole -Wl,--trace -static -no-pthread -L${DEPS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm" PKG_CONFIG_PATH="${DEPS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --enable-windows-unicode --disable-libcurl-option --disable-openssl-auto-load-config --enable-ca-search-safe --with-zlib --with-openssl --with-libidn2 --without-ca-bundle --without-zstd --without-brotli --without-librtmp --without-libssh2 --without-nghttp2 --without-ngtcp2 --without-nghttp3 --without-libgsasl
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${DEPS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DUNICODE -D_UNICODE" LDFLAGS="-mconsole -Wl,--trace -static -no-pthread -L${DEPS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm" PKG_CONFIG_PATH="${DEPS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --enable-windows-unicode --disable-libcurl-option --disable-openssl-auto-load-config --enable-ca-search-safe --with-zlib --with-wolfssl --with-libidn2 --without-ca-bundle --without-zstd --without-brotli --without-librtmp --without-libssh --without-libssh2 --without-nghttp2 --without-ngtcp2 --without-nghttp3 --without-libgsasl
 make V=1
 strip -s src/curl.exe
 popd
@@ -425,9 +438,9 @@ unix2dos -n "${ZSTD_DIR}/README.md"   "legal/zstandard.README.md"
 mkdir -p "${OUT_DIR}/patch"
 cp -vf "${BASE_DIR}/patch/"*.diff "${OUT_DIR}/patch"
 find "${OUT_DIR}" -type f -exec chmod 444 "{}" \;
-zfile="${BASE_DIR}/build/curl-${MY_VERSION}-windows-${MY_CPU}-full.$(date +"%Y-%m-%d").zip"
-rm -rf "${zfile}" && zip -v -r -9 "${zfile}" "."
-chmod 444 "${zfile}"
+ZFILE="${BASE_DIR}/build/curl-${MY_VERSION}-windows-${MY_CPU}-full.$(date +"%Y-%m-%d").zip"
+rm -rf "${ZFILE}" && zip -v -r -9 "${ZFILE}" "."
+chmod 444 "${ZFILE}"
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -456,16 +469,15 @@ unix2dos -n "${IDN2_DIR}/COPYING"     "legal/libidn2.COPYING.txt"
 unix2dos -n "${IDN2_DIR}/README.md"   "legal/libidn2.README.md"
 unix2dos -n "${LPSL_DIR}/AUTHORS"     "legal/libpsl.AUTHORS.txt"
 unix2dos -n "${LPSL_DIR}/COPYING"     "legal/libpsl.COPYING.txt"
-unix2dos -n "${OSSL_DIR}/AUTHORS.md"  "legal/openssl.AUTHORS.md"
-unix2dos -n "${OSSL_DIR}/LICENSE.txt" "legal/openssl.LICENSE.txt"
-unix2dos -n "${OSSL_DIR}/README.md"   "legal/openssl.README.md"
+unix2dos -n "${WOLF_DIR}/README"      "legal/wolfssl.README.txt"
+unix2dos -n "${WOLF_DIR}/COPYING"     "legal/wolfssl.COPYING.txt"
 unix2dos -n "${ZLIB_DIR}/README"      "legal/zlib.README.txt"
 mkdir -p "${OUT_DIR}/patch"
 cp -vf "${BASE_DIR}/patch/"*.diff "${OUT_DIR}/patch"
 find "${OUT_DIR}" -type f -exec chmod 444 "{}" \;
-zfile="${BASE_DIR}/build/curl-${MY_VERSION}-windows-${MY_CPU}-slim.$(date +"%Y-%m-%d").zip"
-rm -rf "${zfile}" && zip -v -r -9 "${zfile}" "."
-chmod 444 "${zfile}"
+ZFILE="${BASE_DIR}/build/curl-${MY_VERSION}-windows-${MY_CPU}-slim.$(date +"%Y-%m-%d").zip"
+rm -rf "${ZFILE}" && zip -v -r -9 "${ZFILE}" "."
+chmod 444 "${ZFILE}"
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
