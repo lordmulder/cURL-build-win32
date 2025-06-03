@@ -203,7 +203,7 @@ rm -rf "${WOLF_DIR}" && mkdir "${WOLF_DIR}"
 tar -xvf "${PKGS_DIR}/wolfssl.tar.gz" --strip-components=1 -C "${WOLF_DIR}"
 pushd "${WOLF_DIR}"
 patch -p1 -b < "${BASE_DIR}/patch/wolfssl_inetpton.diff"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" ./configure --enable-static --disable-shared --prefix="${DEPS_DIR}" --enable-opensslextra --disable-examples --disable-crypttests --disable-benchmark
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" ./configure --enable-static --disable-shared --prefix="${DEPS_DIR}" --enable-curl --disable-examples --disable-crypttests --disable-benchmark
 make && make install
 popd
 
@@ -439,7 +439,7 @@ unix2dos -n "${ZSTD_DIR}/README.md"   "legal/zstandard.README.md"
 mkdir -p "${OUT_DIR}/patch"
 cp -vf "${BASE_DIR}/patch/"*.diff "${OUT_DIR}/patch"
 find "${OUT_DIR}" -type f -exec chmod 444 "{}" \;
-ZFILE="${BASE_DIR}/build/curl-${MY_VERSION}-windows-${MY_CPU}-full.$(date +"%Y-%m-%d").zip"
+ZFILE="${BASE_DIR}/build/curl-${MY_VERSION}-win-${MY_CPU}-full.$(date +"%Y-%m-%d").zip"
 rm -rf "${ZFILE}" && zip -v -r -9 "${ZFILE}" "."
 chmod 444 "${ZFILE}"
 popd
@@ -476,7 +476,7 @@ unix2dos -n "${ZLIB_DIR}/README"      "legal/zlib.README.txt"
 mkdir -p "${OUT_DIR}/patch"
 cp -vf "${BASE_DIR}/patch/"*.diff "${OUT_DIR}/patch"
 find "${OUT_DIR}" -type f -exec chmod 444 "{}" \;
-ZFILE="${BASE_DIR}/build/curl-${MY_VERSION}-windows-${MY_CPU}-slim.$(date +"%Y-%m-%d").zip"
+ZFILE="${BASE_DIR}/build/curl-${MY_VERSION}-win-${MY_CPU}-slim.$(date +"%Y-%m-%d").zip"
 rm -rf "${ZFILE}" && zip -v -r -9 "${ZFILE}" "."
 chmod 444 "${ZFILE}"
 popd
