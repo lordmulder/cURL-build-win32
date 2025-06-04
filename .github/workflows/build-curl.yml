@@ -26,10 +26,12 @@ jobs:
           update: true
           install: mingw-w64-${{ matrix.toolchain }}-toolchain base-devel cmake git mingw-w64-${{ matrix.toolchain }}-7zip
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/cache@v4
         with:
           path: cache
-          key: dependencies-${{ hashFiles('build.sh') }}
+          key: dependencies-${{ hashFiles('dependencies.lst') }}
       - shell: msys2 {0}
         run: ./build.sh
       - uses: actions/upload-artifact@v4

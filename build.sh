@@ -115,52 +115,28 @@ mkdir -p "${PKGS_DIR}" "${DEPS_DIR}/bin" "${DEPS_DIR}/include" "${DEPS_DIR}/lib/
 # DOWNLOAD SOURCES
 ###############################################################################
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Helper function
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function fetch_pkg() {
-    if [ ! -f "${REPO_DIR}/${1}" ]; then
-        if ! wget -4 --tries=8 --retry-connrefused --referer "$(dirname -- "${3}")" -O "${PKGS_DIR}/${2}" "${3}"; then
-            return 1
-        fi
-        local checksum_dnloaded="$(sha256sum -b "${PKGS_DIR}/${2}" | head -n 1 | grep -Po '^[[:xdigit:]]+')"
-        if [ "${checksum_dnloaded}" != "${1}" ]; then
-            printf "Checksum mismatch detected!\n* Expected: %s\n* Computed: %s\n" "${1}" "${checksum_dnloaded}"
-            return 1
-        fi
-        install -v --compare --mode=444 "${PKGS_DIR}/${2}" "${REPO_DIR}/${1}"
-        install -v --compare --mode=444 "${PKGS_DIR}/${2}" "${REPO_DIR}/${1}"
-    else
-        local checksum_existing="$(sha256sum -b "${REPO_DIR}/${1}" | head -n 1 | grep -Po '^[[:xdigit:]]+')"
-        if [ "${checksum_existing}" != "${1}" ]; then
-            printf "Checksum mismatch detected!\n* Expected: %s\n* Computed: %s\n" "${1}" "${checksum_existing}"
-            return 1
-        fi
-        cp -vf "${REPO_DIR}/${1}" "${PKGS_DIR}/${2}"
-    fi
-}
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Download
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== download ====================\n\n"
-fetch_pkg "a73343c3093e5cdc50d9377997c3815b878fd110bf6511c2c7759f2afb90f5a3" "zlib-ng.tar.gz"  https://github.com/zlib-ng/zlib-ng/archive/refs/tags/2.2.4.tar.gz
-fetch_pkg "eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3" "zstd.tar.gz"     https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz
-fetch_pkg "e720a6ca29428b803f4ad165371771f5398faba397edf6778837a18599ea13ff" "brotli.tar.gz"   https://github.com/google/brotli/archive/refs/tags/v1.1.0.tar.gz
-fetch_pkg "344d0a79f1a9b08029b0744e2cc401a43f9c90acd1044d09a530b4885a8e9fc0" "openssl.tar.gz"  https://github.com/openssl/openssl/releases/download/openssl-3.5.0/openssl-3.5.0.tar.gz
-fetch_pkg "e90cebbd25e0c2dd737541ea010ae1026d05e2ac011e72ff07f99da889ced3e7" "wolfssl.tar.gz"  https://fossies.org/linux/misc/wolfssl-5.8.0.tar.gz
-fetch_pkg "c68e05989a93c002e3ba8df3baef0021c17099aa2123a9c096a5cc8e029caf95" "rtmpdump.tar.gz" https://distfiles.macports.org/rtmpdump/f1b83c10d8beb43fcc70a6e88cf4325499f25857.tar.gz
-fetch_pkg "3b08f5f4f9b4eb82f151a7040bfd6fe6c6fb922efe4b1659c66ea933276965e8" "libiconv.tar.gz" https://ftp.fau.de/gnu/libiconv/libiconv-1.18.tar.gz
-fetch_pkg "aee02dab79d9138fdcc7226b67ec985121bce6007edebe30d0e39d42f69a340e" "gettext.tar.gz"  https://ftp.fau.de/gnu/gettext/gettext-0.25.tar.gz
-fetch_pkg "d9ec76cbe34db98eec3539fe2c899d26b0c837cb3eb466a56b0f109cabf658f7" "libssh2.tar.gz"  https://www.libssh2.org/download/libssh2-1.11.1.tar.gz
-fetch_pkg "8ca4f2a77ba7aac20aca3e3517a2c96cfcf7c6b064ab7d4a0809e7e4e9eb9914" "nghttp2.tar.gz"  https://github.com/nghttp2/nghttp2/releases/download/v1.65.0/nghttp2-1.65.0.tar.gz
-fetch_pkg "c86c8c6502141198ace1fb41e0293f035c6444ab1e057dc22bec8fe54f9991a2" "nghttp3.tar.gz"  https://github.com/ngtcp2/nghttp3/releases/download/v1.10.1/nghttp3-1.10.1.tar.gz
-fetch_pkg "a175a6a58313d5736256bf7978d20666f030632a5b6ba80c992d6475690633ea" "ngtcp2.tar.gz"   https://github.com/ngtcp2/ngtcp2/releases/download/v1.13.0/ngtcp2-1.13.0.tar.gz
-fetch_pkg "f557911bf6171621e1f72ff35f5b1825bb35b52ed45325dcdee931e5d3c0787a" "libidn2.tar.gz"  https://ftp.fau.de/gnu/libidn/libidn2-2.3.8.tar.gz
-fetch_pkg "1dcc9ceae8b128f3c0b3f654decd0e1e891afc6ff81098f227ef260449dae208" "libpsl.tar.gz"   https://github.com/rockdaboot/libpsl/releases/download/0.21.5/libpsl-0.21.5.tar.gz
-fetch_pkg "f1b553384dedbd87478449775546a358d6f5140c15cccc8fb574136fdc77329f" "libgsasl.tar.gz" https://ftp.fau.de/gnu/gsasl/libgsasl-1.10.0.tar.gz
-fetch_pkg "6766ada7101d292b42b8b15681120acd68effa4a9660935853cf6d61f0d984d4" "curl.tar.gz"     https://curl.se/download/curl-${MY_VERSION}.tar.gz
-fetch_pkg "ab3ee3651977a4178a702b0b828a4ee7b2bbb9127235b0ab740e2e15974bf5db" "cacert.pem"      https://curl.se/ca/cacert-2025-05-20.pem
+while IFS='|' read -r hash name url; do
+    if [ ! -f "${REPO_DIR}/${hash}" ]; then
+        if ! wget -4 --tries=8 --retry-connrefused --referer "$(dirname -- "${url}")" -O "${PKGS_DIR}/${name}" "${url}"; then
+            exit 1
+        fi
+        hash_dnloaded="$(sha256sum -b "${PKGS_DIR}/${name}" | head -n 1 | grep -Po '^[[:xdigit:]]+')"
+        if [ "${hash_dnloaded}" != "${hash}" ]; then
+            printf "Checksum mismatch detected!\n* Expected: %s\n* Computed: %s\n" "${hash}" "${hash_dnloaded}"
+            exit 1
+        fi
+        install -v --compare --mode=444 "${PKGS_DIR}/${name}" "${REPO_DIR}/${hash}"
+        install -v --compare --mode=444 "${PKGS_DIR}/${name}" "${REPO_DIR}/${hash}"
+    else
+        hash_existing="$(sha256sum -b "${REPO_DIR}/${hash}" | head -n 1 | grep -Po '^[[:xdigit:]]+')"
+        if [ "${hash_existing}" != "${hash}" ]; then
+            printf "Checksum mismatch detected!\n* Expected: %s\n* Computed: %s\n" "${hash}" "${hash_existing}"
+            exit 1
+        fi
+        cp -vf "${REPO_DIR}/${hash}" "${PKGS_DIR}/${name}"
+    fi
+done < <(cat dependencies.lst | sed "s|@MY_VERSION@|${MY_VERSION}|g")
 
 ###############################################################################
 # BUILD DEPENDENCIES
