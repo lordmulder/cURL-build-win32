@@ -1,8 +1,8 @@
- src/tool_getparam.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ src/tool_getparam.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
 diff --git a/src/tool_getparam.c b/src/tool_getparam.c
-index 7354c059b..f7de03b33 100644
+index 51156e46b..07a373687 100644
 --- a/src/tool_getparam.c
 +++ b/src/tool_getparam.c
 @@ -23,6 +23,10 @@
@@ -16,7 +16,14 @@ index 7354c059b..f7de03b33 100644
  #include <curlx.h>
  #include "tool_binmode.h"
  #include "tool_cfgable.h"
-@@ -579,8 +583,13 @@ static void cleanarg(argv_item_t str)
+@@ -572,14 +576,19 @@ static ParameterError GetSizeParameter(struct GlobalConfig *global,
+ }
+ 
+ #ifdef HAVE_WRITABLE_ARGV
+-static void cleanarg(char *str)
++static void cleanarg(TCHAR *str)
+ {
+   /* now that getstr has copied the contents of nextarg, wipe the next
     * argument out so that the username:password is not displayed in the
     * system process list */
    if(str) {
@@ -25,7 +32,7 @@ index 7354c059b..f7de03b33 100644
 +    wmemset(str, L' ', len);
 +#else
      size_t len = strlen(str);
-     memset(str, ' ', len);
+     memset(str, '*', len);
 +#endif
    }
  }

@@ -24,8 +24,12 @@ jobs:
         with:
           msystem: ${{ matrix.msystem }}
           update: true
-          install: mingw-w64-${{ matrix.toolchain }}-toolchain base-devel cmake zip
+          install: mingw-w64-${{ matrix.toolchain }}-toolchain base-devel cmake mingw-w64-${{ matrix.toolchain }}-7zip
       - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: cache
+          key: dependencies-${{ hashFiles('build.sh') }}
       - shell: msys2 {0}
         run: ./build.sh
       - uses: actions/upload-artifact@v4
