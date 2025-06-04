@@ -1,0 +1,24 @@
+ include/internal/e_os.h | 10 +---------
+ 1 file changed, 1 insertion(+), 9 deletions(-)
+
+diff --git a/include/internal/e_os.h b/include/internal/e_os.h
+index 0c546c1d94..c378f28315 100644
+--- a/include/internal/e_os.h
++++ b/include/internal/e_os.h
+@@ -107,15 +107,7 @@
+ #   endif
+ #   include <string.h>
+ #   ifdef _WIN64
+-#    define strlen(s) _strlen31(s)
+-/* cut strings to 2GB */
+-static __inline unsigned int _strlen31(const char *str)
+-{
+-    unsigned int len = 0;
+-    while (*str && len < 0x80000000U)
+-        str++, len++;
+-    return len & 0x7FFFFFFF;
+-}
++#    define strlen(s) ({ const char *_str = (s); unsigned int _len = 0U; while (*_str && _len < 0x80000000U) _str++, _len++; _len & 0x7FFFFFFF; })
+ #   endif   /* def(_WIN64) */
+ #   include <malloc.h>
+ #   if defined(_MSC_VER) && !defined(_WIN32_WCE) && !defined(_DLL) && defined(stdin)
