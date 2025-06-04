@@ -123,15 +123,13 @@ function fetch_pkg() {
         if ! wget -4 --tries=8 --retry-connrefused --referer "$(dirname -- "${3}")" -O "${PKGS_DIR}/${2}" "${3}"; then
             return 1
         fi
-        local checksum_downloaded="$(sha256sum -b "${PKGS_DIR}/${2}" | head -n 1 | grep -Po '^[[:xdigit:]]+')"
-        if [ "${checksum_downloaded}" != "${1}" ]; then
-            printf "Checksum mismatch detected!\n* Expected: %s\n* Computed: %s\n" "${1}" "${checksum_downloaded}"
+        local checksum_dnloaded="$(sha256sum -b "${PKGS_DIR}/${2}" | head -n 1 | grep -Po '^[[:xdigit:]]+')"
+        if [ "${checksum_dnloaded}" != "${1}" ]; then
+            printf "Checksum mismatch detected!\n* Expected: %s\n* Computed: %s\n" "${1}" "${checksum_dnloaded}"
             return 1
         fi
-        if [ ! -f "${REPO_DIR}/${1}" ]; then
-            cp -vn "${PKGS_DIR}/${2}" "${REPO_DIR}/${1}"
-            chmod 444 "${REPO_DIR}/${1}"
-        fi
+        install -v --compare --mode=444 "${PKGS_DIR}/${2}" "${REPO_DIR}/${1}"
+        install -v --compare --mode=444 "${PKGS_DIR}/${2}" "${REPO_DIR}/${1}"
     else
         local checksum_existing="$(sha256sum -b "${REPO_DIR}/${1}" | head -n 1 | grep -Po '^[[:xdigit:]]+')"
         if [ "${checksum_existing}" != "${1}" ]; then
@@ -412,23 +410,26 @@ popd
 function make_out() {
     rm -rf "${1}" && mkdir -p "${1}" && mkdir "${1}/patch" "${1}/legal"
     cp -vf "${2}/src/curl.exe" "${1}/curl.exe"
-    sed -n "/Configured to build curl\/libcurl:$/,/^[[:space:]]*Features:/p" "${2}/config.log" | sed -r "s/configure:[[:digit:]]+://" | sed -r "s/^[[:blank:]]*//" | unix2dos > "${1}/config.log"
     cp -vf "${BASE_DIR}/patch/"*.diff "${1}/patch"
-    cp -vf "${PKGS_DIR}/cacert.pem"   "${1}/curl-ca-bundle.crt"
-    cp -vf "${PKGS_DIR}/manpage.html" "${1}/manpage.html"
-    tee "${1}/build_info.txt" << EOF
-cURL for Windows v${MY_VERSION} [$(date +'%Y-%m-%d %H:%M:%S')]
+    cp -vf "${PKGS_DIR}/cacert.pem" "${1}/curl-ca-bundle.crt"
+    unix2dos > "${1}/build_info.txt" << EOF
+cURL for Windows v${MY_VERSION}-${3} [$(git -C "${BASE_DIR}" describe --long --dirty)]
 
 This build of cURL was kindly provided by LoRd_MuldeR <mulder2@gmx.de>
 https://github.com/lordmulder/cURL-build-win32
 
+[cURLinfo]
 $("${1}/curl.exe" --version)
 
-Platform:
+[Platform]
 $(uname -srvmo)
 
-Compiler:
+[Compiler]
 $(cc -v 2>&1 | tail -n1)
+EOF
+    unix2dos > "${1}/manpage.url" << EOF
+[InternetShortcut]
+URL=https://curl.se/docs/manpage.html
 EOF
 }
 
@@ -455,7 +456,7 @@ function make_zip() {
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== Output (full) ====================\n\n"
 readonly OUTDIR_FULL="${WORK_DIR}/_bin/full"
-make_out "${OUTDIR_FULL}" "${CURL_DIR}"
+make_out "${OUTDIR_FULL}" "${CURL_DIR}" "full"
 copy_doc "${OUTDIR_FULL}" "${BROT_DIR}/LICENSE"     "brotli.LICENSE.txt"
 copy_doc "${OUTDIR_FULL}" "${BROT_DIR}/README.md"   "brotli.README.md"
 copy_doc "${OUTDIR_FULL}" "${CURL_DIR}/CHANGES.md"  "curl.CHANGES.txt"
@@ -477,8 +478,6 @@ copy_doc "${OUTDIR_FULL}" "${NGH2_DIR}/COPYING"     "nghttp2.COPYING.txt"
 copy_doc "${OUTDIR_FULL}" "${NGH2_DIR}/README.rst"  "nghttp2.README.rst"
 copy_doc "${OUTDIR_FULL}" "${NGH3_DIR}/COPYING"     "nghttp3.COPYING.txt"
 copy_doc "${OUTDIR_FULL}" "${NGH3_DIR}/README.rst"  "nghttp3.README.rst"
-copy_doc "${OUTDIR_FULL}" "${TCP2_DIR}/COPYING"     "ngtcp2.COPYING.txt"
-copy_doc "${OUTDIR_FULL}" "${TCP2_DIR}/README.rst"  "ngtcp2.README.rst"
 copy_doc "${OUTDIR_FULL}" "${OSSL_DIR}/AUTHORS.md"  "openssl.AUTHORS.md"
 copy_doc "${OUTDIR_FULL}" "${OSSL_DIR}/LICENSE.txt" "openssl.LICENSE.txt"
 copy_doc "${OUTDIR_FULL}" "${OSSL_DIR}/README.md"   "openssl.README.md"
@@ -489,7 +488,10 @@ copy_doc "${OUTDIR_FULL}" "${SASL_DIR}/COPYING"     "libgsasl.COPYING.txt"
 copy_doc "${OUTDIR_FULL}" "${SASL_DIR}/README"      "libgsasl.README.txt"
 copy_doc "${OUTDIR_FULL}" "${SSH2_DIR}/COPYING"     "libssh2.COPYING.txt"
 copy_doc "${OUTDIR_FULL}" "${SSH2_DIR}/README"      "libssh2.README.txt"
-copy_doc "${OUTDIR_FULL}" "${ZLIB_DIR}/README"      "zlib.README.txt"
+copy_doc "${OUTDIR_FULL}" "${TCP2_DIR}/COPYING"     "ngtcp2.COPYING.txt"
+copy_doc "${OUTDIR_FULL}" "${TCP2_DIR}/README.rst"  "ngtcp2.README.rst"
+copy_doc "${OUTDIR_FULL}" "${ZLIB_DIR}/LICENSE.md"  "zlib.LICENSE.txt"
+copy_doc "${OUTDIR_FULL}" "${ZLIB_DIR}/README.md"   "zlib.README.txt"
 copy_doc "${OUTDIR_FULL}" "${ZSTD_DIR}/LICENSE"     "zstandard.LICENSE.txt"
 copy_doc "${OUTDIR_FULL}" "${ZSTD_DIR}/README.md"   "zstandard.README.md"
 make_zip "${OUTDIR_FULL}" "full"
@@ -499,10 +501,8 @@ make_zip "${OUTDIR_FULL}" "full"
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 printf "\n==================== Output (slim) ====================\n\n"
 readonly OUTDIR_SLIM="${WORK_DIR}/_bin/slim"
-make_out "${OUTDIR_SLIM}" "${SLIM_DIR}"
-copy_doc "${OUTDIR_SLIM}" "${SLIM_DIR}/CHANGES.md" "curl.CHANGES.txt"
-copy_doc "${OUTDIR_SLIM}" "${SLIM_DIR}/COPYING"    "curl.COPYING.txt"
-copy_doc "${OUTDIR_SLIM}" "${SLIM_DIR}/README"     "curl.README.txt"
+make_out "${OUTDIR_SLIM}" "${SLIM_DIR}" "slim"
+copy_doc "${OUTDIR_FULL}" "${ZLIB_DIR}/LICENSE.md" "zlib.LICENSE.txt"
 copy_doc "${OUTDIR_SLIM}" "${GTXT_DIR}/AUTHORS"    "gettext.AUTHORS.txt"
 copy_doc "${OUTDIR_SLIM}" "${GTXT_DIR}/COPYING"    "gettext.COPYING.txt"
 copy_doc "${OUTDIR_SLIM}" "${GTXT_DIR}/README"     "gettext.README.txt"
@@ -514,9 +514,12 @@ copy_doc "${OUTDIR_SLIM}" "${IDN2_DIR}/COPYING"    "libidn2.COPYING.txt"
 copy_doc "${OUTDIR_SLIM}" "${IDN2_DIR}/README.md"  "libidn2.README.md"
 copy_doc "${OUTDIR_SLIM}" "${LPSL_DIR}/AUTHORS"    "libpsl.AUTHORS.txt"
 copy_doc "${OUTDIR_SLIM}" "${LPSL_DIR}/COPYING"    "libpsl.COPYING.txt"
-copy_doc "${OUTDIR_SLIM}" "${WOLF_DIR}/README"     "wolfssl.README.txt"
+copy_doc "${OUTDIR_SLIM}" "${SLIM_DIR}/CHANGES.md" "curl.CHANGES.txt"
+copy_doc "${OUTDIR_SLIM}" "${SLIM_DIR}/COPYING"    "curl.COPYING.txt"
+copy_doc "${OUTDIR_SLIM}" "${SLIM_DIR}/README"     "curl.README.txt"
 copy_doc "${OUTDIR_SLIM}" "${WOLF_DIR}/COPYING"    "wolfssl.COPYING.txt"
-copy_doc "${OUTDIR_SLIM}" "${ZLIB_DIR}/README"     "zlib.README.txt"
+copy_doc "${OUTDIR_SLIM}" "${WOLF_DIR}/README"     "wolfssl.README.txt"
+copy_doc "${OUTDIR_SLIM}" "${ZLIB_DIR}/README.md"  "zlib.README.txt"
 make_zip "${OUTDIR_SLIM}" "slim"
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
