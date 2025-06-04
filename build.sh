@@ -176,6 +176,7 @@ readonly ZLIB_DIR="${WORK_DIR}/zlib"
 rm -rf "${ZLIB_DIR}" && mkdir "${ZLIB_DIR}"
 tar -xvf "${PKGS_DIR}/zlib-ng.tar.gz" --strip-components=1 -C "${ZLIB_DIR}"
 pushd "${ZLIB_DIR}"
+patch -p1 -b < "${BASE_DIR}/patch/zlibng_pkgconfig.diff"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501" ./configure --zlib-compat --static --without-optimizations --prefix="${DEPS_DIR}"
 make && make install
 popd

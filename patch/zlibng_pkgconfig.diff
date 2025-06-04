@@ -1,0 +1,14 @@
+ zlib.pc.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/zlib.pc.in b/zlib.pc.in
+index 45b35989..8b2415be 100644
+--- a/zlib.pc.in
++++ b/zlib.pc.in
+@@ -10,5 +10,5 @@ Description: zlib-ng compression library
+ Version: @VERSION@
+ 
+ Requires:
+-Libs: -L${libdir} -L${sharedlibdir} -lz@SUFFIX@
++Libs: -L${libdir} -lz@SUFFIX@
+ Cflags: -I${includedir} @PKG_CONFIG_CFLAGS@
