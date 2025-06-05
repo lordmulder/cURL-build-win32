@@ -107,7 +107,22 @@ readonly WORK_DIR="${BASE_DIR}/build/${MY_CPU}"
 readonly REPO_DIR="${BASE_DIR}/cache"
 readonly PKGS_DIR="${WORK_DIR}/_pkgs"
 readonly DEPS_DIR="${WORK_DIR}/_deps"
-for i in {1..12}; do rm -rf "${WORK_DIR}" && break; done
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Clean-up old cruft
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+retry_counter=0
+while [ -e "${WORK_DIR}" ]; do
+    if [ $((retry_counter++)) -gt 999 ]; then
+        echo "Too many failed attempts!"
+        exit 1
+    fi
+    rm -rf "${WORK_DIR}" || echo "Failed to remove old work directory, retrying..."
+done
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Create working directory
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 mkdir -v "${WORK_DIR}"
 mkdir -p "${PKGS_DIR}" "${DEPS_DIR}/bin" "${DEPS_DIR}/include" "${DEPS_DIR}/lib/pkgconfig" "${DEPS_DIR}/share"
 
@@ -193,7 +208,7 @@ tar -xvf "${PKGS_DIR}/openssl.tar.gz" --strip-components=1 -C "${OSSL_DIR}"
 [[ "${MY_CPU}" == "x64" ]] && readonly ossl_mngw="mingw64" || readonly ossl_mngw="mingw"
 pushd "${OSSL_DIR}"
 patch -p1 -b < "${BASE_DIR}/patch/openssl_strlen31.diff"
-./Configure no-hw no-shared no-engine no-capieng no-dso zlib ${ossl_flag} -static -march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501 -I"${DEPS_DIR}/include" -L"${DEPS_DIR}/lib" --prefix="${DEPS_DIR}" --libdir="lib" ${ossl_mngw}
+./Configure no-hw no-shared no-engine no-capieng no-dso zlib ${ossl_flag} -static -march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501 -DOPENSSL_TLS_SECURITY_LEVEL=0 -I"${DEPS_DIR}/include" -L"${DEPS_DIR}/lib" --prefix="${DEPS_DIR}" --libdir="lib" ${ossl_mngw}
 make build_libs && make install_dev
 popd
 
@@ -207,7 +222,7 @@ tar -xvf "${PKGS_DIR}/wolfssl.tar.gz" --strip-components=1 -C "${WOLF_DIR}"
 pushd "${WOLF_DIR}"
 patch -p1 -b < "${BASE_DIR}/patch/wolfssl_inetpton.diff"
 patch -p1 -b < "${BASE_DIR}/patch/wolfssl_strcpy_s.diff"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" ./configure --enable-static --disable-shared --prefix="${DEPS_DIR}" --enable-curl --disable-examples --disable-crypttests --disable-benchmark
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501 -DFP_MAX_BITS=16384 -DSP_INT_BITS=8192 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" ./configure --enable-static --disable-shared --prefix="${DEPS_DIR}" --enable-curl --enable-oldtls --enable-tlsv10 --enable-dsa --enable-ecccustcurves --enable-brainpool --enable-curve25519 --enable-ed25519 --enable-ed25519-stream --enable-curve448 --enable-ed448 --enable-ed448-stream --disable-examples --disable-crypttests --disable-benchmark
 make && make install
 popd
 

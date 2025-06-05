@@ -1,14 +1,15 @@
- include/internal/e_os.h | 10 +---------
- 1 file changed, 1 insertion(+), 9 deletions(-)
+ include/internal/e_os.h | 11 -----------
+ 1 file changed, 11 deletions(-)
 
 diff --git a/include/internal/e_os.h b/include/internal/e_os.h
-index 0c546c1d94..c378f28315 100644
+index 0c546c1d94..d105cd2ef2 100644
 --- a/include/internal/e_os.h
 +++ b/include/internal/e_os.h
-@@ -107,15 +107,7 @@
+@@ -106,17 +106,6 @@
+ #    define EACCES   13
  #   endif
  #   include <string.h>
- #   ifdef _WIN64
+-#   ifdef _WIN64
 -#    define strlen(s) _strlen31(s)
 -/* cut strings to 2GB */
 -static __inline unsigned int _strlen31(const char *str)
@@ -18,7 +19,7 @@ index 0c546c1d94..c378f28315 100644
 -        str++, len++;
 -    return len & 0x7FFFFFFF;
 -}
-+#    define strlen(s) ({ const char *_str = (s); unsigned int _len = 0U; while (*_str && _len < 0x80000000U) _str++, _len++; _len & 0x7FFFFFFF; })
- #   endif   /* def(_WIN64) */
+-#   endif   /* def(_WIN64) */
  #   include <malloc.h>
  #   if defined(_MSC_VER) && !defined(_WIN32_WCE) && !defined(_DLL) && defined(stdin)
+ #    if _MSC_VER>=1300 && _MSC_VER<1600
