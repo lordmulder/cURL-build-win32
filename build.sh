@@ -332,6 +332,7 @@ rm -rf "${IDN2_DIR}" && mkdir "${IDN2_DIR}"
 tar -xvf "${PKGS_DIR}/libidn2.tar.gz" --strip-components=1 -C "${IDN2_DIR}"
 pushd "${IDN2_DIR}"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -flto -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-flto -L${DEPS_DIR}/lib" ./configure --prefix="${DEPS_DIR}" --disable-shared --disable-doc --without-libiconv-prefix --without-libunistring-prefix --disable-valgrind-tests
+patch -p1 -b < "${BASE_DIR}/patch/libidn2_makefile.diff"
 make && make install
 popd
 

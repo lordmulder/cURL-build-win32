@@ -1,0 +1,16 @@
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index bae8cf0..e695870 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1772,7 +1772,7 @@ unistringtests_LIBOBJDEPS =
+ unistringtests_LIBOBJS = 
+ unistringtests_LTLIBOBJS = 
+ unistringtests_WITNESS = IN_LIBIDN2_GNULIB_TESTS
+-SUBDIRS = gl unistring lib src examples fuzz po $(am__append_1) tests
++SUBDIRS = gl unistring lib
+ 
+ # version-stamp
+ EXTRA_DIST = cfg.mk maint.mk CONTRIBUTING.md DEPENDENCIES.md README.md \
