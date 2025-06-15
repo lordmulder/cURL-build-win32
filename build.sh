@@ -225,16 +225,16 @@ popd
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # WolfSSL
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#printf "\n==================== WolfSSL ====================\n\n"
-#readonly WOLF_DIR="${WORK_DIR}/wolfssl"
-#rm -rf "${WOLF_DIR}" && mkdir "${WOLF_DIR}"
-#tar -xvf "${PKGS_DIR}/wolfssl.tar.gz" --strip-components=1 -C "${WOLF_DIR}"
-#pushd "${WOLF_DIR}"
-#patch -p1 -b < "${BASE_DIR}/patch/wolfssl_inetpton.diff"
-#patch -p1 -b < "${BASE_DIR}/patch/wolfssl_strcpy_s.diff"
-#CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501 -DFP_MAX_BITS=16384 -DSP_INT_BITS=8192 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" ./configure --enable-static --disable-shared --prefix="${DEPS_DIR}" --enable-curl --enable-oldtls --enable-tlsv10 --enable-dsa --enable-ecccustcurves --enable-brainpool --enable-curve25519 --enable-ed25519 --enable-ed25519-stream --enable-curve448 --enable-ed448 --enable-ed448-stream --disable-examples --disable-crypttests --disable-benchmark
-#make && make install
-#popd
+printf "\n==================== WolfSSL ====================\n\n"
+readonly WOLF_DIR="${WORK_DIR}/wolfssl"
+rm -rf "${WOLF_DIR}" && mkdir "${WOLF_DIR}"
+tar -xvf "${PKGS_DIR}/wolfssl.tar.gz" --strip-components=1 -C "${WOLF_DIR}"
+pushd "${WOLF_DIR}"
+patch -p1 -b < "${BASE_DIR}/patch/wolfssl_inetpton.diff"
+patch -p1 -b < "${BASE_DIR}/patch/wolfssl_strcpy_s.diff"
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -flto -DNDEBUG -D_WIN32_WINNT=0x0501 -DFP_MAX_BITS=16384 -DSP_INT_BITS=8192 -I${DEPS_DIR}/include" LDFLAGS="-flto -L${DEPS_DIR}/lib" ./configure --enable-static --disable-shared --prefix="${DEPS_DIR}" --enable-curl --enable-oldtls --enable-tlsv10 --enable-dsa --enable-ecccustcurves --enable-brainpool --enable-curve25519 --enable-ed25519 --enable-ed25519-stream --enable-curve448 --enable-ed448 --enable-ed448-stream --disable-examples --disable-crypttests --disable-benchmark
+make && make install
+popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # librtmp
@@ -396,7 +396,7 @@ popd
 printf "\n==================== cURL (slim) ====================\n\n"
 readonly SLIM_DIR="${WORK_DIR}/curl.slim"
 init_curl "${SLIM_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -flto -I${DEPS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DUNICODE -D_UNICODE" LDFLAGS="-mconsole -Wl,--trace -static -flto -no-pthread -L${DEPS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm" PKG_CONFIG_PATH="${DEPS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --enable-windows-unicode --disable-libcurl-option --disable-openssl-auto-load-config --enable-ca-search-safe --with-zlib --with-openssl --with-libidn2 --without-ca-bundle --without-zstd --without-brotli --without-librtmp --without-libssh --without-libssh2 --without-nghttp2 --without-ngtcp2 --without-nghttp3 --without-libgsasl
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -flto -I${DEPS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DUNICODE -D_UNICODE" LDFLAGS="-mconsole -Wl,--trace -static -flto -no-pthread -L${DEPS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm" PKG_CONFIG_PATH="${DEPS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --enable-windows-unicode --disable-libcurl-option --disable-openssl-auto-load-config --enable-ca-search-safe --with-zlib --with-wolfssl --with-libidn2 --without-ca-bundle --without-zstd --without-brotli --without-librtmp --without-libssh --without-libssh2 --without-nghttp2 --without-ngtcp2 --without-nghttp3 --without-libgsasl
 make V=1
 popd
 
