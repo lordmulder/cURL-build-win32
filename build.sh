@@ -133,7 +133,7 @@ mkdir -p "${PKGS_DIR}" "${DEPS_DIR}/bin" "${DEPS_DIR}/include" "${DEPS_DIR}/lib/
 printf "\n==================== download ====================\n\n"
 while IFS='|' read -r hash name url; do
     if [ ! -f "${REPO_DIR}/${hash}" ]; then
-        if ! wget -4 --tries=8 --retry-connrefused --referer "$(dirname -- "${url}")" -O "${PKGS_DIR}/${name}" "${url}"; then
+        if ! wget -4 --tries=8 --retry-connrefused --timeout=10 --referer "$(dirname -- "${url}")" -O "${PKGS_DIR}/${name}" "${url}"; then
             exit 1
         fi
         hash_dnloaded="$(sha256sum -b "${PKGS_DIR}/${name}" | head -n 1 | grep -Po '^[[:xdigit:]]+')"
@@ -141,16 +141,23 @@ while IFS='|' read -r hash name url; do
             printf "Checksum mismatch detected!\n* Expected: %s\n* Computed: %s\n" "${hash}" "${hash_dnloaded}"
             exit 1
         fi
-        install -v --compare --mode=444 "${PKGS_DIR}/${name}" "${REPO_DIR}/${hash}"
-        install -v --compare --mode=444 "${PKGS_DIR}/${name}" "${REPO_DIR}/${hash}"
-    else
-        hash_existing="$(sha256sum -b "${REPO_DIR}/${hash}" | head -n 1 | grep -Po '^[[:xdigit:]]+')"
-        if [ "${hash_existing}" != "${hash}" ]; then
-            printf "Checksum mismatch detected!\n* Expected: %s\n* Computed: %s\n" "${hash}" "${hash_existing}"
-            exit 1
-        fi
-        cp -vf "${REPO_DIR}/${hash}" "${PKGS_DIR}/${name}"
+        for i in {0..2}; do
+            install -v --compare --mode=444 "${PKGS_DIR}/${name}" "${REPO_DIR}/${hash}"
+        done
     fi
+done < <(cat dependencies.lst | sed "s|@MY_VERSION@|${MY_VERSION}|g")
+
+while IFS='|' read -r hash name url; do
+    if [ ! -f "${REPO_DIR}/${hash}" ]; then
+        printf "Required dependency file \"${REPO_DIR}/${hash}\" not found!"
+        exit 1
+    fi
+    hash_existing="$(sha256sum -b "${REPO_DIR}/${hash}" | head -n 1 | grep -Po '^[[:xdigit:]]+')"
+    if [ "${hash_existing}" != "${hash}" ]; then
+        printf "Checksum mismatch detected!\n* Expected: %s\n* Computed: %s\n" "${hash}" "${hash_existing}"
+        exit 1
+    fi
+    cp -vf "${REPO_DIR}/${hash}" "${PKGS_DIR}/${name}"
 done < <(cat dependencies.lst | sed "s|@MY_VERSION@|${MY_VERSION}|g")
 
 ###############################################################################
