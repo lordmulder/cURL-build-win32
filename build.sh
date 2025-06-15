@@ -148,16 +148,18 @@ while IFS='|' read -r hash name url; do
 done < <(cat dependencies.lst | sed "s|@MY_VERSION@|${MY_VERSION}|g")
 
 while IFS='|' read -r hash name url; do
-    if [ ! -f "${REPO_DIR}/${hash}" ]; then
-        printf "Required dependency file \"${REPO_DIR}/${hash}\" not found!"
-        exit 1
+    if [ ! -f "${PKGS_DIR}/${name}" ]; then
+        if [ ! -f "${REPO_DIR}/${hash}" ]; then
+            printf "Required dependency file \"${REPO_DIR}/${hash}\" not found!"
+            exit 1
+        fi
+        cp -vf "${REPO_DIR}/${hash}" "${PKGS_DIR}/${name}"
     fi
-    hash_existing="$(sha256sum -b "${REPO_DIR}/${hash}" | head -n 1 | grep -Po '^[[:xdigit:]]+')"
+    hash_existing="$(sha256sum -b "${PKGS_DIR}/${name}" | head -n 1 | grep -Po '^[[:xdigit:]]+')"
     if [ "${hash_existing}" != "${hash}" ]; then
         printf "Checksum mismatch detected!\n* Expected: %s\n* Computed: %s\n" "${hash}" "${hash_existing}"
         exit 1
     fi
-    cp -vf "${REPO_DIR}/${hash}" "${PKGS_DIR}/${name}"
 done < <(cat dependencies.lst | sed "s|@MY_VERSION@|${MY_VERSION}|g")
 
 ###############################################################################
@@ -216,7 +218,7 @@ tar -xvf "${PKGS_DIR}/openssl.tar.gz" --strip-components=1 -C "${OSSL_DIR}"
 [[ "${MY_CPU}" == "x64" ]] && readonly ossl_mngw="mingw64" || readonly ossl_mngw="mingw"
 pushd "${OSSL_DIR}"
 patch -p1 -b < "${BASE_DIR}/patch/openssl_strlen31.diff"
-./Configure no-hw no-shared no-engine no-capieng no-dso zlib ${ossl_flag} -static -march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501 -DOPENSSL_TLS_SECURITY_LEVEL=0 -I"${DEPS_DIR}/include" -L"${DEPS_DIR}/lib" --prefix="${DEPS_DIR}" --libdir="lib" ${ossl_mngw}
+./Configure no-hw no-shared no-engine no-capieng no-dso zlib ${ossl_flag} -static -march=${MY_MARCH} -mtune=${MY_MTUNE} -flto -DNDEBUG -D_WIN32_WINNT=0x0501 -DOPENSSL_TLS_SECURITY_LEVEL=0 -I"${DEPS_DIR}/include" -L"${DEPS_DIR}/lib" --prefix="${DEPS_DIR}" --libdir="lib" ${ossl_mngw}
 make build_libs && make install_dev
 popd
 
@@ -383,9 +385,8 @@ function init_curl() {
 printf "\n==================== cURL (full) ====================\n\n"
 readonly CURL_DIR="${WORK_DIR}/curl.full"
 init_curl "${CURL_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${DEPS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DNGHTTP2_STATICLIB -DNGHTTP3_STATICLIB -DNGTCP2_STATICLIB -DUNICODE -D_UNICODE" LDFLAGS="-mconsole -Wl,--trace -static -no-pthread -L${DEPS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm -lbrotlicommon" PKG_CONFIG_PATH="${DEPS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --enable-windows-unicode --disable-libcurl-option --disable-openssl-auto-load-config --enable-ca-search-safe --with-zlib --with-openssl --with-libidn2 --without-ca-bundle --with-zstd --with-brotli --with-librtmp --with-libssh2 --with-nghttp2="${DEPS_DIR}" --with-ngtcp2="${DEPS_DIR}" --with-nghttp3="${DEPS_DIR}"
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -flto -I${DEPS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DNGHTTP2_STATICLIB -DNGHTTP3_STATICLIB -DNGTCP2_STATICLIB -DUNICODE -D_UNICODE" LDFLAGS="-mconsole -Wl,--trace -static -flto -no-pthread -L${DEPS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm -lbrotlicommon" PKG_CONFIG_PATH="${DEPS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --enable-windows-unicode --disable-libcurl-option --disable-openssl-auto-load-config --enable-ca-search-safe --with-zlib --with-openssl --with-libidn2 --without-ca-bundle --with-zstd --with-brotli --with-librtmp --with-libssh2 --with-nghttp2="${DEPS_DIR}" --with-ngtcp2="${DEPS_DIR}" --with-nghttp3="${DEPS_DIR}"
 make V=1
-strip -s src/curl.exe
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -394,9 +395,8 @@ popd
 printf "\n==================== cURL (slim) ====================\n\n"
 readonly SLIM_DIR="${WORK_DIR}/curl.slim"
 init_curl "${SLIM_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${DEPS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DUNICODE -D_UNICODE" LDFLAGS="-mconsole -Wl,--trace -static -no-pthread -L${DEPS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm" PKG_CONFIG_PATH="${DEPS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --enable-windows-unicode --disable-libcurl-option --disable-openssl-auto-load-config --enable-ca-search-safe --with-zlib --with-openssl --with-libidn2 --without-ca-bundle --without-zstd --without-brotli --without-librtmp --without-libssh --without-libssh2 --without-nghttp2 --without-ngtcp2 --without-nghttp3 --without-libgsasl
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -flto -I${DEPS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DUNICODE -D_UNICODE" LDFLAGS="-mconsole -Wl,--trace -static -flto -no-pthread -L${DEPS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm" PKG_CONFIG_PATH="${DEPS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --enable-windows-unicode --disable-libcurl-option --disable-openssl-auto-load-config --enable-ca-search-safe --with-zlib --with-openssl --with-libidn2 --without-ca-bundle --without-zstd --without-brotli --without-librtmp --without-libssh --without-libssh2 --without-nghttp2 --without-ngtcp2 --without-nghttp3 --without-libgsasl
 make V=1
-strip -s src/curl.exe
 popd
 
 ###############################################################################
