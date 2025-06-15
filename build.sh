@@ -216,16 +216,16 @@ popd
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # WolfSSL
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-printf "\n==================== WolfSSL ====================\n\n"
-readonly WOLF_DIR="${WORK_DIR}/wolfssl"
-rm -rf "${WOLF_DIR}" && mkdir "${WOLF_DIR}"
-tar -xvf "${PKGS_DIR}/wolfssl.tar.gz" --strip-components=1 -C "${WOLF_DIR}"
-pushd "${WOLF_DIR}"
-patch -p1 -b < "${BASE_DIR}/patch/wolfssl_inetpton.diff"
-patch -p1 -b < "${BASE_DIR}/patch/wolfssl_strcpy_s.diff"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501 -DFP_MAX_BITS=16384 -DSP_INT_BITS=8192 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" ./configure --enable-static --disable-shared --prefix="${DEPS_DIR}" --enable-curl --enable-oldtls --enable-tlsv10 --enable-dsa --enable-ecccustcurves --enable-brainpool --enable-curve25519 --enable-ed25519 --enable-ed25519-stream --enable-curve448 --enable-ed448 --enable-ed448-stream --disable-examples --disable-crypttests --disable-benchmark
-make && make install
-popd
+#printf "\n==================== WolfSSL ====================\n\n"
+#readonly WOLF_DIR="${WORK_DIR}/wolfssl"
+#rm -rf "${WOLF_DIR}" && mkdir "${WOLF_DIR}"
+#tar -xvf "${PKGS_DIR}/wolfssl.tar.gz" --strip-components=1 -C "${WOLF_DIR}"
+#pushd "${WOLF_DIR}"
+#patch -p1 -b < "${BASE_DIR}/patch/wolfssl_inetpton.diff"
+#patch -p1 -b < "${BASE_DIR}/patch/wolfssl_strcpy_s.diff"
+#CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501 -DFP_MAX_BITS=16384 -DSP_INT_BITS=8192 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" ./configure --enable-static --disable-shared --prefix="${DEPS_DIR}" --enable-curl --enable-oldtls --enable-tlsv10 --enable-dsa --enable-ecccustcurves --enable-brainpool --enable-curve25519 --enable-ed25519 --enable-ed25519-stream --enable-curve448 --enable-ed448 --enable-ed448-stream --disable-examples --disable-crypttests --disable-benchmark
+#make && make install
+#popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # librtmp
@@ -387,7 +387,7 @@ popd
 printf "\n==================== cURL (slim) ====================\n\n"
 readonly SLIM_DIR="${WORK_DIR}/curl.slim"
 init_curl "${SLIM_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${DEPS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DUNICODE -D_UNICODE" LDFLAGS="-mconsole -Wl,--trace -static -no-pthread -L${DEPS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm" PKG_CONFIG_PATH="${DEPS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --enable-windows-unicode --disable-libcurl-option --disable-openssl-auto-load-config --enable-ca-search-safe --with-zlib --with-wolfssl --with-libidn2 --without-ca-bundle --without-zstd --without-brotli --without-librtmp --without-libssh --without-libssh2 --without-nghttp2 --without-ngtcp2 --without-nghttp3 --without-libgsasl
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -I${DEPS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DUNICODE -D_UNICODE" LDFLAGS="-mconsole -Wl,--trace -static -no-pthread -L${DEPS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm" PKG_CONFIG_PATH="${DEPS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --enable-windows-unicode --disable-libcurl-option --disable-openssl-auto-load-config --enable-ca-search-safe --with-zlib --with-openssl --with-libidn2 --without-ca-bundle --without-zstd --without-brotli --without-librtmp --without-libssh --without-libssh2 --without-nghttp2 --without-ngtcp2 --without-nghttp3 --without-libgsasl
 make V=1
 strip -s src/curl.exe
 popd
@@ -401,7 +401,7 @@ popd
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function make_out() {
     rm -rf "${1}" && mkdir -p "${1}" && mkdir "${1}/patch" "${1}/legal"
-    cp -vf "${2}/src/curl.exe" "${1}/curl.exe"
+    install -v --strip "${2}/src/curl.exe" "${1}/curl.exe"
     cp -vf "${BASE_DIR}/patch/"*.diff "${1}/patch"
     cp -vf "${PKGS_DIR}/cacert.pem" "${1}/curl-ca-bundle.crt"
     unix2dos > "${1}/build_info.txt" << EOF
@@ -494,24 +494,25 @@ make_zip "${OUTDIR_FULL}" "full"
 printf "\n==================== Output (slim) ====================\n\n"
 readonly OUTDIR_SLIM="${WORK_DIR}/_bin/slim"
 make_out "${OUTDIR_SLIM}" "${SLIM_DIR}" "slim"
-copy_doc "${OUTDIR_FULL}" "${ZLIB_DIR}/LICENSE.md" "zlib.LICENSE.txt"
-copy_doc "${OUTDIR_SLIM}" "${GTXT_DIR}/AUTHORS"    "gettext.AUTHORS.txt"
-copy_doc "${OUTDIR_SLIM}" "${GTXT_DIR}/COPYING"    "gettext.COPYING.txt"
-copy_doc "${OUTDIR_SLIM}" "${GTXT_DIR}/README"     "gettext.README.txt"
-copy_doc "${OUTDIR_SLIM}" "${ICNV_DIR}/AUTHORS"    "libiconv.AUTHORS.txt"
-copy_doc "${OUTDIR_SLIM}" "${ICNV_DIR}/COPYING"    "libiconv.COPYING.txt"
-copy_doc "${OUTDIR_SLIM}" "${ICNV_DIR}/README"     "libiconv.README"
-copy_doc "${OUTDIR_SLIM}" "${IDN2_DIR}/AUTHORS"    "libidn2.AUTHORS.txt"
-copy_doc "${OUTDIR_SLIM}" "${IDN2_DIR}/COPYING"    "libidn2.COPYING.txt"
-copy_doc "${OUTDIR_SLIM}" "${IDN2_DIR}/README.md"  "libidn2.README.md"
-copy_doc "${OUTDIR_SLIM}" "${LPSL_DIR}/AUTHORS"    "libpsl.AUTHORS.txt"
-copy_doc "${OUTDIR_SLIM}" "${LPSL_DIR}/COPYING"    "libpsl.COPYING.txt"
-copy_doc "${OUTDIR_SLIM}" "${SLIM_DIR}/CHANGES.md" "curl.CHANGES.txt"
-copy_doc "${OUTDIR_SLIM}" "${SLIM_DIR}/COPYING"    "curl.COPYING.txt"
-copy_doc "${OUTDIR_SLIM}" "${SLIM_DIR}/README"     "curl.README.txt"
-copy_doc "${OUTDIR_SLIM}" "${WOLF_DIR}/COPYING"    "wolfssl.COPYING.txt"
-copy_doc "${OUTDIR_SLIM}" "${WOLF_DIR}/README"     "wolfssl.README.txt"
-copy_doc "${OUTDIR_SLIM}" "${ZLIB_DIR}/README.md"  "zlib.README.txt"
+copy_doc "${OUTDIR_FULL}" "${OSSL_DIR}/AUTHORS.md"  "openssl.AUTHORS.md"
+copy_doc "${OUTDIR_FULL}" "${OSSL_DIR}/LICENSE.txt" "openssl.LICENSE.txt"
+copy_doc "${OUTDIR_FULL}" "${OSSL_DIR}/README.md"   "openssl.README.md"
+copy_doc "${OUTDIR_FULL}" "${ZLIB_DIR}/LICENSE.md"  "zlib.LICENSE.txt"
+copy_doc "${OUTDIR_SLIM}" "${GTXT_DIR}/AUTHORS"     "gettext.AUTHORS.txt"
+copy_doc "${OUTDIR_SLIM}" "${GTXT_DIR}/COPYING"     "gettext.COPYING.txt"
+copy_doc "${OUTDIR_SLIM}" "${GTXT_DIR}/README"      "gettext.README.txt"
+copy_doc "${OUTDIR_SLIM}" "${ICNV_DIR}/AUTHORS"     "libiconv.AUTHORS.txt"
+copy_doc "${OUTDIR_SLIM}" "${ICNV_DIR}/COPYING"     "libiconv.COPYING.txt"
+copy_doc "${OUTDIR_SLIM}" "${ICNV_DIR}/README"      "libiconv.README"
+copy_doc "${OUTDIR_SLIM}" "${IDN2_DIR}/AUTHORS"     "libidn2.AUTHORS.txt"
+copy_doc "${OUTDIR_SLIM}" "${IDN2_DIR}/COPYING"     "libidn2.COPYING.txt"
+copy_doc "${OUTDIR_SLIM}" "${IDN2_DIR}/README.md"   "libidn2.README.md"
+copy_doc "${OUTDIR_SLIM}" "${LPSL_DIR}/AUTHORS"     "libpsl.AUTHORS.txt"
+copy_doc "${OUTDIR_SLIM}" "${LPSL_DIR}/COPYING"     "libpsl.COPYING.txt"
+copy_doc "${OUTDIR_SLIM}" "${SLIM_DIR}/CHANGES.md"  "curl.CHANGES.txt"
+copy_doc "${OUTDIR_SLIM}" "${SLIM_DIR}/COPYING"     "curl.COPYING.txt"
+copy_doc "${OUTDIR_SLIM}" "${SLIM_DIR}/README"      "curl.README.txt"
+copy_doc "${OUTDIR_SLIM}" "${ZLIB_DIR}/README.md"   "zlib.README.txt"
 make_zip "${OUTDIR_SLIM}" "slim"
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
