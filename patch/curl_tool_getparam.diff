@@ -2,21 +2,21 @@
  1 file changed, 10 insertions(+), 1 deletion(-)
 
 diff --git a/src/tool_getparam.c b/src/tool_getparam.c
-index 51156e46b..07a373687 100644
+index 4766dade2..13d316ed7 100644
 --- a/src/tool_getparam.c
 +++ b/src/tool_getparam.c
-@@ -23,6 +23,10 @@
-  ***************************************************************************/
- #include "tool_setup.h"
+@@ -43,6 +43,10 @@
+ #define ALLOW_BLANK TRUE
+ #define DENY_BLANK FALSE
  
 +#ifndef HAVE_WRITABLE_ARGV
 +#define HAVE_WRITABLE_ARGV 1
 +#endif
 +
- #include <curlx.h>
- #include "tool_binmode.h"
- #include "tool_cfgable.h"
-@@ -572,14 +576,19 @@ static ParameterError GetSizeParameter(struct GlobalConfig *global,
+ static ParameterError getstr(char **str, const char *val, bool allowblank)
+ {
+   if(*str) {
+@@ -570,14 +574,19 @@ static ParameterError GetSizeParameter(struct GlobalConfig *global,
  }
  
  #ifdef HAVE_WRITABLE_ARGV

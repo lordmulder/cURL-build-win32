@@ -2,10 +2,10 @@
  1 file changed, 9 insertions(+), 6 deletions(-)
 
 diff --git a/src/tool_parsecfg.c b/src/tool_parsecfg.c
-index 9ce734be6..714c5ca43 100644
+index 0c70bdba5..432937d4a 100644
 --- a/src/tool_parsecfg.c
 +++ b/src/tool_parsecfg.c
-@@ -52,7 +52,7 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
+@@ -51,7 +51,7 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
  
    if(!filename) {
      /* NULL means load .curlrc from homedir! */
@@ -14,7 +14,7 @@ index 9ce734be6..714c5ca43 100644
      if(curlrc) {
        file = fopen(curlrc, FOPEN_READTEXT);
        if(!file) {
-@@ -63,14 +63,17 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
+@@ -62,14 +62,17 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
      }
  #if defined(_WIN32) && !defined(UNDER_CE)
      else {

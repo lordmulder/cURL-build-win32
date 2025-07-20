@@ -3,10 +3,10 @@
  2 files changed, 12 insertions(+), 13 deletions(-)
 
 diff --git a/src/tool_util.c b/src/tool_util.c
-index 27c2df1b6..8a6b0a492 100644
+index e7ab704f1..2fa62e200 100644
 --- a/src/tool_util.c
 +++ b/src/tool_util.c
-@@ -108,27 +108,26 @@ int tool_ftruncate64(int fd, curl_off_t where)
+@@ -107,27 +107,26 @@ int tool_ftruncate64(int fd, curl_off_t where)
  #endif /* USE_TOOL_FTRUNCATE */
  
  #if defined(_WIN32) && !defined(UNDER_CE)
