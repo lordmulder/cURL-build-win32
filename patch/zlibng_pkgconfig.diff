@@ -4,10 +4,10 @@
  3 files changed, 8 insertions(+)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 7afa5319..c608f935 100644
+index 3674130..5cbe82b 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1205,6 +1205,12 @@ else()
+@@ -1064,6 +1064,12 @@ else()
      set(PC_INC_INSTALL_DIR "\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}")
  endif()
  
@@ -21,7 +21,7 @@ index 7afa5319..c608f935 100644
      set(PC_LIB_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}")
  else()
 diff --git a/zlib.pc.cmakein b/zlib.pc.cmakein
-index df8bf9f0..a5ff63ce 100644
+index df8bf9f..a5ff63c 100644
 --- a/zlib.pc.cmakein
 +++ b/zlib.pc.cmakein
 @@ -1,6 +1,7 @@
@@ -33,7 +33,7 @@ index df8bf9f0..a5ff63ce 100644
  sharedlibdir=${libdir}
  includedir=@PC_INC_INSTALL_DIR@
 diff --git a/zlib.pc.in b/zlib.pc.in
-index 45b35989..25cc923e 100644
+index 45b3598..25cc923 100644
 --- a/zlib.pc.in
 +++ b/zlib.pc.in
 @@ -1,6 +1,7 @@
