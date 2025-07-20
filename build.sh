@@ -11,7 +11,7 @@ trap 'read -p "Press any key..." x || true' EXIT
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # cURL version
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-readonly MY_VERSION=8.14.1
+readonly MY_VERSION=8.15.0
 
 ###############################################################################
 # PREPARATION
@@ -221,20 +221,6 @@ patch -p1 -b < "${BASE_DIR}/patch/openssl_strlen31.diff"
 ./Configure no-hw no-shared no-engine no-capieng no-dso zlib ${ossl_flag} -static -march=${MY_MARCH} -mtune=${MY_MTUNE} -flto -DNDEBUG -D_WIN32_WINNT=0x0501 -DOPENSSL_TLS_SECURITY_LEVEL=0 -I"${DEPS_DIR}/include" -L"${DEPS_DIR}/lib" --prefix="${DEPS_DIR}" --libdir="lib" ${ossl_mngw}
 make build_libs && make install_dev
 popd
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# WolfSSL
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#printf "\n==================== WolfSSL ====================\n\n"
-#readonly WOLF_DIR="${WORK_DIR}/wolfssl"
-#rm -rf "${WOLF_DIR}" && mkdir "${WOLF_DIR}"
-#tar -xvf "${PKGS_DIR}/wolfssl.tar.gz" --strip-components=1 -C "${WOLF_DIR}"
-#pushd "${WOLF_DIR}"
-#patch -p1 -b < "${BASE_DIR}/patch/wolfssl_inetpton.diff"
-#patch -p1 -b < "${BASE_DIR}/patch/wolfssl_strcpy_s.diff"
-#CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501 -DFP_MAX_BITS=16384 -DSP_INT_BITS=8192 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" ./configure --enable-static --disable-shared --prefix="${DEPS_DIR}" --enable-curl --enable-oldtls --enable-tlsv10 --enable-dsa --enable-ecccustcurves --enable-brainpool --enable-curve25519 --enable-ed25519 --enable-ed25519-stream --enable-curve448 --enable-ed448 --enable-ed448-stream --disable-examples --disable-crypttests --disable-benchmark
-#make && make install
-#popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # librtmp
