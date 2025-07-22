@@ -45,8 +45,9 @@ if [[ -z "${CC_PATH}" ]]; then
 	exit 1
 fi
 
+readonly CC_DIRECTORY="$(dirname -- "${CC_PATH}")"
 for app_name in gcc ld as nm ar; do
-	if [[ "$(dirname -- "${CC_PATH}")" != "$(dirname -- "$(realpath -- "$(which ${app_name})")")" ]]; then
+	if [ "${CC_DIRECTORY}" != "$(dirname -- "$(realpath -- "$(which ${app_name})")")" ]; then
 		echo 'Inconsistent C compiler path !!!'
 		exit 1
 	fi
@@ -189,7 +190,7 @@ tar -xvf "${PKGS_DIR}/zlib-ng.tar.gz" --strip-components=1 -C "${ZLIB_DIR}"
 pushd "${ZLIB_DIR}"
 patch -p1 -b < "${BASE_DIR}/patch/zlibng_pkgconfig.diff"
 [[ "${MY_CPU}" == "x86" ]] && readonly zlib_extra_flag="--without-optimizations" || readonly zlib_extra_flag=""
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501" LDFLAGS="-L${DEPS_DIR}/lib" ./configure --zlib-compat --static ${zlib_extra_flag} --prefix="${DEPS_DIR}"
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -DNDEBUG -D_WIN32_WINNT=0x0501" LDFLAGS="-L${DEPS_DIR}/lib" ./configure --zlib-compat --static ${zlib_extra_flag} --prefix="${DEPS_DIR}"
 make && make install
 popd
 
@@ -502,10 +503,10 @@ make_zip "${OUTDIR_FULL}" "full"
 printf "\n==================== Output (slim) ====================\n\n"
 readonly OUTDIR_SLIM="${WORK_DIR}/_bin/slim"
 make_out "${OUTDIR_SLIM}" "${SLIM_DIR}" "slim"
-copy_doc "${OUTDIR_FULL}" "${OSSL_DIR}/AUTHORS.md"  "openssl.AUTHORS.md"
-copy_doc "${OUTDIR_FULL}" "${OSSL_DIR}/LICENSE.txt" "openssl.LICENSE.txt"
-copy_doc "${OUTDIR_FULL}" "${OSSL_DIR}/README.md"   "openssl.README.md"
-copy_doc "${OUTDIR_FULL}" "${ZLIB_DIR}/LICENSE.md"  "zlib.LICENSE.txt"
+copy_doc "${OUTDIR_SLIM}" "${OSSL_DIR}/AUTHORS.md"  "openssl.AUTHORS.md"
+copy_doc "${OUTDIR_SLIM}" "${OSSL_DIR}/LICENSE.txt" "openssl.LICENSE.txt"
+copy_doc "${OUTDIR_SLIM}" "${OSSL_DIR}/README.md"   "openssl.README.md"
+copy_doc "${OUTDIR_SLIM}" "${ZLIB_DIR}/LICENSE.md"  "zlib.LICENSE.txt"
 copy_doc "${OUTDIR_SLIM}" "${GTXT_DIR}/AUTHORS"     "gettext.AUTHORS.txt"
 copy_doc "${OUTDIR_SLIM}" "${GTXT_DIR}/COPYING"     "gettext.COPYING.txt"
 copy_doc "${OUTDIR_SLIM}" "${GTXT_DIR}/README"      "gettext.README.txt"
