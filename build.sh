@@ -189,7 +189,7 @@ tar -xvf "${PKGS_DIR}/zlib-ng.tar.gz" --strip-components=1 -C "${ZLIB_DIR}"
 pushd "${ZLIB_DIR}"
 patch -p1 -b < "${BASE_DIR}/patch/zlibng_pkgconfig.diff"
 [[ "${MY_CPU}" == "x86" ]] && readonly zlib_extra_flag="--without-optimizations" || readonly zlib_extra_flag=""
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -flto -DNDEBUG -D_WIN32_WINNT=0x0501" LDFLAGS="-flto -L${DEPS_DIR}/lib" ./configure --zlib-compat --static ${zlib_extra_flag} --prefix="${DEPS_DIR}"
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501" LDFLAGS="-L${DEPS_DIR}/lib" ./configure --zlib-compat --static ${zlib_extra_flag} --prefix="${DEPS_DIR}"
 make && make install
 popd
 
@@ -201,7 +201,7 @@ readonly ZSTD_DIR="${WORK_DIR}/zstd"
 rm -rf "${ZSTD_DIR}" && mkdir "${ZSTD_DIR}"
 tar -xvf "${PKGS_DIR}/zstd.tar.gz" --strip-components=1 -C "${ZSTD_DIR}" || true
 pushd "${ZSTD_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -flto -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-flto -L${DEPS_DIR}/lib" make lib V=1
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" make lib V=1
 cp -vf lib/libzstd.a "${DEPS_DIR}/lib"
 cp -vf lib/zstd.h lib/zstd_errors.h lib/zdict.h "${DEPS_DIR}/include"
 sed -e "s|@PREFIX@|${DEPS_DIR}|g" -e 's|@EXEC_PREFIX@|${prefix}|g' -e 's|@INCLUDEDIR@|${prefix}/include|g' -e 's|@LIBDIR@|${prefix}/lib|g' -e 's|@VERSION@|1.5.0|g' lib/libzstd.pc.in > "${DEPS_DIR}/lib/pkgconfig/libzstd.pc"
@@ -216,8 +216,8 @@ rm -rf "${BROT_DIR}" && mkdir "${BROT_DIR}"
 tar -xvf "${PKGS_DIR}/brotli.tar.gz" --strip-components=1 -C "${BROT_DIR}"
 mkdir "${BROT_DIR}/out"
 pushd "${BROT_DIR}/out"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -flto -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib -flto -static" cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_VERBOSE_MAKEFILE=TRUE -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX="${DEPS_DIR}" ..
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -flto -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib -flto -static" cmake --build . --config Release --target install
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib -static" cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_VERBOSE_MAKEFILE=TRUE -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX="${DEPS_DIR}" ..
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib -static" cmake --build . --config Release --target install
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -230,7 +230,7 @@ tar -xvf "${PKGS_DIR}/openssl.tar.gz" --strip-components=1 -C "${OSSL_DIR}"
 [[ "${MY_CPU}" == "x64" ]] && readonly ossl_flag="no-sse2" || readonly ossl_flag="386"
 [[ "${MY_CPU}" == "x64" ]] && readonly ossl_mngw="mingw64" || readonly ossl_mngw="mingw"
 pushd "${OSSL_DIR}"
-./Configure no-hw no-shared no-engine no-capieng no-dso zlib ${ossl_flag} -static -march=${MY_MARCH} -mtune=${MY_MTUNE} -flto -DNDEBUG -D_WIN32_WINNT=0x0501 -DOPENSSL_TLS_SECURITY_LEVEL=0 -I"${DEPS_DIR}/include" -L"${DEPS_DIR}/lib" --prefix="${DEPS_DIR}" --libdir="lib" ${ossl_mngw}
+./Configure no-hw no-shared no-engine no-capieng no-dso zlib ${ossl_flag} -static -march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -DOPENSSL_TLS_SECURITY_LEVEL=0 -I"${DEPS_DIR}/include" -L"${DEPS_DIR}/lib" --prefix="${DEPS_DIR}" --libdir="lib" ${ossl_mngw}
 make build_libs && make install_dev
 popd
 
@@ -243,7 +243,7 @@ rm -rf "${RTMP_DIR}" && mkdir "${RTMP_DIR}"
 tar -xvf "${PKGS_DIR}/rtmpdump.tar.gz" --strip-components=1 -C "${RTMP_DIR}"
 pushd "${RTMP_DIR}"
 patch -p1 -b < "${BASE_DIR}/patch/librtmp_openssl.diff"
-make SYS=mingw SHARED= prefix="${DEPS_DIR}" XCFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -flto -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" XLDFLAGS="-flto -L${DEPS_DIR}/lib" XLIBS="-lws2_32 -lcrypt32"
+make SYS=mingw SHARED= prefix="${DEPS_DIR}" XCFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" XLDFLAGS="-L${DEPS_DIR}/lib" XLIBS="-lws2_32 -lcrypt32"
 make SYS=mingw SHARED= prefix="${DEPS_DIR}" install
 popd
 
@@ -255,7 +255,7 @@ readonly ICNV_DIR="${WORK_DIR}/libiconv"
 rm -rf "${ICNV_DIR}" && mkdir "${ICNV_DIR}"
 tar -xvf "${PKGS_DIR}/libiconv.tar.gz" --strip-components=1 -C "${ICNV_DIR}"
 pushd "${ICNV_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -flto -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-flto -L${DEPS_DIR}/lib" ./configure --prefix="${DEPS_DIR}" --disable-rpath --disable-shared
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" ./configure --prefix="${DEPS_DIR}" --disable-rpath --disable-shared
 make && make install
 popd
 
@@ -267,7 +267,7 @@ readonly GTXT_DIR="${WORK_DIR}/gettext"
 rm -rf "${GTXT_DIR}" && mkdir "${GTXT_DIR}"
 tar -xvf "${PKGS_DIR}/gettext.tar.gz" --strip-components=1 -C "${GTXT_DIR}"
 pushd "${GTXT_DIR}/gettext-runtime"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -flto -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-flto -L${DEPS_DIR}/lib" ./configure --prefix="${DEPS_DIR}" --disable-shared --disable-libasprintf --without-emacs --disable-java --disable-native-java --disable-csharp --disable-openmp
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" ./configure --prefix="${DEPS_DIR}" --disable-shared --disable-libasprintf --without-emacs --disable-java --disable-native-java --disable-csharp --disable-openmp
 make && make install
 popd
 
@@ -280,7 +280,7 @@ rm -rf "${SSH2_DIR}" && mkdir "${SSH2_DIR}"
 tar -xvf "${PKGS_DIR}/libssh2.tar.gz" --strip-components=1 -C "${SSH2_DIR}"
 pushd "${SSH2_DIR}"
 patch -p1 -b < "${BASE_DIR}/patch/ssh2_session.diff"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -flto -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-flto -L${DEPS_DIR}/lib" ./configure --prefix="${DEPS_DIR}" --disable-examples-build --disable-shared --with-libz
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" ./configure --prefix="${DEPS_DIR}" --disable-examples-build --disable-shared --with-libz
 make && make install
 popd
 
@@ -293,7 +293,7 @@ rm -rf "${NGH2_DIR}" && mkdir "${NGH2_DIR}"
 tar -xvf "${PKGS_DIR}/nghttp2.tar.gz" --strip-components=1 -C "${NGH2_DIR}"
 pushd "${NGH2_DIR}"
 patch -p1 -b < "${BASE_DIR}/patch/nghttp2_time.diff"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -flto -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-flto -L${DEPS_DIR}/lib" OPENSSL_CFLAGS="-I${DEPS_DIR}/include" OPENSSL_LIBS="-L${DEPS_DIR}/lib -lssl -lcrypto" ZLIB_CFLAGS="-I${DEPS_DIR}/include" ZLIB_LIBS="-L${DEPS_DIR}/lib -lz" ./configure --prefix="${DEPS_DIR}" --enable-lib-only --disable-threads --disable-shared
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" OPENSSL_CFLAGS="-I${DEPS_DIR}/include" OPENSSL_LIBS="-L${DEPS_DIR}/lib -lssl -lcrypto" ZLIB_CFLAGS="-I${DEPS_DIR}/include" ZLIB_LIBS="-L${DEPS_DIR}/lib -lz" ./configure --prefix="${DEPS_DIR}" --enable-lib-only --disable-threads --disable-shared
 make && make install
 popd
 
@@ -305,7 +305,7 @@ readonly NGH3_DIR="${WORK_DIR}/nghttp3"
 rm -rf "${NGH3_DIR}" && mkdir "${NGH3_DIR}"
 tar -xvf "${PKGS_DIR}/nghttp3.tar.gz" --strip-components=1 -C "${NGH3_DIR}"
 pushd "${NGH3_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -flto -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-flto -L${DEPS_DIR}/lib" OPENSSL_CFLAGS="-I${DEPS_DIR}/include" OPENSSL_LIBS="-L${DEPS_DIR}/lib -lssl -lcrypto" ZLIB_CFLAGS="-I${DEPS_DIR}/include" ZLIB_LIBS="-L${DEPS_DIR}/lib -lz" ./configure --prefix="${DEPS_DIR}" --enable-lib-only --disable-threads --disable-shared
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" OPENSSL_CFLAGS="-I${DEPS_DIR}/include" OPENSSL_LIBS="-L${DEPS_DIR}/lib -lssl -lcrypto" ZLIB_CFLAGS="-I${DEPS_DIR}/include" ZLIB_LIBS="-L${DEPS_DIR}/lib -lz" ./configure --prefix="${DEPS_DIR}" --enable-lib-only --disable-threads --disable-shared
 make && make install
 popd
 
@@ -317,7 +317,7 @@ readonly TCP2_DIR="${WORK_DIR}/ngtcp2"
 rm -rf "${TCP2_DIR}" && mkdir "${TCP2_DIR}"
 tar -xvf "${PKGS_DIR}/ngtcp2.tar.gz" --strip-components=1 -C "${TCP2_DIR}"
 pushd "${TCP2_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -flto -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-flto -L${DEPS_DIR}/lib" OPENSSL_CFLAGS="-I${DEPS_DIR}/include" OPENSSL_LIBS="-L${DEPS_DIR}/lib -lssl -lcrypto -lws2_32 -lz -lcrypt32" ZLIB_CFLAGS="-I${DEPS_DIR}/include" ZLIB_LIBS="-L${DEPS_DIR}/lib -lz" ./configure --prefix="${DEPS_DIR}" --enable-lib-only --with-openssl --disable-shared
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" OPENSSL_CFLAGS="-I${DEPS_DIR}/include" OPENSSL_LIBS="-L${DEPS_DIR}/lib -lssl -lcrypto -lws2_32 -lz -lcrypt32" ZLIB_CFLAGS="-I${DEPS_DIR}/include" ZLIB_LIBS="-L${DEPS_DIR}/lib -lz" ./configure --prefix="${DEPS_DIR}" --enable-lib-only --with-openssl --disable-shared
 make && make install
 popd
 
@@ -329,7 +329,7 @@ readonly IDN2_DIR="${WORK_DIR}/libidn2"
 rm -rf "${IDN2_DIR}" && mkdir "${IDN2_DIR}"
 tar -xvf "${PKGS_DIR}/libidn2.tar.gz" --strip-components=1 -C "${IDN2_DIR}"
 pushd "${IDN2_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -flto -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-flto -L${DEPS_DIR}/lib" ./configure --prefix="${DEPS_DIR}" --disable-shared --disable-doc --without-libiconv-prefix --without-libunistring-prefix --disable-valgrind-tests
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" ./configure --prefix="${DEPS_DIR}" --disable-shared --disable-doc --without-libiconv-prefix --without-libunistring-prefix --disable-valgrind-tests
 patch -p1 -b < "${BASE_DIR}/patch/libidn2_makefile.diff"
 make && make install
 popd
@@ -342,7 +342,7 @@ readonly LPSL_DIR="${WORK_DIR}/libpsl"
 rm -rf "${LPSL_DIR}" && mkdir "${LPSL_DIR}"
 tar -xvf "${PKGS_DIR}/libpsl.tar.gz" --strip-components=1 -C "${LPSL_DIR}"
 pushd "${LPSL_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -flto -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-flto -L${DEPS_DIR}/lib" ./configure --prefix="${DEPS_DIR}" --disable-shared
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" ./configure --prefix="${DEPS_DIR}" --disable-shared
 make && make install
 popd
 
@@ -354,7 +354,7 @@ readonly SASL_DIR="${WORK_DIR}/libgsasl"
 rm -rf "${SASL_DIR}" && mkdir "${SASL_DIR}"
 tar -xvf "${PKGS_DIR}/libgsasl.tar.gz" --strip-components=1 -C "${SASL_DIR}"
 pushd "${SASL_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -flto -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include -Wno-error=int-conversion" LDFLAGS="-flto -L${DEPS_DIR}/lib" ./configure --prefix="${DEPS_DIR}" --disable-shared --disable-valgrind-tests --disable-obsolete -without-libintl-prefix
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include -Wno-error=int-conversion" LDFLAGS="-L${DEPS_DIR}/lib" ./configure --prefix="${DEPS_DIR}" --disable-shared --disable-valgrind-tests --disable-obsolete -without-libintl-prefix
 make && make install
 popd
 
@@ -384,7 +384,7 @@ function init_curl() {
 printf "\n==================== cURL (full) ====================\n\n"
 readonly CURL_DIR="${WORK_DIR}/curl.full"
 init_curl "${CURL_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -flto -I${DEPS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DNGHTTP2_STATICLIB -DNGHTTP3_STATICLIB -DNGTCP2_STATICLIB -DUNICODE -D_UNICODE" LDFLAGS="-mconsole -Wl,--trace -static -flto -no-pthread -L${DEPS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm -lbrotlicommon" PKG_CONFIG_PATH="${DEPS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --enable-windows-unicode --disable-libcurl-option --disable-openssl-auto-load-config --enable-ca-search-safe --with-zlib --with-openssl --with-libidn2 --without-ca-bundle --with-zstd --with-brotli --with-librtmp --with-libssh2 --with-nghttp2="${DEPS_DIR}" --with-ngtcp2="${DEPS_DIR}" --with-nghttp3="${DEPS_DIR}"
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -I${DEPS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DNGHTTP2_STATICLIB -DNGHTTP3_STATICLIB -DNGTCP2_STATICLIB -DUNICODE -D_UNICODE" LDFLAGS="-mconsole -Wl,--trace -static -no-pthread -L${DEPS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm -lbrotlicommon" PKG_CONFIG_PATH="${DEPS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --enable-windows-unicode --disable-libcurl-option --disable-openssl-auto-load-config --enable-ca-search-safe --with-zlib --with-openssl --with-libidn2 --without-ca-bundle --with-zstd --with-brotli --with-librtmp --with-libssh2 --with-nghttp2="${DEPS_DIR}" --with-ngtcp2="${DEPS_DIR}" --with-nghttp3="${DEPS_DIR}"
 sed -i 's|#define HAVE_IF_NAMETOINDEX 1|/* #undef HAVE_IF_NAMETOINDEX */|g' lib/curl_config.h
 make V=1
 popd
@@ -395,7 +395,7 @@ popd
 printf "\n==================== cURL (slim) ====================\n\n"
 readonly SLIM_DIR="${WORK_DIR}/curl.slim"
 init_curl "${SLIM_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -flto -I${DEPS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DUNICODE -D_UNICODE" LDFLAGS="-mconsole -Wl,--trace -static -flto -no-pthread -L${DEPS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm" PKG_CONFIG_PATH="${DEPS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --enable-windows-unicode --disable-libcurl-option --disable-openssl-auto-load-config --enable-ca-search-safe --with-zlib --with-openssl --with-libidn2 --without-ca-bundle --without-zstd --without-brotli --without-librtmp --without-libssh --without-libssh2 --without-nghttp2 --without-ngtcp2 --without-nghttp3 --without-libgsasl --disable-ares --disable-ntlm --disable-manual
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -I${DEPS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DUNICODE -D_UNICODE" LDFLAGS="-mconsole -Wl,--trace -static -no-pthread -L${DEPS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm" PKG_CONFIG_PATH="${DEPS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --enable-windows-unicode --disable-libcurl-option --disable-openssl-auto-load-config --enable-ca-search-safe --with-zlib --with-openssl --with-libidn2 --without-ca-bundle --without-zstd --without-brotli --without-librtmp --without-libssh --without-libssh2 --without-nghttp2 --without-ngtcp2 --without-nghttp3 --without-libgsasl --disable-ares --disable-ntlm --disable-manual -disable-libcurl-option --disable-doh -disable-kerberos-auth
 sed -i 's|#define HAVE_IF_NAMETOINDEX 1|/* #undef HAVE_IF_NAMETOINDEX */|g' lib/curl_config.h
 make V=1
 popd
