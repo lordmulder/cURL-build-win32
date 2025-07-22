@@ -39,6 +39,19 @@ fi
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Check C compiler
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+readonly CC_PATH="$(realpath -- "$(which cc)")"
+if [[ -z "${CC_PATH}" ]]; then
+	echo 'Sorry, no working C compiler found !!!'
+	exit 1
+fi
+
+for app_name in gcc ld as nm ar; do
+	if [[ "$(dirname -- "${CC_PATH}")" != "$(dirname -- "$(realpath -- "$(which ${app_name})")")" ]]; then
+		echo 'Inconsistent C compiler path !!!'
+		exit 1
+	fi
+done
+
 readonly CC_TARGET="$(cc -dumpmachine)"
 if [[ "${CC_TARGET,,}" =~ w64-mingw(32|64)$ ]]; then
 	echo "Target arch: ${CC_TARGET}"
