@@ -36,6 +36,24 @@ else
 	exit 1
 fi
 
+if [ -n "${WINLIBS_ROOT_PATH}" ]; then
+	readonly _WINLIBS_ROOT_PATH="$(realpath -- "$(cygpath -u -- "${WINLIBS_ROOT_PATH}")")"
+	case "${UNAME_SPEC,,}" in
+		mingw64*)
+			readonly WINLIBS_PATH="${_WINLIBS_ROOT_PATH}/mingw64/bin"
+			;;
+		*)
+			readonly WINLIBS_PATH="${_WINLIBS_ROOT_PATH}/mingw32/bin"
+			;;
+	esac
+	if [ ! -e "${WINLIBS_PATH}/gcc.exe" ]; then
+		echo "Sorry, C compiler could not be found in the \"${WINLIBS_PATH}\" directory!"
+		exit 1
+	fi
+	echo "Using WinLibs MinGW-w64: ${WINLIBS_PATH}"
+	export PATH="${WINLIBS_PATH}:${PATH}"
+fi
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Check C compiler
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -282,7 +300,7 @@ tar -xvf "${PKGS_DIR}/libssh2.tar.gz" --strip-components=1 -C "${SSH2_DIR}"
 pushd "${SSH2_DIR}"
 patch -p1 -b < "${BASE_DIR}/patch/ssh2_session.diff"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" ./configure --prefix="${DEPS_DIR}" --disable-examples-build --disable-shared --with-libz
-make && make install
+make V=1 && make install
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -295,7 +313,7 @@ tar -xvf "${PKGS_DIR}/nghttp2.tar.gz" --strip-components=1 -C "${NGH2_DIR}"
 pushd "${NGH2_DIR}"
 patch -p1 -b < "${BASE_DIR}/patch/nghttp2_time.diff"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" OPENSSL_CFLAGS="-I${DEPS_DIR}/include" OPENSSL_LIBS="-L${DEPS_DIR}/lib -lssl -lcrypto" ZLIB_CFLAGS="-I${DEPS_DIR}/include" ZLIB_LIBS="-L${DEPS_DIR}/lib -lz" ./configure --prefix="${DEPS_DIR}" --enable-lib-only --disable-threads --disable-shared
-make && make install
+make V=1 && make install
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -307,7 +325,7 @@ rm -rf "${NGH3_DIR}" && mkdir "${NGH3_DIR}"
 tar -xvf "${PKGS_DIR}/nghttp3.tar.gz" --strip-components=1 -C "${NGH3_DIR}"
 pushd "${NGH3_DIR}"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" OPENSSL_CFLAGS="-I${DEPS_DIR}/include" OPENSSL_LIBS="-L${DEPS_DIR}/lib -lssl -lcrypto" ZLIB_CFLAGS="-I${DEPS_DIR}/include" ZLIB_LIBS="-L${DEPS_DIR}/lib -lz" ./configure --prefix="${DEPS_DIR}" --enable-lib-only --disable-threads --disable-shared
-make && make install
+make V=1 && make install
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -319,7 +337,7 @@ rm -rf "${TCP2_DIR}" && mkdir "${TCP2_DIR}"
 tar -xvf "${PKGS_DIR}/ngtcp2.tar.gz" --strip-components=1 -C "${TCP2_DIR}"
 pushd "${TCP2_DIR}"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" OPENSSL_CFLAGS="-I${DEPS_DIR}/include" OPENSSL_LIBS="-L${DEPS_DIR}/lib -lssl -lcrypto -lws2_32 -lz -lcrypt32" ZLIB_CFLAGS="-I${DEPS_DIR}/include" ZLIB_LIBS="-L${DEPS_DIR}/lib -lz" ./configure --prefix="${DEPS_DIR}" --enable-lib-only --with-openssl --disable-shared
-make && make install
+make V=1 && make install
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -332,7 +350,7 @@ tar -xvf "${PKGS_DIR}/libidn2.tar.gz" --strip-components=1 -C "${IDN2_DIR}"
 pushd "${IDN2_DIR}"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" ./configure --prefix="${DEPS_DIR}" --disable-shared --disable-doc --without-libiconv-prefix --without-libunistring-prefix --disable-valgrind-tests
 patch -p1 -b < "${BASE_DIR}/patch/libidn2_makefile.diff"
-make && make install
+make V=1 && make install
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -344,7 +362,7 @@ rm -rf "${LPSL_DIR}" && mkdir "${LPSL_DIR}"
 tar -xvf "${PKGS_DIR}/libpsl.tar.gz" --strip-components=1 -C "${LPSL_DIR}"
 pushd "${LPSL_DIR}"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" ./configure --prefix="${DEPS_DIR}" --disable-shared
-make && make install
+make V=1 && make install
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -356,7 +374,7 @@ rm -rf "${SASL_DIR}" && mkdir "${SASL_DIR}"
 tar -xvf "${PKGS_DIR}/libgsasl.tar.gz" --strip-components=1 -C "${SASL_DIR}"
 pushd "${SASL_DIR}"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include -Wno-error=int-conversion" LDFLAGS="-L${DEPS_DIR}/lib" ./configure --prefix="${DEPS_DIR}" --disable-shared --disable-valgrind-tests --disable-obsolete -without-libintl-prefix
-make && make install
+make V=1 && make install
 popd
 
 ###############################################################################
@@ -385,7 +403,7 @@ function init_curl() {
 printf "\n==================== cURL (full) ====================\n\n"
 readonly CURL_DIR="${WORK_DIR}/curl.full"
 init_curl "${CURL_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -I${DEPS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DNGHTTP2_STATICLIB -DNGHTTP3_STATICLIB -DNGTCP2_STATICLIB -DUNICODE -D_UNICODE" LDFLAGS="-mconsole -Wl,--trace -static -no-pthread -L${DEPS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm -lbrotlicommon" PKG_CONFIG_PATH="${DEPS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --enable-windows-unicode --disable-libcurl-option --disable-openssl-auto-load-config --enable-ca-search-safe --with-zlib --with-openssl --with-libidn2 --without-ca-bundle --with-zstd --with-brotli --with-librtmp --with-libssh2 --with-nghttp2="${DEPS_DIR}" --with-ngtcp2="${DEPS_DIR}" --with-nghttp3="${DEPS_DIR}"
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -O2 -I${DEPS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DNGHTTP2_STATICLIB -DNGHTTP3_STATICLIB -DNGTCP2_STATICLIB -DUNICODE -D_UNICODE" LDFLAGS="-mconsole -Wl,--trace -static -no-pthread -L${DEPS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm -lbrotlicommon" PKG_CONFIG_PATH="${DEPS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --enable-windows-unicode --disable-libcurl-option --disable-openssl-auto-load-config --enable-ca-search-safe --enable-sspi --with-zlib --with-openssl --with-libidn2 --without-ca-bundle --with-zstd --with-brotli --with-librtmp --with-libssh2 --with-nghttp2="${DEPS_DIR}" --with-ngtcp2="${DEPS_DIR}" --with-nghttp3="${DEPS_DIR}"
 sed -i 's|#define HAVE_IF_NAMETOINDEX 1|/* #undef HAVE_IF_NAMETOINDEX */|g' lib/curl_config.h
 make V=1
 popd
@@ -396,7 +414,7 @@ popd
 printf "\n==================== cURL (slim) ====================\n\n"
 readonly SLIM_DIR="${WORK_DIR}/curl.slim"
 init_curl "${SLIM_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -I${DEPS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DUNICODE -D_UNICODE" LDFLAGS="-mconsole -Wl,--trace -static -no-pthread -L${DEPS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm" PKG_CONFIG_PATH="${DEPS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --enable-windows-unicode --disable-libcurl-option --disable-openssl-auto-load-config --enable-ca-search-safe --with-zlib --with-openssl --with-libidn2 --without-ca-bundle --without-zstd --without-brotli --without-librtmp --without-libssh --without-libssh2 --without-nghttp2 --without-ngtcp2 --without-nghttp3 --without-libgsasl --disable-ares --disable-ntlm --disable-manual -disable-libcurl-option --disable-doh -disable-kerberos-auth
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Oz -I${DEPS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DUNICODE -D_UNICODE" LDFLAGS="-mconsole -Wl,--trace -static -no-pthread -L${DEPS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm" PKG_CONFIG_PATH="${DEPS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --enable-windows-unicode --disable-libcurl-option --disable-openssl-auto-load-config --enable-ca-search-safe --with-zlib --with-openssl --with-libidn2 --without-ca-bundle --without-zstd --without-brotli --without-librtmp --without-libssh --without-libssh2 --without-nghttp2 --without-ngtcp2 --without-nghttp3 --without-libgsasl --disable-ares --disable-ntlm --disable-manual -disable-libcurl-option --disable-doh -disable-kerberos-auth
 sed -i 's|#define HAVE_IF_NAMETOINDEX 1|/* #undef HAVE_IF_NAMETOINDEX */|g' lib/curl_config.h
 make V=1
 popd
