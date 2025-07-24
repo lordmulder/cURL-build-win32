@@ -21,8 +21,8 @@ readonly MY_VERSION=8.15.0
 # Check bash version
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if [ -z "${BASH}" ] || [ ${BASH_VERSINFO[0]} -lt 5 ]; then
-	echo 'This script requires BASH 5.x or newer !!!'
-	exit 1
+    echo 'This script requires BASH 5.x or newer !!!'
+    exit 1
 fi
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -30,28 +30,28 @@ fi
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 readonly UNAME_SPEC="$(uname -so)"
 if [[ "${UNAME_SPEC,,}" =~ ^mingw(32|64)(.*)msys$ ]]; then
-	echo "Running on: ${UNAME_SPEC}"
+    echo "Running on: ${UNAME_SPEC}"
 else
-	echo 'This script is supposed to run on MSYS2/Mingw-w64 !!!'
-	exit 1
+    echo 'This script is supposed to run on MSYS2/Mingw-w64 !!!'
+    exit 1
 fi
 
 if [ -n "${WINLIBS_ROOT_PATH}" ]; then
-	readonly _WINLIBS_ROOT_PATH="$(realpath -- "$(cygpath -u -- "${WINLIBS_ROOT_PATH}")")"
-	case "${UNAME_SPEC,,}" in
-		mingw64*)
-			readonly WINLIBS_PATH="${_WINLIBS_ROOT_PATH}/mingw64/bin"
-			;;
-		*)
-			readonly WINLIBS_PATH="${_WINLIBS_ROOT_PATH}/mingw32/bin"
-			;;
-	esac
-	if [ ! -e "${WINLIBS_PATH}/gcc.exe" ]; then
-		echo "Sorry, C compiler could not be found in the \"${WINLIBS_PATH}\" directory!"
-		exit 1
-	fi
-	echo "Using WinLibs MinGW-w64: ${WINLIBS_PATH}"
-	export PATH="${WINLIBS_PATH}:${PATH}"
+    readonly _WINLIBS_ROOT_PATH="$(realpath -- "$(cygpath -u -- "${WINLIBS_ROOT_PATH}")")"
+    case "${UNAME_SPEC,,}" in
+        mingw64*)
+            readonly WINLIBS_PATH="${_WINLIBS_ROOT_PATH}/mingw64/bin"
+            ;;
+        *)
+            readonly WINLIBS_PATH="${_WINLIBS_ROOT_PATH}/mingw32/bin"
+            ;;
+    esac
+    if [ ! -e "${WINLIBS_PATH}/gcc.exe" ]; then
+        echo "Sorry, C compiler could not be found in the \"${WINLIBS_PATH}\" directory!"
+        exit 1
+    fi
+    echo "Using WinLibs MinGW-w64: ${WINLIBS_PATH}"
+    export PATH="${WINLIBS_PATH}:${PATH}"
 fi
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -59,28 +59,28 @@ fi
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 readonly CC_PATH="$(realpath -- "$(which cc)")"
 if [[ -z "${CC_PATH}" ]]; then
-	echo 'Sorry, no working C compiler found !!!'
-	exit 1
+    echo 'Sorry, no working C compiler found !!!'
+    exit 1
 fi
 
 readonly CC_DIRECTORY="$(dirname -- "${CC_PATH}")"
 for app_name in gcc ld as nm ar; do
-	if [ "${CC_DIRECTORY}" != "$(dirname -- "$(realpath -- "$(which ${app_name})")")" ]; then
-		echo 'Inconsistent C compiler path !!!'
-		exit 1
-	fi
+    if [ "${CC_DIRECTORY}" != "$(dirname -- "$(realpath -- "$(which ${app_name})")")" ]; then
+        echo 'Inconsistent C compiler path !!!'
+        exit 1
+    fi
 done
 
 readonly CC_TARGET="$(cc -dumpmachine)"
 if [[ "${CC_TARGET,,}" =~ w64-mingw(32|64)$ ]]; then
 	echo "Target arch: ${CC_TARGET}"
 else
-	if [[ -n "${CC_TARGET}" ]]; then
-		echo 'This script is supposed to run on MSYS2/Mingw-w64 !!!'
-	else
-		echo 'Sorry, no working C compiler found !!!'
-	fi
-	exit 1
+    if [[ -n "${CC_TARGET}" ]]; then
+        echo 'This script is supposed to run on MSYS2/Mingw-w64 !!!'
+    else
+        echo 'Sorry, no working C compiler found !!!'
+    fi
+    exit 1
 fi
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -275,7 +275,7 @@ rm -rf "${ICNV_DIR}" && mkdir "${ICNV_DIR}"
 tar -xvf "${PKGS_DIR}/libiconv.tar.gz" --strip-components=1 -C "${ICNV_DIR}"
 pushd "${ICNV_DIR}"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" ./configure --prefix="${DEPS_DIR}" --disable-rpath --disable-shared
-make && make install
+make V=1 && make install
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -287,7 +287,7 @@ rm -rf "${GTXT_DIR}" && mkdir "${GTXT_DIR}"
 tar -xvf "${PKGS_DIR}/gettext.tar.gz" --strip-components=1 -C "${GTXT_DIR}"
 pushd "${GTXT_DIR}/gettext-runtime"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" ./configure --prefix="${DEPS_DIR}" --disable-shared --disable-libasprintf --without-emacs --disable-java --disable-native-java --disable-csharp --disable-openmp
-make && make install
+make V=1 && make install
 popd
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -403,7 +403,7 @@ function init_curl() {
 printf "\n==================== cURL (full) ====================\n\n"
 readonly CURL_DIR="${WORK_DIR}/curl.full"
 init_curl "${CURL_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -O2 -I${DEPS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DNGHTTP2_STATICLIB -DNGHTTP3_STATICLIB -DNGTCP2_STATICLIB -DUNICODE -D_UNICODE" LDFLAGS="-mconsole -Wl,--trace -static -no-pthread -L${DEPS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm -lbrotlicommon" PKG_CONFIG_PATH="${DEPS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --enable-windows-unicode --disable-libcurl-option --disable-openssl-auto-load-config --enable-ca-search-safe --enable-sspi --with-zlib --with-openssl --with-libidn2 --without-ca-bundle --with-zstd --with-brotli --with-librtmp --with-libssh2 --with-nghttp2="${DEPS_DIR}" --with-ngtcp2="${DEPS_DIR}" --with-nghttp3="${DEPS_DIR}"
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -O2 -I${DEPS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DNGHTTP2_STATICLIB -DNGHTTP3_STATICLIB -DNGTCP2_STATICLIB -DUNICODE -D_UNICODE" LDFLAGS="-mconsole -Wl,--trace -Wl,--gc-sections -static -no-pthread -L${DEPS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm -lbrotlicommon" PKG_CONFIG_PATH="${DEPS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --enable-windows-unicode --disable-libcurl-option --disable-openssl-auto-load-config --enable-ca-search-safe --enable-sspi --with-zlib --with-openssl --with-libidn2 --without-ca-bundle --with-zstd --with-brotli --with-librtmp --with-libssh2 --with-nghttp2="${DEPS_DIR}" --with-ngtcp2="${DEPS_DIR}" --with-nghttp3="${DEPS_DIR}"
 sed -i 's|#define HAVE_IF_NAMETOINDEX 1|/* #undef HAVE_IF_NAMETOINDEX */|g' lib/curl_config.h
 make V=1
 popd
@@ -414,7 +414,7 @@ popd
 printf "\n==================== cURL (slim) ====================\n\n"
 readonly SLIM_DIR="${WORK_DIR}/curl.slim"
 init_curl "${SLIM_DIR}"
-CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Oz -I${DEPS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DUNICODE -D_UNICODE" LDFLAGS="-mconsole -Wl,--trace -static -no-pthread -L${DEPS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm" PKG_CONFIG_PATH="${DEPS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --enable-windows-unicode --disable-libcurl-option --disable-openssl-auto-load-config --enable-ca-search-safe --with-zlib --with-openssl --with-libidn2 --without-ca-bundle --without-zstd --without-brotli --without-librtmp --without-libssh --without-libssh2 --without-nghttp2 --without-ngtcp2 --without-nghttp3 --without-libgsasl --disable-ares --disable-ntlm --disable-manual -disable-libcurl-option --disable-doh -disable-kerberos-auth
+CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Oz -I${DEPS_DIR}/include" CPPFLAGS="-DNDEBUG -D_WIN32_WINNT=0x0501 -DUNICODE -D_UNICODE" LDFLAGS="-mconsole -Wl,--trace -Wl,--gc-sections -static -no-pthread -L${DEPS_DIR}/lib" LIBS="-liconv -lcrypt32 -lwinmm" PKG_CONFIG_PATH="${DEPS_DIR}/lib/pkgconfig" ./configure --enable-static --disable-shared --enable-windows-unicode --disable-libcurl-option --disable-openssl-auto-load-config --enable-ca-search-safe --with-zlib --with-openssl --with-libidn2 --without-ca-bundle --without-zstd --without-brotli --without-librtmp --without-libssh --without-libssh2 --without-nghttp2 --without-ngtcp2 --without-nghttp3 --without-libgsasl --disable-ares --disable-ntlm --disable-manual -disable-libcurl-option --disable-doh -disable-kerberos-auth
 sed -i 's|#define HAVE_IF_NAMETOINDEX 1|/* #undef HAVE_IF_NAMETOINDEX */|g' lib/curl_config.h
 make V=1
 popd
