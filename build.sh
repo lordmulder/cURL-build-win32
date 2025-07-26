@@ -65,17 +65,22 @@ fi
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 readonly CC_PATH="$(realpath -- "$(which cc)")"
 if [[ -z "${CC_PATH}" ]]; then
-    echo 'Sorry, no working C compiler found !!!'
+    echo 'Sorry, failed to determine path of the C compiler !!!'
     exit 1
 fi
 
 readonly CC_DIRECTORY="$(dirname -- "${CC_PATH}")"
 for app_name in gcc ld as nm ar; do
     if [ "${CC_DIRECTORY}" != "$(dirname -- "$(realpath -- "$(which ${app_name})")")" ]; then
-        echo 'Inconsistent C compiler path !!!'
+        echo 'Inconsistent C compiler paths !!!'
         exit 1
     fi
 done
+
+if [ "$(cc -v 2>&1 | tail -n 1)" != "$(gcc -v 2>&1 | tail -n 1)" ]; then
+    echo 'Inconsistent C compiler versions !!!'
+    exit 1
+fi
 
 readonly CC_TARGET="$(cc -dumpmachine)"
 if [[ "${CC_TARGET,,}" =~ w64-mingw(32|64)$ ]]; then
