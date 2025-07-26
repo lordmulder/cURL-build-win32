@@ -45,7 +45,7 @@ jobs:
       - shell: msys2 {0}
         run: ./build.sh
         env:
-          WINLIBS_ROOT_PATH: ${{ github.workspace }}/_winlibs
+          WINLIBS_BIN_PATH_OVERRIDE: ${{ steps.winlibs.outputs.bin }}
       - uses: actions/upload-artifact@v4
         with:
           name: curl-windows-${{ matrix.flavor }}

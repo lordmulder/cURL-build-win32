@@ -36,22 +36,28 @@ else
     exit 1
 fi
 
-if [ -n "${WINLIBS_ROOT_PATH}" ]; then
-    readonly _WINLIBS_ROOT_PATH="$(realpath -- "$(cygpath -u -- "${WINLIBS_ROOT_PATH}")")"
+unset WINLIBS_BIN_PATH
+
+if [ -n "${WINLIBS_BIN_PATH_OVERRIDE}" ]; then
+    readonly WINLIBS_BIN_PATH="$(realpath -- "$(cygpath -u -- "${WINLIBS_BIN_PATH_OVERRIDE}")")"
+elif [ -n "${WINLIBS_INSTALL_PATH}" ]; then
     case "${UNAME_SPEC,,}" in
         mingw64*)
-            readonly WINLIBS_PATH="${_WINLIBS_ROOT_PATH}/mingw64/bin"
+            readonly WINLIBS_BIN_PATH="$(realpath -- "$(cygpath -u -- "${WINLIBS_INSTALL_PATH}")")/mingw64/bin"
             ;;
         *)
-            readonly WINLIBS_PATH="${_WINLIBS_ROOT_PATH}/mingw32/bin"
+            readonly WINLIBS_BIN_PATH="$(realpath -- "$(cygpath -u -- "${WINLIBS_INSTALL_PATH}")")/mingw32/bin"
             ;;
     esac
-    if [ ! -e "${WINLIBS_PATH}/gcc.exe" ]; then
-        echo "Sorry, C compiler could not be found in the \"${WINLIBS_PATH}\" directory!"
+fi
+
+if [ -n "${WINLIBS_BIN_PATH}" ]; then
+    if [ ! -e "${WINLIBS_BIN_PATH}/gcc.exe" ]; then
+        echo "Sorry, C compiler could not be found in the \"${WINLIBS_BIN_PATH}\" directory!"
         exit 1
     fi
-    echo "Using WinLibs MinGW-w64: ${WINLIBS_PATH}"
-    export PATH="${WINLIBS_PATH}:${PATH}"
+    echo "Using WinLibs MinGW-w64: ${WINLIBS_BIN_PATH}"
+    export PATH="${WINLIBS_BIN_PATH}:${PATH}"
 fi
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

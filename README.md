@@ -64,11 +64,11 @@ As a workaround, I found that, at the time of this writing, the MinGW-w64 compil
 * [winlibs-i686-posix-dwarf-gcc-15.1.0-mingw-w64msvcrt-13.0.0-r2.7z](https://github.com/brechtsanders/winlibs_mingw/releases/download/15.1.0posix-13.0.0-msvcrt-r2/winlibs-i686-posix-dwarf-gcc-15.1.0-mingw-w64msvcrt-13.0.0-r2.7z)
 * [winlibs-x86_64-posix-seh-gcc-15.1.0-mingw-w64msvcrt-13.0.0-r2.7z](https://github.com/brechtsanders/winlibs_mingw/releases/download/15.1.0posix-13.0.0-msvcrt-r2/winlibs-x86_64-posix-seh-gcc-15.1.0-mingw-w64msvcrt-13.0.0-r2.7z)
 
-I have now extended my cURL build script to automatically pick up *WinLibs* MinGW-w64 compiler, if the environment variable **`WINLIBS_ROOT_PATH`** is set and it points to the *WinLibs* installation directory.
+I have now extended my cURL build script to automatically pick up *WinLibs* MinGW-w64 compiler, if the environment variable **`WINLIBS_INSTALL_PATH`** is set and it points to the *WinLibs* installation directory.
 
 Please make sure that the following files exist for the build script to detect and use the WinLibs GCC compiler:
-* `%WINLIBS_ROOT_PATH%\mingw32\bin\gcc.exe`
-* `%WINLIBS_ROOT_PATH%\mingw64\bin\gcc.exe`
+* `%WINLIBS_INSTALL_PATH%\mingw32\bin\gcc.exe`
+* `%WINLIBS_INSTALL_PATH%\mingw64\bin\gcc.exe`
 
 **Note:** Since the WinLibs package does not provide a `cc.exe`, you will need to *copy* the `gcc.exe` to `cc.exe` within the `mingw32\bin` and `mingw64\bin` directories, to make things work as expected.
 
