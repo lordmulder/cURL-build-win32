@@ -29,14 +29,22 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - uses: bwoodsend/setup-winlibs-action@v1
+        id: winlibs
+        with:
+          destination: ${{ github.workspace }}/_winlibs
+          architecture: ${{ matrix.toolchain }}
       - uses: actions/cache@v4
         with:
           path: cache
           key: dependencies-${{ hashFiles('dependencies.lst') }}
+      - run: Copy-Item -Path "${{ steps.winlibs.outputs.bin }}\gcc.exe" -Destination "${{ steps.winlibs.outputs.bin }}\cc.exe"
       - shell: msys2 {0}
         run: git config --global core.autocrlf input
       - shell: msys2 {0}
         run: ./build.sh
+        env:
+          WINLIBS_ROOT_PATH: ${{ github.workspace }}/_winlibs
       - uses: actions/upload-artifact@v4
         with:
           name: curl-windows-${{ matrix.flavor }}
