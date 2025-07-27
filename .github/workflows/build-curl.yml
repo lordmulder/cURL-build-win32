@@ -25,21 +25,21 @@ jobs:
           msystem: ${{ matrix.msystem }}
           update: true
           install: mingw-w64-${{ matrix.toolchain }}-toolchain base-devel cmake git mingw-w64-${{ matrix.toolchain }}-7zip
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - uses: bwoodsend/setup-winlibs-action@v1
         id: winlibs
         with:
           tag: 15.1.0posix-13.0.0-msvcrt-r3
-          destination: ${{ github.workspace }}/_winlibs
-          add_to_path: false
+          destination: ${{ runner.temp }}\winlibs-setup
           architecture: ${{ matrix.toolchain }}
+          add_to_path: false
+      - run: Copy-Item -Path "${{ steps.winlibs.outputs.bin }}\gcc.exe" -Destination "${{ steps.winlibs.outputs.bin }}\cc.exe"
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/cache@v4
         with:
           path: cache
           key: dependencies-${{ hashFiles('dependencies.lst') }}
-      - run: Copy-Item -Path "${{ steps.winlibs.outputs.bin }}\gcc.exe" -Destination "${{ steps.winlibs.outputs.bin }}\cc.exe"
       - shell: msys2 {0}
         run: git config --global core.autocrlf input
       - shell: msys2 {0}
