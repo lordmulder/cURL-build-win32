@@ -12,5 +12,5 @@ a175a6a58313d5736256bf7978d20666f030632a5b6ba80c992d6475690633ea|ngtcp2.tar.gz|h
 f557911bf6171621e1f72ff35f5b1825bb35b52ed45325dcdee931e5d3c0787a|libidn2.tar.gz|https://ftp.fau.de/gnu/libidn/libidn2-2.3.8.tar.gz
 1dcc9ceae8b128f3c0b3f654decd0e1e891afc6ff81098f227ef260449dae208|libpsl.tar.gz|https://github.com/rockdaboot/libpsl/releases/download/0.21.5/libpsl-0.21.5.tar.gz
 f1b553384dedbd87478449775546a358d6f5140c15cccc8fb574136fdc77329f|libgsasl.tar.gz|https://ftp.fau.de/gnu/gsasl/libgsasl-1.10.0.tar.gz
-d85cfc79dc505ff800cb1d321a320183035011fa08cb301356425d86be8fc53c|curl.tar.gz|https://curl.se/download/curl-@MY_VERSION@.tar.gz
+a21e20476e39eca5a4fc5cfb00acf84bbc1f5d8443ec3853ad14c26b3c85b970|curl.tar.gz|https://curl.se/download/curl-@MY_VERSION@.tar.gz
 7430e90ee0cdca2d0f02b1ece46fbf255d5d0408111f009638e3b892d6ca089c|cacert.pem|https://curl.se/ca/cacert-2025-07-15.pem
