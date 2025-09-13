@@ -2,10 +2,10 @@
  1 file changed, 8 insertions(+)
 
 diff --git a/src/tool_doswin.c b/src/tool_doswin.c
-index 4f0fa1d..7b1e126 100644
+index 4ed90ba8c..3d690ea69 100644
 --- a/src/tool_doswin.c
 +++ b/src/tool_doswin.c
-@@ -733,11 +733,19 @@ static void init_terminal(void)
+@@ -734,11 +734,19 @@ static void init_terminal(void)
  
  CURLcode win32_init(void)
  {
