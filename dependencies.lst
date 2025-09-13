@@ -1,4 +1,4 @@
-a73343c3093e5cdc50d9377997c3815b878fd110bf6511c2c7759f2afb90f5a3|zlib-ng.tar.gz|https://github.com/zlib-ng/zlib-ng/archive/refs/tags/2.2.4.tar.gz
+5b3b022489f3ced82384f06db1e13ba148cbce38c7941e424d6cb414416acd18|zlib-ng.tar.gz|https://github.com/zlib-ng/zlib-ng/archive/refs/tags/2.2.5.tar.gz
 eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3|zstd.tar.gz|https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz
 e720a6ca29428b803f4ad165371771f5398faba397edf6778837a18599ea13ff|brotli.tar.gz|https://github.com/google/brotli/archive/refs/tags/v1.1.0.tar.gz
 529043b15cffa5f36077a4d0af83f3de399807181d607441d734196d889b641f|openssl.tar.gz|https://github.com/openssl/openssl/releases/download/openssl-3.5.1/openssl-3.5.1.tar.gz
