@@ -1,7 +1,7 @@
 5b3b022489f3ced82384f06db1e13ba148cbce38c7941e424d6cb414416acd18|zlib-ng.tar.gz|https://github.com/zlib-ng/zlib-ng/archive/refs/tags/2.2.5.tar.gz
 eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3|zstd.tar.gz|https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz
 e720a6ca29428b803f4ad165371771f5398faba397edf6778837a18599ea13ff|brotli.tar.gz|https://github.com/google/brotli/archive/refs/tags/v1.1.0.tar.gz
-529043b15cffa5f36077a4d0af83f3de399807181d607441d734196d889b641f|openssl.tar.gz|https://github.com/openssl/openssl/releases/download/openssl-3.5.1/openssl-3.5.1.tar.gz
+c53a47e5e441c930c3928cf7bf6fb00e5d129b630e0aa873b08258656e7345ec|openssl.tar.gz|https://github.com/openssl/openssl/releases/download/openssl-3.5.2/openssl-3.5.2.tar.gz
 c68e05989a93c002e3ba8df3baef0021c17099aa2123a9c096a5cc8e029caf95|rtmpdump.tar.gz|https://distfiles.macports.org/rtmpdump/f1b83c10d8beb43fcc70a6e88cf4325499f25857.tar.gz
 3b08f5f4f9b4eb82f151a7040bfd6fe6c6fb922efe4b1659c66ea933276965e8|libiconv.tar.gz|https://ftp.fau.de/gnu/libiconv/libiconv-1.18.tar.gz
 39acf4b0371e9b110b60005562aace5b3631fed9b1bb9ecccfc7f56e58bb1d7f|gettext.tar.gz|https://ftp.fau.de/gnu/gettext/gettext-0.26.tar.gz
