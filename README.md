@@ -72,6 +72,14 @@ Please make sure that the following files exist for the build script to detect a
 
 **Note:** Since the WinLibs package does not provide a `cc.exe`, you will need to *copy* the `gcc.exe` to `cc.exe` within the `mingw32\bin` and `mingw64\bin` directories, to make things work as expected.
 
+## Git Mirrors
+
+Git mirrors for this project can be found here, among other places:
+
+* <https://github.com/lordmulder/cURL-build-win32>
+* <https://codeberg.org/MuldeR/cURL-build-win32>
+* <https://punkindrublic.mooo.com:3000/Muldersoft/cURL-build-win32>
+
 ## Acknowledgement
 
 cURL has been created by Daniel Stenberg, daniel@haxx.se, and many contributors.
