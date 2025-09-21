@@ -240,6 +240,12 @@ int wmain(void)
 		return EXIT_FAILURE;
 	}
 
+	fwprintf(stderr, L"cURL executable:\n%ls\n\n", exe_file);
+	fflush(stderr);
+
+	/* cURL version */
+	run_test(exe_file, work_dir, console_out, null_device, L"curl.exe --version");
+
 	/* Unicode/IDN tests */
 	{
 		static const wchar_t *const HOST_NAMES[] = { L"www.b\u00fccher.de", L"www.caf\u00e9.com", L"\u0219coal\u0103.ro", L"\u0444\u0443\u0442\u0431\u043e\u043b.\u0440\u0444", L"\u03bf\u03c5\u03c4\u03bf\u03c0\u03af\u03b1.\u03b4\u03c0\u03b8.\u0067\u0072", L"www.\u2668\ufe0f.com" };
