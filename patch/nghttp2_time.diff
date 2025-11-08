@@ -1,18 +1,12 @@
- lib/nghttp2_time.c | 41 ++++++++++-------------------------------
- 1 file changed, 10 insertions(+), 31 deletions(-)
+ lib/nghttp2_time.c | 37 ++++++++++---------------------------
+ 1 file changed, 10 insertions(+), 27 deletions(-)
 
 diff --git a/lib/nghttp2_time.c b/lib/nghttp2_time.c
-index 18fd7bca..8477b132 100644
+index 18fd7bca..62b7be29 100644
 --- a/lib/nghttp2_time.c
 +++ b/lib/nghttp2_time.c
-@@ -24,39 +24,18 @@
-  */
- #include "nghttp2_time.h"
+@@ -30,33 +30,16 @@
  
--#ifdef HAVE_WINDOWS_H
--#  include <windows.h>
--#endif /* defined(HAVE_WINDOWS_H) */
--
  #include <time.h>
  
 -#if !defined(HAVE_GETTICKCOUNT64) || defined(__CYGWIN__)
