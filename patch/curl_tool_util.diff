@@ -3,7 +3,7 @@
  2 files changed, 12 insertions(+), 13 deletions(-)
 
 diff --git a/src/tool_util.c b/src/tool_util.c
-index e7ab704f1..2fa62e200 100644
+index f8415d2a1..2fa62e200 100644
 --- a/src/tool_util.c
 +++ b/src/tool_util.c
 @@ -107,27 +107,26 @@ int tool_ftruncate64(int fd, curl_off_t where)
@@ -40,7 +40,7 @@ index e7ab704f1..2fa62e200 100644
 +        _tcscat(filebuffer, TEXT("\\"));
 +        _tcscat(filebuffer, filename);
          *pathp = filebuffer;
--        return fopen(filebuffer, FOPEN_READTEXT);
+-        return curlx_fopen(filebuffer, FOPEN_READTEXT);
 +        return _tfopen(filebuffer, TEXT(FOPEN_READTEXT));
        }
      }

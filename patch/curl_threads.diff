@@ -2,10 +2,10 @@
  1 file changed, 1 insertion(+), 5 deletions(-)
 
 diff --git a/lib/curl_threads.h b/lib/curl_threads.h
-index 115277c00..23a0c28f3 100644
+index 241014cc6..daf3b877a 100644
 --- a/lib/curl_threads.h
 +++ b/lib/curl_threads.h
-@@ -39,11 +39,7 @@
+@@ -41,11 +41,7 @@
  #  define curl_mutex_t           CRITICAL_SECTION
  #  define curl_thread_t          HANDLE
  #  define curl_thread_t_null     (HANDLE)0

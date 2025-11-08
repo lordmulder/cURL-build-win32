@@ -2,19 +2,19 @@
  1 file changed, 9 insertions(+), 6 deletions(-)
 
 diff --git a/src/tool_parsecfg.c b/src/tool_parsecfg.c
-index bc22b9d5b..718e7c9fc 100644
+index 03f9930c5..3c3077386 100644
 --- a/src/tool_parsecfg.c
 +++ b/src/tool_parsecfg.c
-@@ -91,7 +91,7 @@ int parseconfig(const char *filename)
+@@ -91,7 +91,7 @@ ParameterError parseconfig(const char *filename, int max_recursive)
  
    if(!filename) {
      /* NULL means load .curlrc from homedir! */
 -    char *curlrc = findfile(".curlrc", CURLRC_DOTSCORE);
 +    char *curlrc = NULL; /* findfile(".curlrc", CURLRC_DOTSCORE); */
      if(curlrc) {
-       file = fopen(curlrc, FOPEN_READTEXT);
+       file = curlx_fopen(curlrc, FOPEN_READTEXT);
        if(!file) {
-@@ -102,14 +102,17 @@ int parseconfig(const char *filename)
+@@ -102,14 +102,17 @@ ParameterError parseconfig(const char *filename, int max_recursive)
      }
  #if defined(_WIN32) && !defined(UNDER_CE)
      else {

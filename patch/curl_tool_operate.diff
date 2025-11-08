@@ -2,10 +2,10 @@
  1 file changed, 6 insertions(+), 2 deletions(-)
 
 diff --git a/src/tool_operate.c b/src/tool_operate.c
-index 2c3030096..ee3b92617 100644
+index f290a288d..314a575e4 100644
 --- a/src/tool_operate.c
 +++ b/src/tool_operate.c
-@@ -1994,11 +1994,15 @@ static CURLcode cacertpaths(struct OperationConfig *config)
+@@ -2086,11 +2086,15 @@ static CURLcode cacertpaths(struct OperationConfig *config)
  #ifdef _WIN32
    if(!env) {
  #ifdef CURL_CA_SEARCH_SAFE
@@ -14,12 +14,12 @@ index 2c3030096..ee3b92617 100644
 +    TCHAR *cacert = NULL;
 +    FILE *cafile = tool_execpath(TEXT("curl-ca-bundle.crt"), &cacert);
      if(cafile) {
-       fclose(cafile);
+       curlx_fclose(cafile);
 +#ifdef UNICODE
 +      config->cacert = curlx_convert_wchar_to_UTF8(cacert);
 +#else
        config->cacert = strdup(cacert);
 +#endif
-     }
- #elif !defined(CURL_WINDOWS_UWP) && !defined(UNDER_CE) && \
-   !defined(CURL_DISABLE_CA_SEARCH)
+       if(!config->cacert) {
+         result = CURLE_OUT_OF_MEMORY;
+         goto fail;
