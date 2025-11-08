@@ -28,7 +28,7 @@ jobs:
       - uses: bwoodsend/setup-winlibs-action@v1
         id: winlibs
         with:
-          tag: 15.2.0posix-13.0.0-msvcrt-r1
+          tag: 15.2.0posix-13.0.0-msvcrt-r3
           destination: ${{ runner.temp }}\winlibs-setup
           architecture: ${{ matrix.toolchain }}
           add_to_path: false
