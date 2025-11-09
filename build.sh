@@ -439,6 +439,7 @@ popd
 function make_out() {
     rm -rf "${1}" && mkdir -p "${1}" && mkdir "${1}/patch" "${1}/legal"
     install -v --strip "${2}/src/curl.exe" "${1}/curl.exe"
+    [ "${3}" == "slim" ] && upx --brute "${1}/curl.exe" || true
     cp -vf "${BASE_DIR}/patch/"*.diff "${1}/patch"
     cp -vf "${PKGS_DIR}/cacert.pem" "${1}/curl-ca-bundle.crt"
     unix2dos > "${1}/build_info.txt" << EOF
