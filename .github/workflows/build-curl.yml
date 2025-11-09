@@ -55,10 +55,38 @@ jobs:
           name: build-log-${{ matrix.flavor }}
           path: build/curl_build-*.log
 
+  tests:
+    name: Build Test-Runner
+    runs-on: windows-2022
+    steps:
+      - uses: msys2/setup-msys2@v2
+        id: msys2
+        with:
+          msystem: MINGW32
+          update: true
+          install: base-devel mingw-w64-i686-7zip
+      - uses: bwoodsend/setup-winlibs-action@v1
+        id: winlibs
+        with:
+          tag: 15.2.0posix-13.0.0-msvcrt-r3
+          destination: ${{ runner.temp }}\winlibs-setup
+          architecture: i686
+          add_to_path: false
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - shell: msys2 {0}
+        run: CC="$(cygpath "${{ steps.winlibs.outputs.bin }}\gcc.exe")" make -B
+        working-directory: ${{ github.workspace }}/tests
+      - uses: actions/upload-artifact@v4
+        with:
+          name: curl-windows-test-runner
+          path: tests/curl-test-runner.7z
+
   release:
     name: release files
     if: ${{ github.event_name == 'release' }}
-    needs: build
+    needs: [build, tests]
     runs-on: ubuntu-latest
     permissions:
       contents: write

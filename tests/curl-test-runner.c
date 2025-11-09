@@ -66,7 +66,7 @@ static BOOL get_executable_directory(wchar_t *const buffer, const size_t capacit
 
 static HANDLE open_handle(const wchar_t *const path, const BOOL inhertitable)
 {
-	HANDLE null_device;
+	HANDLE handle_value;
 	SECURITY_ATTRIBUTES secattr;
 
 	if (inhertitable) {
@@ -75,11 +75,11 @@ static HANDLE open_handle(const wchar_t *const path, const BOOL inhertitable)
 		secattr.bInheritHandle = TRUE;
 	}
 
-	if ((null_device = CreateFileW(path, GENERIC_WRITE, 0, inhertitable ? &secattr : NULL, OPEN_EXISTING, 0, NULL)) == INVALID_HANDLE_VALUE) {
+	if ((handle_value = CreateFileW(path, GENERIC_WRITE, 0, inhertitable ? &secattr : NULL, OPEN_EXISTING, 0, NULL)) == INVALID_HANDLE_VALUE) {
 		return NULL;
 	}
 
-	return null_device;
+	return handle_value;
 }
 
 static HANDLE get_os_handle(FILE *const stream, const BOOL inhertitable)

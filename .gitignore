@@ -1,3 +1,5 @@
+/_release
 /build/**/*
 /cache/*
-/_release
+/tests/**/*.7z
+/tests/**/*.exe
