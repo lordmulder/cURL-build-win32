@@ -259,7 +259,7 @@ tar -xvf "${PKGS_DIR}/openssl.tar.gz" --strip-components=1 -C "${OSSL_DIR}"
 [[ "${MY_CPU}" == "x64" ]] && readonly ossl_flag="no-sse2" || readonly ossl_flag="386"
 [[ "${MY_CPU}" == "x64" ]] && readonly ossl_mngw="mingw64" || readonly ossl_mngw="mingw"
 pushd "${OSSL_DIR}"
-./Configure no-hw no-shared no-engine no-capieng no-dso zlib ${ossl_flag} -static -march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -DOPENSSL_TLS_SECURITY_LEVEL=0 -I"${DEPS_DIR}/include" -L"${DEPS_DIR}/lib" --prefix="${DEPS_DIR}" --libdir="lib" ${ossl_mngw}
+./Configure no-hw no-shared no-apps no-engine no-capieng no-dso zlib ${ossl_flag} -static -march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -DOPENSSL_TLS_SECURITY_LEVEL=0 -I"${DEPS_DIR}/include" -L"${DEPS_DIR}/lib" --prefix="${DEPS_DIR}" --libdir="lib" ${ossl_mngw}
 make build_libs && make install_dev
 popd
 
@@ -271,7 +271,7 @@ readonly RTMP_DIR="${WORK_DIR}/librtmp"
 rm -rf "${RTMP_DIR}" && mkdir "${RTMP_DIR}"
 tar -xvf "${PKGS_DIR}/rtmpdump.tar.gz" --strip-components=1 -C "${RTMP_DIR}"
 pushd "${RTMP_DIR}"
-patch -p1 -b < "${BASE_DIR}/patch/librtmp_openssl.diff"
+patch --fuzz=0 -p1 -b < "${BASE_DIR}/patch/librtmp_openssl.diff"
 make SYS=mingw SHARED= prefix="${DEPS_DIR}" XCFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" XLDFLAGS="-L${DEPS_DIR}/lib" XLIBS="-lws2_32 -lcrypt32"
 make SYS=mingw SHARED= prefix="${DEPS_DIR}" install
 popd
@@ -308,7 +308,7 @@ readonly SSH2_DIR="${WORK_DIR}/libssh2"
 rm -rf "${SSH2_DIR}" && mkdir "${SSH2_DIR}"
 tar -xvf "${PKGS_DIR}/libssh2.tar.gz" --strip-components=1 -C "${SSH2_DIR}"
 pushd "${SSH2_DIR}"
-patch -p1 -b < "${BASE_DIR}/patch/ssh2_session.diff"
+patch --fuzz=0 -p1 -b < "${BASE_DIR}/patch/ssh2_session.diff"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" ./configure --prefix="${DEPS_DIR}" --disable-examples-build --disable-shared --with-libz
 make V=1 && make install
 popd
@@ -321,7 +321,7 @@ readonly NGH2_DIR="${WORK_DIR}/nghttp2"
 rm -rf "${NGH2_DIR}" && mkdir "${NGH2_DIR}"
 tar -xvf "${PKGS_DIR}/nghttp2.tar.gz" --strip-components=1 -C "${NGH2_DIR}"
 pushd "${NGH2_DIR}"
-patch -p1 -b < "${BASE_DIR}/patch/nghttp2_time.diff"
+patch --fuzz=0 -p1 -b < "${BASE_DIR}/patch/nghttp2_time.diff"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" OPENSSL_CFLAGS="-I${DEPS_DIR}/include" OPENSSL_LIBS="-L${DEPS_DIR}/lib -lssl -lcrypto" ZLIB_CFLAGS="-I${DEPS_DIR}/include" ZLIB_LIBS="-L${DEPS_DIR}/lib -lz" ./configure --prefix="${DEPS_DIR}" --enable-lib-only --disable-threads --disable-shared
 make V=1 && make install
 popd
@@ -359,7 +359,7 @@ rm -rf "${IDN2_DIR}" && mkdir "${IDN2_DIR}"
 tar -xvf "${PKGS_DIR}/libidn2.tar.gz" --strip-components=1 -C "${IDN2_DIR}"
 pushd "${IDN2_DIR}"
 CFLAGS="-march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" ./configure --prefix="${DEPS_DIR}" --disable-shared --disable-doc --without-libiconv-prefix --without-libunistring-prefix --disable-valgrind-tests
-patch -p1 -b < "${BASE_DIR}/patch/libidn2_makefile.diff"
+patch --fuzz=0 -p1 -b < "${BASE_DIR}/patch/libidn2_makefile.diff"
 make V=1 && make install
 popd
 
@@ -398,13 +398,13 @@ function init_curl() {
     rm -rf "${1}" && mkdir "${1}"
     tar -xvf "${PKGS_DIR}/curl.tar.gz" --strip-components=1 -C "${1}"
     pushd "${1}"
-    patch -p1 -b < "${BASE_DIR}/patch/curl_getenv.diff"
-    patch -p1 -b < "${BASE_DIR}/patch/curl_threads.diff"
-    patch -p1 -b < "${BASE_DIR}/patch/curl_tool_doswin.diff"
-    patch -p1 -b < "${BASE_DIR}/patch/curl_tool_getparam.diff"
-    patch -p1 -b < "${BASE_DIR}/patch/curl_tool_operate.diff"
-    patch -p1 -b < "${BASE_DIR}/patch/curl_tool_parsecfg.diff"
-    patch -p1 -b < "${BASE_DIR}/patch/curl_tool_util.diff"
+    patch --fuzz=0 -p1 -b < "${BASE_DIR}/patch/curl_getenv.diff"
+    patch --fuzz=0 -p1 -b < "${BASE_DIR}/patch/curl_threads.diff"
+    patch --fuzz=0 -p1 -b < "${BASE_DIR}/patch/curl_tool_doswin.diff"
+    patch --fuzz=0 -p1 -b < "${BASE_DIR}/patch/curl_tool_getparam.diff"
+    patch --fuzz=0 -p1 -b < "${BASE_DIR}/patch/curl_tool_operate.diff"
+    patch --fuzz=0 -p1 -b < "${BASE_DIR}/patch/curl_tool_parsecfg.diff"
+    patch --fuzz=0 -p1 -b < "${BASE_DIR}/patch/curl_tool_util.diff"
 }
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
