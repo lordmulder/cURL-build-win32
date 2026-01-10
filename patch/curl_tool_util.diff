@@ -3,13 +3,13 @@
  2 files changed, 12 insertions(+), 13 deletions(-)
 
 diff --git a/src/tool_util.c b/src/tool_util.c
-index f8415d2a1..2fa62e200 100644
+index 96b0715..33796df 100644
 --- a/src/tool_util.c
 +++ b/src/tool_util.c
-@@ -107,27 +107,26 @@ int tool_ftruncate64(int fd, curl_off_t where)
+@@ -97,27 +97,26 @@ int tool_ftruncate64(int fd, curl_off_t where)
  #endif /* USE_TOOL_FTRUNCATE */
  
- #if defined(_WIN32) && !defined(UNDER_CE)
+ #ifdef _WIN32
 -FILE *tool_execpath(const char *filename, char **pathp)
 +#define BUFFSIZE 512U
 +FILE *tool_execpath(const TCHAR *filename, TCHAR **pathp)
@@ -46,13 +46,13 @@ index f8415d2a1..2fa62e200 100644
      }
    }
 diff --git a/src/tool_util.h b/src/tool_util.h
-index c97c1c03c..7ab3091f2 100644
+index 12206ce..a43dd9d 100644
 --- a/src/tool_util.h
 +++ b/src/tool_util.h
 @@ -35,7 +35,7 @@ int struplocompare(const char *p1, const char *p2);
  int struplocompare4sort(const void *p1, const void *p2);
  
- #if defined(_WIN32) && !defined(UNDER_CE)
+ #ifdef _WIN32
 -FILE *tool_execpath(const char *filename, char **pathp);
 +FILE *tool_execpath(const TCHAR *filename, TCHAR **pathp);
  #endif
