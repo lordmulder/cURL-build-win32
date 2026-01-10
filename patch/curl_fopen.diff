@@ -1,0 +1,177 @@
+ lib/curl_sspi.c    |  8 ++------
+ lib/curlx/fopen.c  | 48 +++++++++++++++++-------------------------------
+ lib/curlx/winapi.c | 30 +++++++++++++++++-------------
+ 3 files changed, 36 insertions(+), 50 deletions(-)
+
+diff --git a/lib/curl_sspi.c b/lib/curl_sspi.c
+index 6e27269..d24f4fd 100644
+--- a/lib/curl_sspi.c
++++ b/lib/curl_sspi.c
+@@ -139,12 +139,8 @@ CURLcode Curl_create_sspi_identity(const char *userp, const char *passwdp,
+     curlx_free(useranddomain.tchar_ptr);
+     return CURLE_OUT_OF_MEMORY;
+   }
+-  if(_tcsncpy_s(dup_domain.tchar_ptr, domlen + 1, domain.tchar_ptr, domlen)) {
+-    curlx_free(dup_user.tchar_ptr);
+-    curlx_free(dup_domain.tchar_ptr);
+-    curlx_free(useranddomain.tchar_ptr);
+-    return CURLE_OUT_OF_MEMORY;
+-  }
++  _tcsncpy(dup_domain.tchar_ptr, domain.tchar_ptr, domlen);
++  *(dup_domain.tchar_ptr + domlen) = TEXT('\0');
+ 
+   curlx_free(useranddomain.tchar_ptr);
+ 
+diff --git a/lib/curlx/fopen.c b/lib/curlx/fopen.c
+index e9eb6df..a880759 100644
+--- a/lib/curlx/fopen.c
++++ b/lib/curlx/fopen.c
+@@ -126,16 +126,15 @@ static bool fix_excessive_path(const TCHAR *in, TCHAR **out)
+ 
+ #ifndef _UNICODE
+   /* convert multibyte input to unicode */
+-  if(mbstowcs_s(&needed, NULL, 0, in, 0))
+-    goto cleanup;
+-  if(!needed || needed >= max_path_len)
++  needed = mbstowcs(NULL, in, 0);
++  if(needed == (size_t)-1 || needed >= max_path_len)
+     goto cleanup;
++  ++needed; /* for NUL */
+   ibuf = CURLX_MALLOC(needed * sizeof(wchar_t));
+   if(!ibuf)
+     goto cleanup;
+-  if(mbstowcs_s(&count, ibuf, needed, in, needed - 1))
+-    goto cleanup;
+-  if(count != needed)
++  count = mbstowcs(ibuf, in, needed);
++  if(count == (size_t)-1 || count >= needed)
+     goto cleanup;
+   in_w = ibuf;
+ #else
+@@ -184,18 +183,12 @@ static bool fix_excessive_path(const TCHAR *in, TCHAR **out)
+       if(needed > max_path_len)
+         goto cleanup;
+ 
+-      temp = CURLX_MALLOC(needed * sizeof(wchar_t));
++      temp = (malloc)(needed * sizeof(wchar_t));
+       if(!temp)
+         goto cleanup;
+ 
+-      if(wcsncpy_s(temp, needed, L"\\\\?\\UNC\\", 8)) {
+-        CURLX_FREE(temp);
+-        goto cleanup;
+-      }
+-      if(wcscpy_s(temp + 8, needed, fbuf + 2)) {
+-        CURLX_FREE(temp);
+-        goto cleanup;
+-      }
++      wcsncpy(temp, L"\\\\?\\UNC\\", 8);
++      wcscpy(temp + 8, fbuf + 2);
+     }
+     else {
+       /* "\\?\" + full path + null */
+@@ -207,14 +200,8 @@ static bool fix_excessive_path(const TCHAR *in, TCHAR **out)
+       if(!temp)
+         goto cleanup;
+ 
+-      if(wcsncpy_s(temp, needed, L"\\\\?\\", 4)) {
+-        CURLX_FREE(temp);
+-        goto cleanup;
+-      }
+-      if(wcscpy_s(temp + 4, needed, fbuf)) {
+-        CURLX_FREE(temp);
+-        goto cleanup;
+-      }
++      wcsncpy(temp, L"\\\\?\\", 4);
++      wcscpy(temp + 4, fbuf);
+     }
+ 
+     CURLX_FREE(fbuf);
+@@ -223,16 +210,15 @@ static bool fix_excessive_path(const TCHAR *in, TCHAR **out)
+ 
+ #ifndef _UNICODE
+   /* convert unicode full path to multibyte output */
+-  if(wcstombs_s(&needed, NULL, 0, fbuf, 0))
+-    goto cleanup;
+-  if(!needed || needed >= max_path_len)
++  needed = wcstombs(NULL, fbuf, 0);
++  if(needed == (size_t)-1 || needed >= max_path_len)
+     goto cleanup;
++  ++needed; /* for NUL */
+   obuf = CURLX_MALLOC(needed);
+   if(!obuf)
+     goto cleanup;
+-  if(wcstombs_s(&count, obuf, needed, fbuf, needed - 1))
+-    goto cleanup;
+-  if(count != needed)
++  count = wcstombs(obuf, fbuf, needed);
++  if(count == (size_t)-1 || count >= needed)
+     goto cleanup;
+   *out = obuf;
+   obuf = NULL;
+@@ -316,7 +302,7 @@ int curlx_win32_open(const char *filename, int oflag, ...)
+       target = fixed;
+     else
+       target = filename_w;
+-    errno = _wsopen_s(&result, target, oflag, _SH_DENYNO, pmode);
++    result = _wsopen(target, oflag, _SH_DENYNO, pmode);
+     CURLX_FREE(filename_w);
+   }
+   else
+@@ -386,7 +372,7 @@ FILE *curlx_win32_freopen(const char *filename, const char *mode, FILE *fp)
+       target = fixed;
+     else
+       target = filename_w;
+-    errno = _wfreopen_s(&result, target, mode_w, fp);
++    result = _wfreopen(target, mode_w, fp);
+   }
+   else
+     /* !checksrc! disable ERRNOVAR 1 */
+diff --git a/lib/curlx/winapi.c b/lib/curlx/winapi.c
+index b46a5bf..7909006 100644
+--- a/lib/curlx/winapi.c
++++ b/lib/curlx/winapi.c
+@@ -40,7 +40,6 @@ const char *curlx_get_winapi_error(DWORD err, char *buf, size_t buflen)
+ {
+   char *p;
+   wchar_t wbuf[256];
+-  DWORD wlen;
+ 
+   if(!buflen)
+     return NULL;
+@@ -51,18 +50,23 @@ const char *curlx_get_winapi_error(DWORD err, char *buf, size_t buflen)
+   /* We return the local codepage version of the error string because if it is
+      output to the user's terminal it will likely be with functions which
+      expect the local codepage (eg fprintf, failf, infof). */
+-  wlen = FormatMessageW((FORMAT_MESSAGE_FROM_SYSTEM |
+-                         FORMAT_MESSAGE_IGNORE_INSERTS), NULL, err,
+-                        LANG_NEUTRAL, wbuf, CURL_ARRAYSIZE(wbuf), NULL);
+-  if(wlen && !wcstombs_s(NULL, buf, buflen, wbuf, wlen)) {
+-    /* Truncate multiple lines */
+-    p = strchr(buf, '\n');
+-    if(p) {
+-      if(p > buf && *(p - 1) == '\r')
+-        *(p - 1) = '\0';
+-      else
+-        *p = '\0';
+-    }
++  if(FormatMessageW((FORMAT_MESSAGE_FROM_SYSTEM |
++                     FORMAT_MESSAGE_IGNORE_INSERTS), NULL, err,
++                    LANG_NEUTRAL, wbuf, CURL_ARRAYSIZE(wbuf), NULL)) {
++    size_t written = wcstombs(buf, wbuf, buflen - 1);
++    if(written != (size_t)-1)
++      buf[written] = '\0';
++    else
++      *buf = '\0';
++  }
++
++  /* Truncate multiple lines */
++  p = strchr(buf, '\n');
++  if(p) {
++    if(p > buf && *(p-1) == '\r')
++      *(p-1) = '\0';
++    else
++      *p = '\0';
+   }
+ 
+   return *buf ? buf : NULL;

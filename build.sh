@@ -400,6 +400,7 @@ function init_curl() {
     pushd "${1}"
     patch --fuzz=0 -p1 -b < "${BASE_DIR}/patch/curl_getenv.diff"
     patch --fuzz=0 -p1 -b < "${BASE_DIR}/patch/curl_threads.diff"
+    patch --fuzz=0 -p1 -b < "${BASE_DIR}/patch/curl_fopen.diff"
     patch --fuzz=0 -p1 -b < "${BASE_DIR}/patch/curl_tool_doswin.diff"
     patch --fuzz=0 -p1 -b < "${BASE_DIR}/patch/curl_tool_getparam.diff"
     patch --fuzz=0 -p1 -b < "${BASE_DIR}/patch/curl_tool_operate.diff"
