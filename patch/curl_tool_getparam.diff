@@ -2,12 +2,12 @@
  1 file changed, 10 insertions(+), 1 deletion(-)
 
 diff --git a/src/tool_getparam.c b/src/tool_getparam.c
-index 5624d3cd7..dcdcc089a 100644
+index 841c6ff..3df48ab 100644
 --- a/src/tool_getparam.c
 +++ b/src/tool_getparam.c
-@@ -43,6 +43,10 @@
+@@ -42,6 +42,10 @@
  #define ALLOW_BLANK TRUE
- #define DENY_BLANK FALSE
+ #define DENY_BLANK  FALSE
  
 +#ifndef HAVE_WRITABLE_ARGV
 +#define HAVE_WRITABLE_ARGV 1
@@ -16,7 +16,7 @@ index 5624d3cd7..dcdcc089a 100644
  static ParameterError getstr(char **str, const char *val, bool allowblank)
  {
    if(*str) {
-@@ -573,14 +577,19 @@ static ParameterError GetSizeParameter(const char *arg,
+@@ -586,14 +590,19 @@ static ParameterError GetSizeParameter(const char *arg,
  }
  
  #ifdef HAVE_WRITABLE_ARGV
@@ -29,7 +29,7 @@ index 5624d3cd7..dcdcc089a 100644
    if(str) {
 +#ifdef _UNICODE
 +    size_t len = wcslen(str);
-+    wmemset(str, L' ', len);
++    wmemset(str, L'*', len);
 +#else
      size_t len = strlen(str);
      memset(str, '*', len);
