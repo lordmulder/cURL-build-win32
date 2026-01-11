@@ -244,7 +244,9 @@ int wmain(void)
 	fflush(stderr);
 
 	/* cURL version */
-	run_test(exe_file, work_dir, console_out, null_device, L"curl.exe --version");
+	if (!run_test(exe_file, work_dir, console_out, null_device, L"curl.exe --version")) {
+		goto cleanup;
+	}
 
 	/* Unicode/IDN tests */
 	{
