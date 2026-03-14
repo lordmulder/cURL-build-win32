@@ -1,6 +1,6 @@
  configure        | 2 +-
- lib/curl_setup.h | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ lib/curl_setup.h | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/configure b/configure
 index 42bde11..a04bbbf 100644
@@ -16,10 +16,10 @@ index 42bde11..a04bbbf 100644
        #endif
  
 diff --git a/lib/curl_setup.h b/lib/curl_setup.h
-index 4f8d65a..8327c68 100644
+index 4f8d65a..97f7910 100644
 --- a/lib/curl_setup.h
 +++ b/lib/curl_setup.h
-@@ -160,7 +160,7 @@
+@@ -160,11 +160,11 @@
  #endif /* HAVE_CONFIG_H */
  
  #ifdef _WIN32
@@ -28,3 +28,8 @@ index 4f8d65a..8327c68 100644
  #    error The minimum build target is Windows Vista (0x0600)
  #  endif
  
+-#  if !defined(CURL_WINDOWS_UWP) && (defined(_MSC_VER) || defined(__MINGW32__))
++#  if !defined(CURL_WINDOWS_UWP) && (defined(_MSC_VER) || defined(__MINGW32__)) && defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0600)
+ #    ifndef HAVE_IF_NAMETOINDEX
+ #    define HAVE_IF_NAMETOINDEX
+ #    endif
