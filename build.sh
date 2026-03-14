@@ -259,7 +259,8 @@ tar -xvf "${PKGS_DIR}/openssl.tar.gz" --strip-components=1 -C "${OSSL_DIR}"
 [[ "${MY_CPU}" == "x64" ]] && readonly ossl_flag="no-sse2" || readonly ossl_flag="386"
 [[ "${MY_CPU}" == "x64" ]] && readonly ossl_mngw="mingw64" || readonly ossl_mngw="mingw"
 pushd "${OSSL_DIR}"
-./Configure no-hw no-shared no-apps no-engine no-capieng no-dso zlib ${ossl_flag} -static -march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -DOPENSSL_TLS_SECURITY_LEVEL=0 -I"${DEPS_DIR}/include" -L"${DEPS_DIR}/lib" --prefix="${DEPS_DIR}" --libdir="lib" ${ossl_mngw}
+patch --fuzz=0 -p1 -b < "${BASE_DIR}/patch/openssl_quic_mingw.diff"
+./Configure no-hw no-shared no-apps no-engine no-capieng no-dso no-quic zlib ${ossl_flag} -static -march=${MY_MARCH} -mtune=${MY_MTUNE} -Os -DNDEBUG -D_WIN32_WINNT=0x0501 -DOPENSSL_TLS_SECURITY_LEVEL=0 -I"${DEPS_DIR}/include" -L"${DEPS_DIR}/lib" --prefix="${DEPS_DIR}" --libdir="lib" ${ossl_mngw}
 make build_libs && make install_dev
 popd
 
