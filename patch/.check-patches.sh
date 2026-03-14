@@ -22,6 +22,7 @@ function apply_patch() {
 curl --proto '=https' --tlsv1.2 -sSf "https://curl.se/download/curl-${CURL_VER}.tar.gz" | tar -C "${TEMP_DIR}" --strip-components=1 -xz
 pushd "${TEMP_DIR}"
 
+apply_patch "curl_configure.diff"
 apply_patch "curl_getenv.diff"
 apply_patch "curl_threads.diff"
 apply_patch "curl_fopen.diff"
@@ -32,3 +33,4 @@ apply_patch "curl_tool_parsecfg.diff"
 apply_patch "curl_tool_util.diff"
 
 popd
+printf "\e[92mAll patches applied successfully.\e[0m\n"

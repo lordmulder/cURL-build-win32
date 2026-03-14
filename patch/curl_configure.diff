@@ -1,0 +1,16 @@
+ configure | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure b/configure
+index 42bde11..a04bbbf 100644
+--- a/configure
++++ b/configure
+@@ -18616,7 +18616,7 @@ printf %s "checking if building for Windows Vista or newer... " >&6; }
+ int main(void)
+ {
+ 
+-      #if (_WIN32_WINNT < 0x600)
++      #if (_WIN32_WINNT < 0x501)
+       #error
+       #endif
+ 
