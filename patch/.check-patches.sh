@@ -13,7 +13,7 @@ readonly TEMP_DIR="$(mktemp -d)"
 
 trap "rm -rf \"${TEMP_DIR}\"" EXIT
 
-function apply_patch() {
+function do_patch() {
 	test -n "${1}"
 	printf "\e[96m[${1}]\e[0m\n"
 	patch --fuzz=0 -p1 -b < "${BASE_DIR}/patch/${1}"
@@ -22,15 +22,16 @@ function apply_patch() {
 curl --proto '=https' --tlsv1.2 -sSf "https://curl.se/download/curl-${CURL_VER}.tar.gz" | tar -C "${TEMP_DIR}" --strip-components=1 -xz
 pushd "${TEMP_DIR}"
 
-apply_patch "curl_configure.diff"
-apply_patch "curl_getenv.diff"
-apply_patch "curl_threads.diff"
-apply_patch "curl_fopen.diff"
-apply_patch "curl_tool_doswin.diff"
-apply_patch "curl_tool_getparam.diff"
-apply_patch "curl_tool_operate.diff"
-apply_patch "curl_tool_parsecfg.diff"
-apply_patch "curl_tool_util.diff"
+do_patch "curl_configure.diff"
+do_patch "curl_getenv.diff"
+do_patch "curl_threads.diff"
+do_patch "curl_fopen.diff"
+do_patch "curl_easy_lock.diff"
+do_patch "curl_tool_doswin.diff"
+do_patch "curl_tool_getparam.diff"
+do_patch "curl_tool_operate.diff"
+do_patch "curl_tool_parsecfg.diff"
+do_patch "curl_tool_util.diff"
 
 popd
 printf "\e[92mAll patches applied successfully.\e[0m\n"

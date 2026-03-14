@@ -412,6 +412,7 @@ function init_curl() {
     do_patch "curl_getenv.diff"
     do_patch "curl_threads.diff"
     do_patch "curl_fopen.diff"
+    do_patch "curl_easy_lock.diff"
     do_patch "curl_tool_doswin.diff"
     do_patch "curl_tool_getparam.diff"
     do_patch "curl_tool_operate.diff"
