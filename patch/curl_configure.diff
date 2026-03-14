@@ -1,5 +1,6 @@
- configure | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ configure        | 2 +-
+ lib/curl_setup.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/configure b/configure
 index 42bde11..a04bbbf 100644
@@ -13,4 +14,17 @@ index 42bde11..a04bbbf 100644
 +      #if (_WIN32_WINNT < 0x501)
        #error
        #endif
+ 
+diff --git a/lib/curl_setup.h b/lib/curl_setup.h
+index 4f8d65a..8327c68 100644
+--- a/lib/curl_setup.h
++++ b/lib/curl_setup.h
+@@ -160,7 +160,7 @@
+ #endif /* HAVE_CONFIG_H */
+ 
+ #ifdef _WIN32
+-#  if defined(_WIN32_WINNT) && (_WIN32_WINNT < 0x0600)
++#  if defined(_WIN32_WINNT) && (_WIN32_WINNT < 0x0501)
+ #    error The minimum build target is Windows Vista (0x0600)
+ #  endif
  
