@@ -487,12 +487,14 @@ function copy_doc() {
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Helper function
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function make_zip() {
+function make_pkg() {
     find "${1}" -type f -exec chmod 444 "{}" \;
     local ZFILE="${BASE_DIR}/build/curl-${MY_VERSION}-win-${MY_CPU}-${2}.$(date +"%Y-%m-%d").zip"
-    rm -rf "${ZFILE}"
+    local OFILE="${BASE_DIR}/build/curl-${MY_VERSION}-win-${MY_CPU}-${2}.$(date +"%Y-%m-%d").iso"
+    rm -rf "${ZFILE}" "${OFILE}"
     7z a -r -tzip -mx=9 -mpass=15 "${ZFILE}" "${1}/"*
-    chmod 444 "${ZFILE}"
+    xorriso -as mkisofs -iso-level 3 --norock -joliet -volid CURL_W32 -o "${OFILE}" "${1}"
+    chmod 444 "${ZFILE}" "${OFILE}"
 }
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -538,7 +540,7 @@ copy_doc "${OUTDIR_FULL}" "${ZLIB_DIR}/LICENSE.md"  "zlib.LICENSE.txt"
 copy_doc "${OUTDIR_FULL}" "${ZLIB_DIR}/README.md"   "zlib.README.txt"
 copy_doc "${OUTDIR_FULL}" "${ZSTD_DIR}/LICENSE"     "zstandard.LICENSE.txt"
 copy_doc "${OUTDIR_FULL}" "${ZSTD_DIR}/README.md"   "zstandard.README.md"
-make_zip "${OUTDIR_FULL}" "full"
+make_pkg "${OUTDIR_FULL}" "full"
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Output (slim)
@@ -565,7 +567,7 @@ copy_doc "${OUTDIR_SLIM}" "${SLIM_DIR}/CHANGES.md"  "curl.CHANGES.txt"
 copy_doc "${OUTDIR_SLIM}" "${SLIM_DIR}/COPYING"     "curl.COPYING.txt"
 copy_doc "${OUTDIR_SLIM}" "${SLIM_DIR}/README"      "curl.README.txt"
 copy_doc "${OUTDIR_SLIM}" "${ZLIB_DIR}/README.md"   "zlib.README.txt"
-make_zip "${OUTDIR_SLIM}" "slim"
+make_pkg "${OUTDIR_SLIM}" "slim"
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Complete

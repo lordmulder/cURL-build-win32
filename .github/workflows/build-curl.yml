@@ -24,7 +24,8 @@ jobs:
         with:
           msystem: ${{ matrix.msystem }}
           update: true
-          install: mingw-w64-${{ matrix.toolchain }}-toolchain base-devel cmake git mingw-w64-${{ matrix.toolchain }}-7zip upx
+          cache: false
+          install: mingw-w64-${{ matrix.toolchain }}-toolchain base-devel cmake git mingw-w64-${{ matrix.toolchain }}-7zip upx xorriso
       - uses: bwoodsend/setup-winlibs-action@v1
         id: winlibs
         with:
@@ -49,7 +50,9 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: curl-windows-${{ matrix.flavor }}
-          path: build/curl-*.zip
+          path: |
+            build/curl-*.zip
+            build/curl-*.iso
       - uses: actions/upload-artifact@v4
         with:
           name: build-log-${{ matrix.flavor }}
