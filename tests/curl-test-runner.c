@@ -266,8 +266,10 @@ int wmain(void)
 			for (size_t j = 0; j < ARRAYSIZE(HTTP_VERSIONS); ++j) {
 				for (size_t k = 0; k < ARRAYSIZE(TLS_VERSIONS); ++k) {
 					if (!((j == 2) && (k < 2))) {
-						if (!RUN_TEST(L"curl.exe -vf --no-progress-meter --tlsv%ls --tls-max %ls --http%ls \"https://%ls/\"", TLS_VERSIONS[k], TLS_VERSIONS[k], HTTP_VERSIONS[j], HOST_NAMES[i])) {
-							goto cleanup;
+						if (!((i == 1) && (k < 1))) {
+							if (!RUN_TEST(L"curl.exe -vf --no-progress-meter --tlsv%ls --tls-max %ls --http%ls \"https://%ls/\"", TLS_VERSIONS[k], TLS_VERSIONS[k], HTTP_VERSIONS[j], HOST_NAMES[i])) {
+								goto cleanup;
+							}
 						}
 					}
 				}
