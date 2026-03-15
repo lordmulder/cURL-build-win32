@@ -8,9 +8,9 @@ f557911bf6171621e1f72ff35f5b1825bb35b52ed45325dcdee931e5d3c0787a|libidn2.tar.gz|
 1dcc9ceae8b128f3c0b3f654decd0e1e891afc6ff81098f227ef260449dae208|libpsl.tar.gz|https://github.com/rockdaboot/libpsl/releases/download/0.21.5/libpsl-0.21.5.tar.gz
 d9ec76cbe34db98eec3539fe2c899d26b0c837cb3eb466a56b0f109cabf658f7|libssh2.tar.gz|https://www.libssh2.org/download/libssh2-1.11.1.tar.gz
 2c16ffc588ad3f9e2613c3fad72db48ecb5ce15bc362fcc85b342e48daf51013|nghttp2.tar.gz|https://github.com/nghttp2/nghttp2/releases/download/v1.68.0/nghttp2-1.68.0.tar.gz
-375c64e039c2224cf1d86596ccc90bfcfe94f78c829761d5cc36f52384342313|nghttp3.tar.gz|https://github.com/ngtcp2/nghttp3/releases/download/v1.14.0/nghttp3-1.14.0.tar.gz
-b8aae6b438c3dbc8223bae208e9e2798e0797ecd61d5a945d480896e04307c79|ngtcp2.tar.gz|https://github.com/ngtcp2/ngtcp2/releases/download/v1.19.0/ngtcp2-1.19.0.tar.gz
+0e431c81eb2d3df5ced048d6e942925ff922ad053e76a0274eea7b164c9b776e|nghttp3.tar.gz|https://github.com/ngtcp2/nghttp3/releases/download/v1.15.0/nghttp3-1.15.0.tar.gz
+cff43747548dc930acdd9f2950ee11422e6897288725081878852abebf978733|ngtcp2.tar.gz|https://github.com/ngtcp2/ngtcp2/releases/download/v1.21.0/ngtcp2-1.21.0.tar.gz
 b28c91532a8b65a1f983b4c28b7488174e4a01008e29ce8e69bd789f28bc2a89|openssl.tar.gz|https://github.com/openssl/openssl/releases/download/openssl-3.5.5/openssl-3.5.5.tar.gz
 c68e05989a93c002e3ba8df3baef0021c17099aa2123a9c096a5cc8e029caf95|rtmpdump.tar.gz|https://distfiles.macports.org/rtmpdump/f1b83c10d8beb43fcc70a6e88cf4325499f25857.tar.gz
-6a0561b50b8f5f6434a6a9e667a67026f2b2064a1ffa959c6b2dae320161c2a8|zlib-ng.tar.gz|https://github.com/zlib-ng/zlib-ng/archive/refs/tags/2.3.2.tar.gz
+f9c65aa9c852eb8255b636fd9f07ce1c406f061ec19a2e7d508b318ca0c907d1|zlib-ng.tar.gz|https://github.com/zlib-ng/zlib-ng/archive/refs/tags/2.3.3.tar.gz
 eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3|zstd.tar.gz|https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz
