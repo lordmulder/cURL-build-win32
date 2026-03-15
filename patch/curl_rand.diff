@@ -1,0 +1,47 @@
+ lib/rand.c | 25 +++++++++----------------
+ 1 file changed, 9 insertions(+), 16 deletions(-)
+
+diff --git a/lib/rand.c b/lib/rand.c
+index 4232e81..d110537 100644
+--- a/lib/rand.c
++++ b/lib/rand.c
+@@ -34,30 +34,23 @@
+ #include "escape.h"
+ 
+ #ifdef _WIN32
+-
+-#ifndef CURL_WINDOWS_UWP
+-#  include <bcrypt.h>
+-#  ifdef _MSC_VER
+-#    pragma comment(lib, "bcrypt.lib")
+-#  endif
+-#  ifndef STATUS_SUCCESS
+-#  define STATUS_SUCCESS ((NTSTATUS)0x00000000L)
+-#  endif
+-#endif
++#include <wincrypt.h>
+ 
+ CURLcode Curl_win32_random(unsigned char *entropy, size_t length)
+ {
++  HCRYPTPROV hCryptProv = 0;
+   memset(entropy, 0, length);
+ 
+-#ifndef CURL_WINDOWS_UWP
+-  if(BCryptGenRandom(NULL, entropy, (ULONG)length,
+-                     BCRYPT_USE_SYSTEM_PREFERRED_RNG) != STATUS_SUCCESS)
++  if(!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT | CRYPT_SILENT))
+     return CURLE_FAILED_INIT;
+ 
++  if(!CryptGenRandom(hCryptProv, (DWORD)length, entropy)) {
++    CryptReleaseContext(hCryptProv, 0UL);
++    return CURLE_FAILED_INIT;
++  }
++
++  CryptReleaseContext(hCryptProv, 0UL);
+   return CURLE_OK;
+-#else
+-  return CURLE_NOT_BUILT_IN;
+-#endif
+ }
+ #endif
+ 
