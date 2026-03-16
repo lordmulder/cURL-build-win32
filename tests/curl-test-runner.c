@@ -42,13 +42,13 @@
 static void remove_file_spec(wchar_t *const path)
 {
 	size_t len = wcslen(path);
-	while ((len > 0U) && IS_PATH_SEPARATOR(path[len - 1U])) {
+	while ((len > 3U) && IS_PATH_SEPARATOR(path[len - 1U])) {
 		path[--len] = L'\0';
 	}
-	while ((len > 0U) && NO_PATH_SEPARATOR(path[len - 1U])) {
+	while ((len > 3U) && NO_PATH_SEPARATOR(path[len - 1U])) {
 		path[--len] = L'\0';
 	}
-	while ((len > 0U) && IS_PATH_SEPARATOR(path[len - 1U])) {
+	while ((len > 3U) && IS_PATH_SEPARATOR(path[len - 1U])) {
 		path[--len] = L'\0';
 	}
 }
@@ -62,6 +62,47 @@ static BOOL get_executable_directory(wchar_t *const buffer, const size_t capacit
 	}
 
 	return FALSE;
+}
+
+static BOOL get_environment_variable(const wchar_t *const name, wchar_t *const buffer, const size_t capacity)
+{
+	const DWORD result = GetEnvironmentVariableW(name, buffer, (DWORD)capacity);
+	if ((result > 0U) & ((size_t)result < capacity)) {
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
+static BOOL get_full_path(const wchar_t *const path, wchar_t *const buffer, const size_t capacity)
+{
+	const DWORD result = GetFullPathNameW(path, (DWORD)capacity, buffer, NULL);
+	if ((result > 0U) & ((size_t)result < capacity)) {
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
+static BOOL get_directory_name(const wchar_t *const path, wchar_t *const buffer, const size_t capacity)
+{
+	if (capacity > wcslen(path)) {
+		wcscpy(buffer, path);
+		remove_file_spec(buffer);
+		return TRUE;
+	}
+	
+	return FALSE;
+}
+
+static BOOL file_exists(const wchar_t *const path)
+{
+	const DWORD attributes = GetFileAttributesW(path);
+	if ((attributes == INVALID_FILE_ATTRIBUTES) || (attributes & FILE_ATTRIBUTE_DIRECTORY)) {
+		return FALSE;
+	}
+
+	return TRUE;
 }
 
 static HANDLE open_handle(const wchar_t *const path, const BOOL inhertitable)
@@ -202,10 +243,11 @@ static BOOL run_test(const wchar_t *const exe_file, const wchar_t *const work_di
 
 int wmain(void)
 {
-	WCHAR work_dir[MAX_PATH_LENGTH];
-	WCHAR exe_file[MAX_PATH_LENGTH];
-	HANDLE null_device;
-	HANDLE console_out;
+	WCHAR env_buff[MAX_PATH_LENGTH] = { L'\0' };
+	WCHAR exe_file[MAX_PATH_LENGTH] = { L'\0' };
+	WCHAR work_dir[MAX_PATH_LENGTH] = { L'\0' };
+	HANDLE null_device = NULL;
+	HANDLE console_out = NULL;
 	int exit_code = EXIT_FAILURE;
 
 	SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOOPENFILEERRORBOX);
@@ -214,19 +256,37 @@ int wmain(void)
 	fwprintf(stderr, L"cURL Test Runner [%ls]\n\n", MAKE_WIDESTR(__DATE__));
 	fflush(stderr);
 
-	if (!get_executable_directory(work_dir, MAX_PATH_LENGTH)) {
-		fwprintf(stderr, L"Error: Failed to detect working directory!\n");
-		return EXIT_FAILURE;
+	if (get_environment_variable(L"CURL_TEST_EXECUTABLE_FILE", env_buff, MAX_PATH_LENGTH)) {
+		if (!get_full_path(env_buff, exe_file, MAX_PATH_LENGTH)) {
+			fwprintf(stderr, L"Error: Failed to acquire full executable path!\n");
+			return EXIT_FAILURE;
+		}
+		if (!file_exists(exe_file)) {
+			fwprintf(stderr, L"Error: cURL executable file could not be found!\n");
+			return EXIT_FAILURE;
+		}
+		if (!get_directory_name(exe_file, work_dir, MAX_PATH_LENGTH)) {
+			fwprintf(stderr, L"Error: Failed to detect working directory!\n");
+			return EXIT_FAILURE;
+		}
+	} else {
+		if (!get_executable_directory(work_dir, MAX_PATH_LENGTH)) {
+			fwprintf(stderr, L"Error: Failed to detect working directory!\n");
+			return EXIT_FAILURE;
+		}
+		int retval = snwprintf(exe_file, MAX_PATH_LENGTH, L"%ls\\curl.exe", work_dir);
+		if (!((retval > 0) && ((size_t)retval < MAX_PATH_LENGTH))) {
+			fwprintf(stderr, L"Error: Failed to build cURL executable path!\n");
+			return EXIT_FAILURE;
+		}
+		if (!file_exists(exe_file)) {
+			fwprintf(stderr, L"Error: cURL executable file could not be found!\n");
+			return EXIT_FAILURE;
+		}
 	}
 
-	int retval = snwprintf(exe_file, MAX_PATH_LENGTH, L"%ls\\curl.exe", work_dir);
-	if (!((retval > 0) && ((size_t)retval < MAX_PATH_LENGTH))) {
-		fwprintf(stderr, L"Error: Failed to build cURL executable path!\n");
-		return EXIT_FAILURE;
-	}
-
-	if (GetFileAttributesW(exe_file) == INVALID_FILE_ATTRIBUTES) {
-		fwprintf(stderr, L"Error: cURL executable file could not be found!\n");
+	if (!SetCurrentDirectoryW(work_dir)) {
+		fwprintf(stderr, L"Error: Failed to set the working directory!\n");
 		return EXIT_FAILURE;
 	}
 
