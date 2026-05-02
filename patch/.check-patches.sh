@@ -24,6 +24,7 @@ pushd "${TEMP_DIR}"
 
 do_patch "curl_configure.diff"
 do_patch "curl_getenv.diff"
+do_patch "curl_mutex.diff"
 do_patch "curl_threads.diff"
 do_patch "curl_fopen.diff"
 do_patch "curl_easy_lock.diff"

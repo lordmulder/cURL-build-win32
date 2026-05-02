@@ -1,0 +1,21 @@
+ lib/curl_setup.h | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/lib/curl_setup.h b/lib/curl_setup.h
+index 9e293c2..6daf46d 100644
+--- a/lib/curl_setup.h
++++ b/lib/curl_setup.h
+@@ -681,9 +681,10 @@
+ #endif /* _WIN32 */
+ 
+ /* We want to use mutex when available. */
+-#if defined(HAVE_THREADS_POSIX) || defined(_WIN32)
+-#define USE_MUTEX
+-#endif
++//#if defined(HAVE_THREADS_POSIX) || defined(_WIN32)
++//#define USE_MUTEX
++//#endif
++#undef USE_MUTEX
+ 
+ /* threaded resolver is the only feature requiring threads. */
+ #ifdef USE_RESOLV_THREADED
