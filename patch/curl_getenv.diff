@@ -2,14 +2,14 @@
  1 file changed, 28 insertions(+), 10 deletions(-)
 
 diff --git a/lib/getenv.c b/lib/getenv.c
-index a957e6e..8502fdb 100644
+index a957e6e..9175e18 100644
 --- a/lib/getenv.c
 +++ b/lib/getenv.c
 @@ -22,24 +22,21 @@
   *
   ***************************************************************************/
  #include "curl_setup.h"
-+#include "curlx/curlx.h"
++#include "curlx/multibyte.h"
  
 -char *curl_getenv(const char *variable)
 +#if defined(_WIN32)
