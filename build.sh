@@ -175,7 +175,7 @@ mkdir -p "${PKGS_DIR}" "${DEPS_DIR}/bin" "${DEPS_DIR}/include" "${DEPS_DIR}/lib/
 
 printf "\n==================== download ====================\n\n"
 while IFS='|' read -r hash name url; do
-    pkg_uuid="$(printf '%s\x1F%s\x1F%s' "${hash}" "${name}" "${url}" | sha384sum -b | head -c 64 | xxd -r -p | base64 | tr '+/' '-_' | tr -d '=')"
+    pkg_uuid="a$(printf '%s\x1F%s\x1F%s' "${hash}" "${name}" "${url}" | sha384sum -b | head -c 64 | xxd -r -p | base64 | tr '+/' '-_' | tr -d '=')"
     if [ ! -f "${REPO_DIR}/${pkg_uuid}.pkg" ]; then
         if ! wget -4 --tries=8 --retry-connrefused --timeout=10 --referer "$(dirname -- "${url}")" -O "${PKGS_DIR}/${name}" "${url}"; then
             exit 1
@@ -192,7 +192,7 @@ while IFS='|' read -r hash name url; do
 done < <(cat dependencies.lst | sed "s|@MY_VERSION@|${MY_VERSION}|g")
 
 while IFS='|' read -r hash name url; do
-    pkg_uuid="$(printf '%s\x1F%s\x1F%s' "${hash}" "${name}" "${url}" | sha384sum -b | head -c 64 | xxd -r -p | base64 | tr '+/' '-_' | tr -d '=')"
+    pkg_uuid="a$(printf '%s\x1F%s\x1F%s' "${hash}" "${name}" "${url}" | sha384sum -b | head -c 64 | xxd -r -p | base64 | tr '+/' '-_' | tr -d '=')"
     if [ ! -f "${PKGS_DIR}/${name}" ]; then
         if [ ! -f "${REPO_DIR}/${pkg_uuid}.pkg" ]; then
             printf "Required dependency file \"${REPO_DIR}/${pkg_uuid}.pkg\" not found!"
