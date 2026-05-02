@@ -2,10 +2,10 @@
  1 file changed, 8 insertions(+)
 
 diff --git a/src/tool_doswin.c b/src/tool_doswin.c
-index ad03865..6b915ab 100644
+index 4b2a2a3..89d5fd5 100644
 --- a/src/tool_doswin.c
 +++ b/src/tool_doswin.c
-@@ -901,12 +901,20 @@ curl_socket_t win32_stdin_read_thread(void)
+@@ -904,12 +904,20 @@ curl_socket_t win32_stdin_read_thread(void)
  
  CURLcode win32_init(void)
  {

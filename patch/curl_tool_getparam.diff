@@ -2,7 +2,7 @@
  1 file changed, 10 insertions(+), 1 deletion(-)
 
 diff --git a/src/tool_getparam.c b/src/tool_getparam.c
-index e6e6419..7d6d055 100644
+index 176d3eb..480bf43 100644
 --- a/src/tool_getparam.c
 +++ b/src/tool_getparam.c
 @@ -41,6 +41,10 @@
@@ -16,7 +16,7 @@ index e6e6419..7d6d055 100644
  static ParameterError getstr(char **str, const char *val, bool allowblank)
  {
    if(*str) {
-@@ -623,14 +627,19 @@ UNITTEST ParameterError GetSizeParameter(const char *arg, curl_off_t *out)
+@@ -624,14 +628,19 @@ UNITTEST ParameterError GetSizeParameter(const char *arg, curl_off_t *out)
  }
  
  #ifdef HAVE_WRITABLE_ARGV
