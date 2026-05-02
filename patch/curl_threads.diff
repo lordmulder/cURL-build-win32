@@ -1,5 +1,6 @@
  lib/curl_setup.h | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+ lib/hostip.c     |  8 ++++----
+ 2 files changed, 13 insertions(+), 10 deletions(-)
 
 diff --git a/lib/curl_setup.h b/lib/curl_setup.h
 index 9e293c2..be1d2fa 100644
@@ -29,3 +30,22 @@ index 9e293c2..be1d2fa 100644
  
  /* ---------------------------------------------------------------- */
  /*             resolver specialty compile-time defines              */
+diff --git a/lib/hostip.c b/lib/hostip.c
+index 85f53c4..165f3b8 100644
+--- a/lib/hostip.c
++++ b/lib/hostip.c
+@@ -986,10 +986,10 @@ CURLcode Curl_resolv(struct Curl_easy *data,
+   }
+ #endif /* !USE_ALARM_TIMEOUT */
+ 
+-#ifndef CURLRES_ASYNCH
+-  if(timeout_ms)
+-    infof(data, "timeout on name lookup is not supported");
+-#endif
++//#ifndef CURLRES_ASYNCH
++//  if(timeout_ms)
++//    infof(data, "timeout on name lookup is not supported");
++//#endif
+ 
+   return hostip_resolv(data, dns_queries, hostname, port, transport,
+                        for_proxy, timeout_ms, TRUE, presolv_id, pdns);

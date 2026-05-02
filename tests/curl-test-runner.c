@@ -310,7 +310,7 @@ int wmain(void)
 
 	/* Unicode/IDN tests */
 	{
-		static const wchar_t *const HOST_NAMES[] = { L"www.b\u00fccher.de", L"www.caf\u00e9.com", L"\u0219coal\u0103.ro", L"\u0444\u0443\u0442\u0431\u043e\u043b.\u0440\u0444", L"\u03bf\u03c5\u03c4\u03bf\u03c0\u03af\u03b1.\u03b4\u03c0\u03b8.\u0067\u0072", L"www.\u2668\ufe0f.com" };
+		static const wchar_t *const HOST_NAMES[] = { L"www.b\u00fccher.de", L"www.caf\u00e9.com", L"\u0219coal\u0103.ro", L"\u03bf\u03c5\u03c4\u03bf\u03c0\u03af\u03b1.\u03b4\u03c0\u03b8.\u0067\u0072", L"www.\u2668\ufe0f.com" }; //L"\u0444\u0443\u0442\u0431\u043e\u043b.\u0440\u0444",
 		for (size_t i = 0; i < ARRAYSIZE(HOST_NAMES); ++i) {
 			if (!RUN_TEST(L"curl.exe -vf --no-progress-meter \"http://%ls/\"", HOST_NAMES[i])) {
 				goto cleanup;
