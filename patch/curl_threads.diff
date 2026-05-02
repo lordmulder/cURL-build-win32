@@ -1,11 +1,11 @@
- lib/curl_setup.h | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+ lib/curl_setup.h | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
 diff --git a/lib/curl_setup.h b/lib/curl_setup.h
-index 9e293c2..c678893 100644
+index 9e293c2..be1d2fa 100644
 --- a/lib/curl_setup.h
 +++ b/lib/curl_setup.h
-@@ -681,14 +681,16 @@
+@@ -681,14 +681,17 @@
  #endif /* _WIN32 */
  
  /* We want to use mutex when available. */
@@ -25,6 +25,7 @@ index 9e293c2..c678893 100644
 +//#define USE_THREADS
 +//#endif
 +#undef USE_THREADS
++#undef USE_RESOLV_THREADED
  
  /* ---------------------------------------------------------------- */
  /*             resolver specialty compile-time defines              */

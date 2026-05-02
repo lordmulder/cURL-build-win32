@@ -25,7 +25,7 @@ jobs:
           msystem: ${{ matrix.msystem }}
           update: true
           cache: false
-          install: mingw-w64-${{ matrix.toolchain }}-toolchain base-devel cmake git mingw-w64-${{ matrix.toolchain }}-7zip upx xorriso
+          install: mingw-w64-${{ matrix.toolchain }}-toolchain base-devel cmake git vim mingw-w64-${{ matrix.toolchain }}-7zip upx xorriso
       - uses: bwoodsend/setup-winlibs-action@v1
         id: winlibs
         with:

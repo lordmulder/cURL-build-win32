@@ -175,8 +175,8 @@ mkdir -p "${PKGS_DIR}" "${DEPS_DIR}/bin" "${DEPS_DIR}/include" "${DEPS_DIR}/lib/
 
 printf "\n==================== download ====================\n\n"
 while IFS='|' read -r hash name url; do
-    pkg_uuid="$(printf '%s\x1F%s\x1F%s' "${hash}" "${name}" "${url}" | sha384sum -b | head -n 1 | grep -Po '^[[:xdigit:]]+')"
-    if [ ! -f "${REPO_DIR}/${pkg_uuid}" ]; then
+    pkg_uuid="$(printf '%s\x1F%s\x1F%s' "${hash}" "${name}" "${url}" | sha384sum -b | head -c 64 | xxd -r -p | base64 | tr '+/' '-_' | tr -d '=')"
+    if [ ! -f "${REPO_DIR}/${pkg_uuid}.pkg" ]; then
         if ! wget -4 --tries=8 --retry-connrefused --timeout=10 --referer "$(dirname -- "${url}")" -O "${PKGS_DIR}/${name}" "${url}"; then
             exit 1
         fi
@@ -186,19 +186,19 @@ while IFS='|' read -r hash name url; do
             exit 1
         fi
         for i in {0..2}; do
-            install -v --compare --mode=444 "${PKGS_DIR}/${name}" "${REPO_DIR}/${pkg_uuid}"
+            install -v --compare --mode=444 "${PKGS_DIR}/${name}" "${REPO_DIR}/${pkg_uuid}.pkg"
         done
     fi
 done < <(cat dependencies.lst | sed "s|@MY_VERSION@|${MY_VERSION}|g")
 
 while IFS='|' read -r hash name url; do
-    pkg_uuid="$(printf '%s\x1F%s\x1F%s' "${hash}" "${name}" "${url}" | sha384sum -b | head -n 1 | grep -Po '^[[:xdigit:]]+')"
+    pkg_uuid="$(printf '%s\x1F%s\x1F%s' "${hash}" "${name}" "${url}" | sha384sum -b | head -c 64 | xxd -r -p | base64 | tr '+/' '-_' | tr -d '=')"
     if [ ! -f "${PKGS_DIR}/${name}" ]; then
-        if [ ! -f "${REPO_DIR}/${pkg_uuid}" ]; then
-            printf "Required dependency file \"${REPO_DIR}/${pkg_uuid}\" not found!"
+        if [ ! -f "${REPO_DIR}/${pkg_uuid}.pkg" ]; then
+            printf "Required dependency file \"${REPO_DIR}/${pkg_uuid}.pkg\" not found!"
             exit 1
         fi
-        cp -vf "${REPO_DIR}/${pkg_uuid}" "${PKGS_DIR}/${name}"
+        cp -vf "${REPO_DIR}/${pkg_uuid}.pkg" "${PKGS_DIR}/${name}"
     fi
     hash_existing="$(sha256sum -b "${PKGS_DIR}/${name}" | head -n 1 | grep -Po '^[[:xdigit:]]+')"
     if [ "${hash_existing}" != "${hash}" ]; then
