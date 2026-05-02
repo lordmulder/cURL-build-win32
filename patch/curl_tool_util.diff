@@ -3,11 +3,11 @@
  2 files changed, 12 insertions(+), 13 deletions(-)
 
 diff --git a/src/tool_util.c b/src/tool_util.c
-index 96b0715..33796df 100644
+index 5a8a3bc..6495ab9 100644
 --- a/src/tool_util.c
 +++ b/src/tool_util.c
-@@ -97,27 +97,26 @@ int tool_ftruncate64(int fd, curl_off_t where)
- #endif /* USE_TOOL_FTRUNCATE */
+@@ -108,27 +108,26 @@ int toolx_ftruncate_djgpp(int fd, curl_off_t where)
+ #endif
  
  #ifdef _WIN32
 -FILE *tool_execpath(const char *filename, char **pathp)
