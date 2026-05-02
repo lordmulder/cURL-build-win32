@@ -3,10 +3,10 @@
  2 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/configure b/configure
-index 42bde11..a04bbbf 100644
+index 0900a99..161429d 100644
 --- a/configure
 +++ b/configure
-@@ -18616,7 +18616,7 @@ printf %s "checking if building for Windows Vista or newer... " >&6; }
+@@ -18758,7 +18758,7 @@ printf %s "checking if building for Windows Vista or newer... " >&6; }
  int main(void)
  {
  
@@ -16,7 +16,7 @@ index 42bde11..a04bbbf 100644
        #endif
  
 diff --git a/lib/curl_setup.h b/lib/curl_setup.h
-index 4f8d65a..97f7910 100644
+index 0d4a8fa..9e293c2 100644
 --- a/lib/curl_setup.h
 +++ b/lib/curl_setup.h
 @@ -160,11 +160,11 @@

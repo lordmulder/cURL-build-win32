@@ -7,7 +7,7 @@
 
 set -euo pipefail
 
-readonly CURL_VER="8.19.0"
+readonly CURL_VER="8.20.0"
 readonly BASE_DIR="$(realpath "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/..")"
 readonly TEMP_DIR="$(mktemp -d)"
 
