@@ -1,6 +1,6 @@
 816c96e8e8f193b40151dad7e8ff37b1221d019dbcb9c35cd3fadbfe6477dfec|brotli.tar.gz|https://github.com/google/brotli/archive/refs/tags/v1.2.0.tar.gz
 f1407d974c5ed87d544bd931a278232e13925177e239fca370619aba63c757b4|cacert.pem|https://curl.se/ca/cacert-2025-12-02.pem
-2a2c11db4c122691aa23b4363befda1bfd801770bfebf41e1d21cee4f2ab0f71|curl.tar.gz|https://curl.se/download/curl-@MY_VERSION@.tar.gz
+fc5819cad3f9f5482669adcdc49a782c15f36d2a0715b395b06d9173593d2dc0|curl.tar.gz|https://curl.se/download/curl-@MY_VERSION@.tar.gz
 39acf4b0371e9b110b60005562aace5b3631fed9b1bb9ecccfc7f56e58bb1d7f|gettext.tar.gz|https://ftp.fau.de/gnu/gettext/gettext-0.26.tar.gz
 f1b553384dedbd87478449775546a358d6f5140c15cccc8fb574136fdc77329f|libgsasl.tar.gz|https://ftp.fau.de/gnu/gsasl/libgsasl-1.10.0.tar.gz
 3b08f5f4f9b4eb82f151a7040bfd6fe6c6fb922efe4b1659c66ea933276965e8|libiconv.tar.gz|https://ftp.fau.de/gnu/libiconv/libiconv-1.18.tar.gz
